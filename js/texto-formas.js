@@ -15,9 +15,9 @@
 
    A peça tem um ciclo com o nome do evento e um segundo em que a tela
    vira branca a partir do centro (f 1–11), as formas se repetem em laranja e
-   "Fotos Disponíveis" entra num swipe up, palavra por palavra, terminando
-   parado por mais 1 s. Por cima de tudo vai um efeito de filme antigo
-   (granulação, tom envelhecido, oscilação de luz, poeira, riscos e vinheta).
+   "Fotos Disponíveis" é datilografado letra por letra, com um cursor que
+   continua piscando no fim (mais 1 s parado). No nome do evento, "Capoeira"
+   ganha um marca-texto rosa que se desenha da esquerda para a direita.
 
    As medidas da referência foram convertidas para U (o tamanho de fonte da
    referência), escalado para a largura do nosso bloco de texto.
@@ -45,6 +45,10 @@
   const FONT = '"Batica Sans", "Helvetica Neue", Arial, sans-serif';
   const WHITE = '#FFFFFF';
   const ORANGE = '#EA622F';
+  const PINK = '#D12384';                        // marca-texto sob "Capoeira"
+  const HIGHLIGHT = 'Capoeira';
+  const TYPE_START = 37;                         // quadro do ciclo em que a digitação começa
+  const TYPE_RATE = 2;                           // quadros por letra
   let fg = WHITE;                                // cores do ciclo atual (invertidas no final)
   let bg = ORANGE;
 
@@ -145,6 +149,7 @@
   let fs = 100;
   let textA = null;     // { glyphs, swooshes } de cada frase
   let textB = null;
+  let capH = 70;        // altura das maiúsculas, para o cursor
 
   function setFont(size) {
     ctx.font = `400 ${size}px ${FONT}`;
@@ -160,47 +165,41 @@
     fs = 100 * (TITLE_W / textW('Disponíveis'));
     setFont(fs);
     U = 110 * (TITLE_W / 460);                   // "famolus": 460 px de largura a 110 px de fonte
+    capH = ctx.measureText('H').actualBoundingBoxAscent;
     textA = build(TEXT_A, 20251010);
-    textB = words(TEXT_B);
+    textA.highlight = marker(textA.glyphs, HIGHLIGHT);
+    textB = build(TEXT_B, 20251011);
   }
 
-  /** posiciona cada palavra de uma frase (para o swipe up, palavra por palavra) */
-  function words(lines) {
-    const m = ctx.measureText('Íp');
-    const asc = m.actualBoundingBoxAscent;
-    const desc = m.actualBoundingBoxDescent;
-    const fm = ctx.measureText('Hp');
-    const lh = LINE_H * fs;
-    const top = C.y - (lh * lines.length) / 2;
-    const list = [];
-    lines.forEach((text, li) => {
-      const baseline = top + li * lh + (lh - (fm.fontBoundingBoxAscent + fm.fontBoundingBoxDescent)) / 2 + fm.fontBoundingBoxAscent;
-      const x0 = C.x - textW(text) / 2;
-      let i = 0;
-      for (const word of text.split(' ')) {
-        const x = x0 + ctx.measureText(text.slice(0, i)).width;
-        // máscara da linha: do topo do acento até o fim da descendente
-        list.push({ word, x, baseline, maskTop: baseline - asc - 0.06 * fs, maskBot: baseline + desc + 0.06 * fs });
-        i += word.length + 1;
-      }
-    });
-    return list;
+  /** retângulo de marca-texto sob uma palavra: cobre a metade de baixo das letras */
+  function marker(glyphs, word) {
+    const gs = glyphs.filter((g) => g.word === word);
+    const xh = ctx.measureText('x').actualBoundingBoxAscent;
+    const x0 = gs[0].x - 0.08 * fs;
+    const x1 = gs[gs.length - 1].x + gs[gs.length - 1].w + 0.08 * fs;
+    const base = gs[0].baseline;
+    return { x: x0, y: base - xh * 0.62, w: x1 - x0, h: xh * 0.62 + 0.14 * fs };
   }
 
-  /** cada palavra sobe de baixo da própria linha, uma depois da outra */
-  function drawSwipe(list, f) {
+  function drawMarker(m, p, yoff = 0) {
+    if (!m || p <= 0) return;
+    ctx.fillStyle = PINK;
+    ctx.fillRect(m.x, m.y + yoff, m.w * p, m.h);
+  }
+
+  /** máquina de escrever: uma letra a cada TYPE_RATE quadros, com cursor */
+  function drawTyping({ glyphs }, f) {
+    if (f < TYPE_START) return;
+    const shown = Math.min(glyphs.length, Math.floor((f - TYPE_START) / TYPE_RATE) + 1);
     ctx.fillStyle = fg;
-    list.forEach((w, k) => {
-      const p = E.outExpo(span(f, 37 + k * 6, 37 + k * 6 + 16));
-      if (p <= 0) return;
-      const h = w.maskBot - w.maskTop;
-      ctx.save();
-      ctx.beginPath();
-      ctx.rect(0, w.maskTop, STAGE_W, h);
-      ctx.clip();
-      ctx.fillText(w.word, w.x, w.baseline + (1 - p) * h);
-      ctx.restore();
-    });
+    for (let i = 0; i < shown; i++) ctx.fillText(glyphs[i].ch, glyphs[i].x, glyphs[i].baseline);
+
+    // cursor logo depois da última letra; fixo enquanto digita, piscando no fim
+    const typedAt = TYPE_START + glyphs.length * TYPE_RATE;
+    if (f >= typedAt && Math.floor((f - typedAt) / 8) % 2 === 0) return;
+    const g = glyphs[shown - 1];
+    const x = g.x + g.w + 0.08 * fs;             // largura medida já desconta o espaçamento -50
+    ctx.fillRect(x, g.baseline - capH, 0.06 * fs, capH + 0.08 * fs);
   }
 
   /** posiciona as letras de uma frase (linhas centradas) e sorteia os detalhes da montagem */
@@ -217,6 +216,7 @@
       const x0 = C.x - textW(text) / 2;
       [...text].forEach((ch, i) => {
         if (ch === ' ') return;
+        const word = text.slice(text.lastIndexOf(' ', i) + 1).split(' ')[0];
         const x = x0 + ctx.measureText(text.slice(0, i)).width;
         const gm = ctx.measureText(ch);
         const gTop = baseline - gm.actualBoundingBoxAscent;
@@ -232,7 +232,7 @@
           dy: (0.1 + rnd() * 0.3) * U,
         }));
         glyphs.push({
-          ch, line: li, x, baseline, cx, cy, w, top: gTop, bot: gBot, start, bands,
+          ch, line: li, word, x, baseline, cx, cy, w, top: gTop, bot: gBot, start, bands,
           arc: rnd() < 0.3 ? {
             x: cx + (rnd() - 0.5) * 0.4 * U,
             y: cy + (rnd() - 0.3) * 0.4 * U,
@@ -309,16 +309,19 @@
     });
   }
 
-  function drawText({ glyphs }, alpha) {
+  function drawText({ glyphs, highlight }, alpha) {
     ctx.globalAlpha = alpha;
+    drawMarker(highlight, 1);
     ctx.fillStyle = fg;
     for (const g of glyphs) ctx.fillText(g.ch, g.x, g.baseline);
     ctx.globalAlpha = 1;
   }
 
-  function drawAssembly({ glyphs, swooshes }, f) {
+  function drawAssembly({ glyphs, swooshes, highlight }, f) {
     if (f < 36) return;
     const yoff = (1 - E.outCubic(span(f, 37, 51))) * 0.3 * U;
+    // o marca-texto passa da esquerda para a direita depois que a palavra se monta
+    drawMarker(highlight, E.outCubic(span(f, 49, 58)), yoff);
     ctx.fillStyle = fg;
 
     for (const g of glyphs) {
@@ -370,12 +373,9 @@
 
   function render(t) {
     const F = ((t / 1000) * FPS) % TOTAL;        // quadro na linha do tempo inteira
-    const n = Math.floor(F);                     // o efeito de filme muda a cada quadro
-    const rnd = random(n * 7919 + 13);
-    // tremor leve do quadro, como num projetor
-    ctx.setTransform(1, 0, 0, 1, (rnd() - 0.5) * 3, (rnd() - 0.5) * 3);
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.fillStyle = ORANGE;
-    ctx.fillRect(-10, -10, STAGE_W + 20, STAGE_H + 20);
+    ctx.fillRect(0, 0, STAGE_W, STAGE_H);
     ctx.lineCap = 'round';
     ctx.textBaseline = 'alphabetic';
     setFont(fs);
@@ -388,7 +388,7 @@
       // último ciclo: o nome do evento some, a tela vira branca a partir
       // do centro, as formas se repetem em laranja e "Fotos Disponíveis"
       // entra num swipe up, palavra por palavra
-      f = Math.min(F - OUTRO, CYCLE - 0.01);
+      f = F - OUTRO;                             // segue além do ciclo para o cursor piscar
       if (f < 7) drawText(textA, 1 - E.inOutSine(f / 7));
       const wipe = E.outCubic(span(f, 1, 11)) * Math.hypot(STAGE_W, STAGE_H) / 2;
       ctx.fillStyle = WHITE;
@@ -403,83 +403,8 @@
     }
     drawArcs(f);
     drawBars(f);
-    if (text === textB) drawSwipe(text, f);
+    if (text === textB) drawTyping(text, f);
     else drawAssembly(text, f);
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    film(rnd);
-  }
-
-  /* --- filme antigo ------------------------------------------------------ */
-
-  const scratch = document.createElement('canvas');
-  scratch.width = STAGE_W;
-  scratch.height = STAGE_H;
-  const sctx = scratch.getContext('2d');
-
-  // granulação: alguns quadros de ruído pré-calculados, sorteados a cada quadro
-  const GRAIN = Array.from({ length: 6 }, (_, k) => {
-    const c = document.createElement('canvas');
-    c.width = STAGE_W / 2;
-    c.height = STAGE_H / 2;
-    const g = c.getContext('2d');
-    const img = g.createImageData(c.width, c.height);
-    const rnd = random(4242 + k);
-    for (let i = 0; i < img.data.length; i += 4) {
-      const v = 128 + (rnd() + rnd() + rnd() - 1.5) * 120;
-      img.data[i] = img.data[i + 1] = img.data[i + 2] = v;
-      img.data[i + 3] = 255;
-    }
-    g.putImageData(img, 0, 0);
-    return c;
-  });
-
-  const vignette = ctx.createRadialGradient(C.x, C.y, STAGE_H * 0.38, C.x, C.y, STAGE_H * 0.62);
-  vignette.addColorStop(0, 'rgba(40, 20, 5, 0)');
-  vignette.addColorStop(1, 'rgba(40, 20, 5, 0.25)');
-
-  function film(rnd) {
-    // tom envelhecido e oscilação de luz
-    const flicker = 0.97 + rnd() * 0.06;
-    sctx.clearRect(0, 0, STAGE_W, STAGE_H);
-    sctx.drawImage(canvas, 0, 0);
-    ctx.save();
-    ctx.filter = `sepia(0.3) saturate(0.85) contrast(1.05) brightness(${flicker.toFixed(3)})`;
-    ctx.drawImage(scratch, 0, 0);
-    ctx.restore();
-
-    // granulação leve
-    ctx.save();
-    ctx.globalCompositeOperation = 'overlay';
-    ctx.globalAlpha = 0.16;
-    const grain = GRAIN[Math.floor(rnd() * GRAIN.length)];
-    const ox = Math.floor(rnd() * 2) * -2;
-    const oy = Math.floor(rnd() * 2) * -2;
-    ctx.drawImage(grain, ox, oy, STAGE_W + 4, STAGE_H + 4);
-    ctx.restore();
-
-    // poeira e um risco vertical de vez em quando
-    ctx.save();
-    const specks = Math.floor(rnd() * 4);
-    for (let i = 0; i < specks; i++) {
-      ctx.fillStyle = rnd() < 0.5 ? 'rgba(30, 20, 10, 0.55)' : 'rgba(255, 250, 235, 0.6)';
-      ctx.beginPath();
-      ctx.ellipse(rnd() * STAGE_W, rnd() * STAGE_H, 1.5 + rnd() * 3, 1 + rnd() * 2.5, rnd() * Math.PI, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    if (rnd() < 0.25) {
-      const x = rnd() * STAGE_W;
-      ctx.strokeStyle = 'rgba(255, 250, 235, 0.35)';
-      ctx.lineWidth = 1 + rnd();
-      ctx.beginPath();
-      ctx.moveTo(x, rnd() * STAGE_H * 0.3);
-      ctx.lineTo(x + (rnd() - 0.5) * 6, STAGE_H * (0.7 + rnd() * 0.3));
-      ctx.stroke();
-    }
-    ctx.restore();
-
-    // vinheta
-    ctx.fillStyle = vignette;
-    ctx.fillRect(0, 0, STAGE_W, STAGE_H);
   }
 
   /* --- palco e relógio --------------------------------------------------- */

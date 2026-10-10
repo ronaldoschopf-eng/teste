@@ -58,13 +58,11 @@ Uma animação curta, de 6 s, só com o texto **Fotos Disponíveis** (só as ini
 
 Recriação de uma animação de referência, em laranja `#EA622F` e branco, com a mesma fonte, tamanho e espaçamento da versão P&B. Tudo é desenhado num canvas, em ciclos de 74 quadros a 30 fps (≈ 2,47 s). O vídeo [`video/fotos-disponiveis-formas.mp4`](video/fotos-disponiveis-formas.mp4) tem 5,9 s:
 
-1. um ciclo com **4º Festival Barra Vento de Capoeira** (três linhas), branco sobre laranja;
-2. a tela vira branca a partir do centro, as formas se repetem em laranja e **Fotos Disponíveis** entra num swipe up (sobe de baixo da linha), palavra por palavra;
-3. 1 s parado no fim.
+1. um ciclo com **4º Festival Barra Vento de Capoeira** (três linhas), branco sobre laranja. Depois que as letras se montam, um marca-texto rosa `#D12384` se desenha da esquerda para a direita atrás de **Capoeira**;
+2. a tela vira branca a partir do centro, as formas se repetem em laranja e **Fotos Disponíveis** é datilografado letra por letra (máquina de escrever), com um cursor;
+3. 1 s parado no fim, com o cursor piscando.
 
-Por cima do vídeo todo vai um efeito leve de filme antigo: granulação, tom envelhecido (sépia), oscilação de luz, tremor do quadro, poeira, riscos ocasionais e vinheta. Tudo é sorteado com semente por quadro, então o vídeo sai sempre igual.
-
-Para gerar de novo, rode `npm run render:formas`. Cada ciclo segue esta sequência (no segundo, o texto entra pelo swipe up a partir do quadro 37):
+Para gerar de novo, rode `npm run render:formas`. Cada ciclo segue esta sequência (no segundo, a digitação começa no quadro 37, com uma letra a cada 2 quadros):
 
 | Quadros | O que acontece |
 | --- | --- |
