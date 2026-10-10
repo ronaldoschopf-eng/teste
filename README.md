@@ -56,7 +56,7 @@ Uma animação curta, de 6 s, só com o texto **Fotos Disponíveis** (só as ini
 
 ## Versão com formas (`texto-formas.html`)
 
-Recriação de uma animação de referência, com **Fotos Disponíveis** no lugar do texto original: branco sobre preto, na mesma fonte, tamanho e espaçamento da versão P&B. Tudo é desenhado num canvas e roda em loop de 74 quadros a 30 fps (≈ 2,47 s). O vídeo [`video/fotos-disponiveis-formas.mp4`](video/fotos-disponiveis-formas.mp4) tem 8,4 s: dois ciclos de "Fotos Disponíveis", como a referência, e um terceiro em que a tela vira branca a partir do centro e **Link na BIO** se monta em preto com o mesmo movimento, terminando parado por mais 1 s. Para gerar de novo, rode `npm run render:formas`.
+Recriação de uma animação de referência, com **Fotos Disponíveis** no lugar do texto original: branco sobre preto, na mesma fonte, tamanho e espaçamento da versão P&B. Tudo é desenhado num canvas e roda em loop de 74 quadros a 30 fps (≈ 2,47 s). O vídeo [`video/fotos-disponiveis-formas.mp4`](video/fotos-disponiveis-formas.mp4) tem 5,9 s: um ciclo de "Fotos Disponíveis" e um segundo em que a tela vira branca a partir do centro e **Link na BIO** se monta em preto com o mesmo movimento, terminando parado por mais 1 s. Para gerar de novo, rode `npm run render:formas`.
 
 | Quadros | O que acontece |
 | --- | --- |

@@ -13,7 +13,7 @@
                traços curvos, tracinhos e pontos que se desenham e somem
      f 58–74   texto parado
 
-   A peça tem dois ciclos de "Fotos Disponíveis" e um terceiro em que a tela
+   A peça tem um ciclo de "Fotos Disponíveis" e um segundo em que a tela
    vira branca a partir do centro (f 1–11) e "Link na BIO" se monta em preto
    com o mesmo movimento, terminando parado por mais 1 s.
 
@@ -31,7 +31,7 @@
   const FPS = 30;
   const CYCLE = 74;                              // quadros por ciclo
   const CYCLE_MS = (CYCLE / FPS) * 1000;
-  const OUTRO = 2 * CYCLE;                       // dois ciclos de "Fotos Disponíveis", como a referência
+  const OUTRO = CYCLE;                           // um ciclo de "Fotos Disponíveis"
   const END_HOLD = 30;                           // quadros parados no fim, com "Link na BIO"
   const TOTAL = OUTRO + CYCLE + END_HOLD;        // em quadros
   const DURATION = (TOTAL / FPS) * 1000;
