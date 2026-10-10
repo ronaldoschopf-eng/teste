@@ -56,7 +56,13 @@ Uma animação curta, de 6 s, só com o texto **Fotos Disponíveis** (só as ini
 
 ## Versão com formas (`texto-formas.html`)
 
-Recriação de uma animação de referência, com **Fotos Disponíveis** no lugar do texto original: branco sobre laranja `#EA622F`, na mesma fonte, tamanho e espaçamento da versão P&B. Tudo é desenhado num canvas e roda em loop de 74 quadros a 30 fps (≈ 2,47 s). O vídeo [`video/fotos-disponiveis-formas.mp4`](video/fotos-disponiveis-formas.mp4) tem 5,9 s: um ciclo de "Fotos Disponíveis" e um segundo em que a tela vira branca a partir do centro e **Link na BIO** se monta em laranja com o mesmo movimento, com um brilho leve de neon e **BIO** em itálico (inclinação sintética, já que a fonte só tem o peso regular), terminando parado por mais 1 s. Para gerar de novo, rode `npm run render:formas`.
+Recriação de uma animação de referência, em laranja `#EA622F` e branco, com a mesma fonte, tamanho e espaçamento da versão P&B. Tudo é desenhado num canvas, em ciclos de 74 quadros a 30 fps (≈ 2,47 s). O vídeo [`video/fotos-disponiveis-formas.mp4`](video/fotos-disponiveis-formas.mp4) tem 5,9 s:
+
+1. um ciclo com **4º Festival Barra Vento de Capoeira** (três linhas), branco sobre laranja;
+2. a tela vira branca a partir do centro e **Fotos Disponíveis** se monta em laranja com o mesmo movimento;
+3. 1 s parado no fim.
+
+Para gerar de novo, rode `npm run render:formas`. Cada ciclo segue esta sequência:
 
 | Quadros | O que acontece |
 | --- | --- |
