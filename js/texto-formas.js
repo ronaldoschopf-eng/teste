@@ -13,6 +13,10 @@
                traços curvos, tracinhos e pontos que se desenham e somem
      f 58–74   texto parado
 
+   A peça tem dois ciclos de "Fotos Disponíveis" e um terceiro em que a tela
+   vira branca a partir do centro (f 1–11) e "Link na BIO" se monta em preto
+   com o mesmo movimento, terminando parado por mais 1 s.
+
    As medidas da referência foram convertidas para U (o tamanho de fonte da
    referência), escalado para a largura do nosso bloco de texto.
 
@@ -27,14 +31,20 @@
   const FPS = 30;
   const CYCLE = 74;                              // quadros por ciclo
   const CYCLE_MS = (CYCLE / FPS) * 1000;
-  const DURATION = 2 * CYCLE_MS;                 // o vídeo exportado tem dois ciclos, como a referência
-  const LINES = ['Fotos', 'Disponíveis'];
+  const OUTRO = 2 * CYCLE;                       // dois ciclos de "Fotos Disponíveis", como a referência
+  const END_HOLD = 30;                           // quadros parados no fim, com "Link na BIO"
+  const TOTAL = OUTRO + CYCLE + END_HOLD;        // em quadros
+  const DURATION = (TOTAL / FPS) * 1000;
+  const TEXT_A = ['Fotos', 'Disponíveis'];
+  const TEXT_B = ['Link na BIO'];
   const TITLE_W = 528;                           // largura de "Disponíveis"
   const TRACKING = -0.05;                        // espaçamento entre letras: -50
   const LINE_H = 0.88;                           // entrelinha
   const FONT = '"Batica Sans", "Helvetica Neue", Arial, sans-serif';
   const WHITE = '#FFFFFF';
   const BLACK = '#000000';
+  let fg = WHITE;                                // cores do ciclo atual (invertidas no final)
+  let bg = BLACK;
 
   const params = new URLSearchParams(location.search);
   const canvas = document.querySelector('canvas');
@@ -97,7 +107,7 @@
 
   /* --- traçado ----------------------------------------------------------- */
 
-  function line(x1, y1, x2, y2, w, color = WHITE) {
+  function line(x1, y1, x2, y2, w, color = fg) {
     if (w <= 0.2) return;
     ctx.strokeStyle = color;
     ctx.lineWidth = w;
@@ -110,7 +120,7 @@
   function arc(cx, cy, r, a0, a1, w) {
     if (w <= 0.2 || r <= 0) return;
     if (Math.abs(a1 - a0) < 0.002) a1 = a0 + 0.002;
-    ctx.strokeStyle = WHITE;
+    ctx.strokeStyle = fg;
     ctx.lineWidth = w;
     ctx.beginPath();
     ctx.arc(cx, cy, r, Math.min(a0, a1), Math.max(a0, a1));
@@ -119,7 +129,7 @@
 
   function dot(x, y, r) {
     if (r <= 0.2) return;
-    ctx.fillStyle = WHITE;
+    ctx.fillStyle = fg;
     ctx.beginPath();
     ctx.arc(x, y, r, 0, Math.PI * 2);
     ctx.fill();
@@ -130,8 +140,8 @@
   let U = 126;          // unidade da referência em px
   let C = { x: STAGE_W / 2, y: STAGE_H / 2 };
   let fs = 100;
-  let glyphs = [];
-  let swooshes = [];
+  let textA = null;     // { glyphs, swooshes } de cada frase
+  let textB = null;
 
   function setFont(size) {
     ctx.font = `400 ${size}px ${FONT}`;
@@ -144,22 +154,27 @@
   function layout() {
     fs = 100;
     setFont(fs);
-    fs = 100 * (TITLE_W / textW(LINES[1]));
+    fs = 100 * (TITLE_W / textW(TEXT_A[1]));
     setFont(fs);
+    U = 110 * (TITLE_W / 460);                   // "famolus": 460 px de largura a 110 px de fonte
+    textA = build(TEXT_A, 20251010);
+    textB = build(TEXT_B, 20251011);
+  }
 
+  /** posiciona as letras de uma frase (linhas centradas) e sorteia os detalhes da montagem */
+  function build(lines, seed) {
     const m = ctx.measureText('Hp');
     const asc = m.fontBoundingBoxAscent;
     const desc = m.fontBoundingBoxDescent;
     const lh = LINE_H * fs;
-    const top = C.y - lh;                        // bloco com duas linhas, centrado
-
-    U = 110 * (TITLE_W / 460);                   // "famolus": 460 px de largura a 110 px de fonte
-    const rnd = random(20251010);
-    glyphs = [];
-    LINES.forEach((text, li) => {
+    const top = C.y - (lh * lines.length) / 2;   // bloco centrado
+    const rnd = random(seed);
+    const glyphs = [];
+    lines.forEach((text, li) => {
       const baseline = top + li * lh + (lh - (asc + desc)) / 2 + asc;
       const x0 = C.x - textW(text) / 2;
       [...text].forEach((ch, i) => {
+        if (ch === ' ') return;
         const x = x0 + ctx.measureText(text.slice(0, i)).width;
         const gm = ctx.measureText(ch);
         const gTop = baseline - gm.actualBoundingBoxAscent;
@@ -175,7 +190,7 @@
           dy: (0.1 + rnd() * 0.3) * U,
         }));
         glyphs.push({
-          ch, x, baseline, cx, cy, w, top: gTop, bot: gBot, start, bands,
+          ch, line: li, x, baseline, cx, cy, w, top: gTop, bot: gBot, start, bands,
           arc: rnd() < 0.3 ? {
             x: cx + (rnd() - 0.5) * 0.4 * U,
             y: cy + (rnd() - 0.3) * 0.4 * U,
@@ -190,12 +205,13 @@
     });
 
     // grandes traços curvos que atravessam várias letras
-    const l1 = glyphs.find((g) => g.ch === 'F');
-    const l2 = glyphs.find((g) => g.ch === 'D');
-    swooshes = [
+    const l1 = glyphs[0];
+    const l2 = glyphs[glyphs.length - 1];
+    const swooshes = [
       { x: C.x + 0.2 * U, y: l2.baseline + 1.5 * U, r: 2.1 * U, a0: 205, a1: 300, from: 40, to: 51 },
       { x: C.x - 0.4 * U, y: l1.baseline + 1.1 * U, r: 1.5 * U, a0: 215, a1: 320, from: 41, to: 52 },
     ];
+    return { glyphs, swooshes };
   }
 
   /* --- fases ------------------------------------------------------------- */
@@ -246,22 +262,22 @@
       if (i === 0 && f > 32.3 && f < 35.6) {
         const p = 0.12 + 0.05 * span(f, 32.3, 34);
         const q = lerp(p, 0.62, span(f, 32.6, 34));
-        line(lerp(X1, X2, p), lerp(Y1, Y2, p), lerp(X1, X2, q), lerp(Y1, Y2, q), 0.06 * U, BLACK);
+        line(lerp(X1, X2, p), lerp(Y1, Y2, p), lerp(X1, X2, q), lerp(Y1, Y2, q), 0.06 * U, bg);
       }
     });
   }
 
-  function drawText(alpha) {
+  function drawText({ glyphs }, alpha) {
     ctx.globalAlpha = alpha;
-    ctx.fillStyle = WHITE;
+    ctx.fillStyle = fg;
     for (const g of glyphs) ctx.fillText(g.ch, g.x, g.baseline);
     ctx.globalAlpha = 1;
   }
 
-  function drawAssembly(f) {
+  function drawAssembly({ glyphs, swooshes }, f) {
     if (f < 36) return;
     const yoff = (1 - E.outCubic(span(f, 37, 51))) * 0.3 * U;
-    ctx.fillStyle = WHITE;
+    ctx.fillStyle = fg;
 
     for (const g of glyphs) {
       // a letra surge em três faixas horizontais que se encaixam
@@ -311,7 +327,7 @@
   }
 
   function render(t) {
-    const f = ((t / 1000) * FPS) % CYCLE;
+    const F = ((t / 1000) * FPS) % TOTAL;        // quadro na linha do tempo inteira
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.fillStyle = BLACK;
     ctx.fillRect(0, 0, STAGE_W, STAGE_H);
@@ -319,10 +335,29 @@
     ctx.textBaseline = 'alphabetic';
     setFont(fs);
 
-    if (f < 7) drawText(1 - E.inOutSine(f / 7));
+    fg = WHITE;
+    bg = BLACK;
+    let f = F % CYCLE;
+    let text = textA;
+    if (F >= OUTRO) {
+      // último ciclo: "Fotos Disponíveis" some, a tela vira branca a partir
+      // do centro e "Link na BIO" se monta em preto com o mesmo movimento
+      f = Math.min(F - OUTRO, CYCLE - 0.01);
+      if (f < 7) drawText(textA, 1 - E.inOutSine(f / 7));
+      const wipe = E.outCubic(span(f, 1, 11)) * Math.hypot(STAGE_W, STAGE_H) / 2;
+      ctx.fillStyle = WHITE;
+      ctx.beginPath();
+      ctx.arc(C.x, C.y, wipe + 1, 0, Math.PI * 2);
+      ctx.fill();
+      fg = BLACK;
+      bg = WHITE;
+      text = textB;
+    } else if (f < 7) {
+      drawText(textA, 1 - E.inOutSine(f / 7));
+    }
     drawArcs(f);
     drawBars(f);
-    drawAssembly(f);
+    drawAssembly(text, f);
   }
 
   /* --- palco e relógio --------------------------------------------------- */
@@ -346,7 +381,7 @@
   function tick() {
     const t = elapsed();
     render(t);
-    timeEl.textContent = ((t % CYCLE_MS) / 1000).toFixed(1);
+    timeEl.textContent = `${((t % DURATION) / 1000).toFixed(1)} / ${(DURATION / 1000).toFixed(1)}`;
     pauseBtn.textContent = pausedAt !== null ? 'Continuar' : 'Pausar';
     raf = pausedAt === null ? requestAnimationFrame(tick) : 0;
   }
