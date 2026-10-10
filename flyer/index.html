@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#E9612E">
+  <title>4º Festival Barra Vento — Fotos sendo adicionadas</title>
+  <link rel="stylesheet" href="fonts.css">
+  <link rel="stylesheet" href="flyer.css">
+</head>
+<body>
+  <main class="viewport">
+    <!--
+      Palco em 1080 × 1920 px, com as mesmas posições do flyer original.
+      Cada elemento animado é uma camada independente (data-ref) e toda a
+      animação é calculada por render(t) em flyer.js.
+    -->
+    <div class="stage" id="stage" data-ref="stage" role="img"
+         aria-label="4º Festival Barra Vento de Capoeira — fotos sendo adicionadas. Cupom BEMVINDO10. QR Code para a galeria de fotos.">
+
+      <div class="scene" data-ref="scene">
+
+        <!-- Faixa de cupom superior (esteira para a esquerda) -->
+        <div class="strip strip--top" data-ref="stripTop" aria-hidden="true">
+          <div class="strip__track" data-ref="trackTop"></div>
+        </div>
+
+        <!-- Título principal: cada palavra numa máscara própria -->
+        <h1 class="title" data-ref="title">
+          <span class="title__line title__line--1">
+            <span class="w"><span class="w__in">4º</span></span>
+            <span class="w"><span class="w__in">FESTIVAL</span></span>
+            <span class="w"><span class="w__in">BARRA</span></span>
+            <span class="w"><span class="w__in">VENTO</span></span>
+          </span>
+          <span class="title__line title__line--2">
+            <span class="w"><span class="w__in">DE</span></span>
+            <span class="w w--bold"><span class="w__in">CAPOEIRA</span></span>
+          </span>
+        </h1>
+
+        <!-- Texto secundário + marca-texto -->
+        <p class="sub" data-ref="sub">
+          <span class="sub__lead" data-ref="subLead">Fotos sendo</span>
+          <span class="mark" data-ref="mark">
+            <span class="mark__bg" data-ref="markBg"></span>
+            <span class="mark__word" data-ref="markWord">adicionadas</span>
+          </span>
+        </p>
+
+        <!-- Porcentagem (só durante o carregamento) -->
+        <span class="pct" data-ref="pct" aria-hidden="true">0%</span>
+
+        <!-- Barra de carregamento: borda + trilho com recorte arredondado + preenchimento por largura -->
+        <div class="bar" data-ref="bar" aria-hidden="true">
+          <span class="bar__frame" data-ref="barFrame"></span>
+          <span class="bar__echo" data-ref="barEcho"></span>
+          <span class="bar__track"><span class="bar__fill" data-ref="barFill"></span></span>
+        </div>
+
+        <!-- QR Code: módulos reais, desenhados em canvas -->
+        <canvas class="qr" data-ref="qr" width="528" height="528" aria-hidden="true"></canvas>
+
+        <!-- Faixa de cupom inferior (esteira para a direita) -->
+        <div class="strip strip--bottom" data-ref="stripBottom" aria-hidden="true">
+          <div class="strip__track" data-ref="trackBottom"></div>
+        </div>
+      </div>
+
+      <!-- Grão de filme: camada própria por cima de tudo, muda a cada quadro -->
+      <canvas class="grain" data-ref="grain" width="1080" height="1920" aria-hidden="true"></canvas>
+    </div>
+
+    <nav class="controls" aria-label="Controles da pré-visualização">
+      <span class="controls__time" data-ref="ctrlTime">00.0 / 10.0</span>
+      <button type="button" data-ref="btnPause" aria-keyshortcuts="Space">Pausar</button>
+      <button type="button" data-ref="btnRestart" aria-keyshortcuts="R">↻ Reiniciar</button>
+    </nav>
+  </main>
+
+  <script src="flyer.js"></script>
+</body>
+</html>

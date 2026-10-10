@@ -82,3 +82,26 @@ O título se ajusta sozinho: `disponíveis.` ocupa 860 px de largura, e `Fotos` 
 - **Fonte**: **Poppins**, com peso 600 no título, 500 no nome do evento e no link, e 400 na chamada. O título vai em caixa alta e baixa, como na referência.
 - **Área segura**: os textos ficam entre y = 370 e y = 1600 px, centralizados.
 - **Acessibilidade**: com `prefers-reduced-motion`, deslocamentos, desfoques, paralaxe e pulsos viram transições só de opacidade. O anel continua avançando.
+
+---
+
+# 4º Festival Barra Vento — "Fotos sendo adicionadas" (flyer animado)
+
+Animação do flyer laranja/magenta em [`flyer/`](flyer/index.html), com a mesma composição, as mesmas cores e as mesmas posições da arte original (medidas pixel a pixel).
+
+- **Vídeo**: [`video/festival-fotos-sendo-adicionadas.mp4`](video/festival-fotos-sendo-adicionadas.mp4). 1080 × 1920 px, H.264, 30 fps, 10 s, cerca de 18 MB.
+- **Pré-visualização**: abra `flyer/index.html` direto no navegador; as fontes vêm embutidas. Os parâmetros são os mesmos: `?t=<ms>`, `?clean` e também `?nograin`.
+- **Exportar de novo**: `npm install && npm run render:flyer`.
+
+| Tempo | O que acontece |
+| --- | --- |
+| 0–1 s | O flyer assenta com uma escala sutil. As faixas de cupom entram por máscara e começam a correr em sentidos opostos. |
+| 0,3–1,6 s | As palavras do título sobem, uma por vez, por uma máscara de recorte, com um overshoot leve. `CAPOEIRA` entra por último, com mais peso. |
+| 1,15–2,4 s | Entra "Fotos sendo" e, logo depois, o marca-texto rosa passa da esquerda para a direita, revelando `adicionadas`. |
+| 1,85–6,5 s | A borda da barra se desenha. O preenchimento cresce em largura real, de 0 a 100 %, e a porcentagem acompanha o progresso. |
+| 3–7,2 s | O QR Code se monta: primeiro os três marcadores, depois o padrão de alinhamento e então os módulos, em grupos 2 × 2. |
+| 6,5–8 s | A barra chega a 100 % com um pulso e um eco sutil da borda. `adicionadas` recebe o último destaque e a porcentagem sai. |
+| 8–10 s | Tudo fica estável; só as faixas continuam. A esteira percorre exatamente duas repetições em 10 s, então o vídeo faz loop sem emenda. |
+
+- **QR Code**: os 29 × 29 módulos foram extraídos da arte original, sem nenhum módulo ambíguo, e ficam em `flyer/flyer.js`. O código decodifica para `https://www.fotto.com.br/ronaldo.schopf`; o último quadro do vídeo foi verificado com um leitor de QR Code.
+- **Grão**: ruído monocromático gerado com semente fixa, em `mix-blend-mode: overlay`. Muda a cada quadro e sai sempre igual na exportação.
