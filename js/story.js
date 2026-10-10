@@ -3,8 +3,11 @@
    --------------------------------------------------------------------------
    Toda a animação é uma função pura do tempo: render(t) recebe os
    milissegundos decorridos e posiciona cada elemento. Uma única fonte de
-   tempo garante que barra, porcentagem, textos e cenas fiquem sincronizados,
+   tempo garante que anel, porcentagem, textos e cenas fiquem sincronizados,
    e permite congelar qualquer quadro com ?t=<ms>.
+
+   Depois de 10 s a narrativa termina, mas o "ambiente" (círculos flutuando,
+   orbe respirando) continua vivo até o usuário reiniciar.
 
    Parâmetros de URL:
      ?t=7500   congela a peça nesse instante (pré-visualização / captura)
@@ -18,33 +21,49 @@
   const DURATION = 10000;
   const STAGE_W = 1080;
   const STAGE_H = 1920;
-  const CONTENT_W = 888;
+  const HEADLINE_W = 860;
+  const ORB_LOAD_Y = 1060;   // centro do orbe durante o carregamento
+  const RING_R = 170;
 
-  // Pontos de passagem da porcentagem (ms, %). A curva é interpolada de forma
-  // contínua e monotônica — sem saltos — e chega a 100 exatamente em 5 s.
+  // Pontos de passagem da porcentagem (ms, %). Curva contínua e monotônica,
+  // chega a 100 exatamente em 5 s.
   const PROGRESS_KEYS = [
     [2000, 0], [2300, 8], [2650, 17], [3100, 34],
     [3550, 52], [4050, 76], [4550, 91], [5000, 100],
   ];
 
-  // Paralaxe: cada camada de texto tem uma profundidade. Duas "câmeras"
-  // percorrem a peça (carregamento e revelação); o deslocamento de cada camada
-  // é profundidade × curso restante da câmera, e chega a zero no fim de cada
-  // ato. Profundidades crescem de cima para baixo, então os textos começam
-  // afastados e se acomodam em velocidades diferentes, sem se sobrepor.
+  // Paralaxe: cada camada tem uma profundidade. Duas "câmeras" percorrem a
+  // peça (carregamento 0–6 s, revelação 6–10 s); o deslocamento de cada camada
+  // é profundidade × curso restante da câmera e chega a zero no fim de cada
+  // ato. Textos mais baixos são mais "próximos", então começam afastados e se
+  // acomodam em velocidades diferentes, sem se sobrepor.
   const PARALLAX = {
-    loadRange: 220,      // px de curso da câmera no ato 1 (0–6 s)
-    revealRange: 280,    // px de curso da câmera no ato 2 (6–10 s)
+    loadRange: 200,
+    revealRange: 260,
     depth: {
-      boot: 0.6, event: 0.25, pct: 0.5, loader: 0.8,
-      hl1: 0.4, hl2: 0.65, divider: 0.8, finalEvent: 0.95, copy: 1.1, cta: 1.25,
+      event: 0.25, pct: 0.35, orb: 0.55, status: 0.85,
+      hl1: 0.3, hl2: 0.42, finalEvent: 0.8, copy: 0.95, cta: 1.1,
     },
   };
 
-  const TYPE_START = 620;   // início da digitação do nome
-  const TYPE_STEP = 22;     // ms por caractere
-  const SCRAMBLE = 70;      // ms em que cada caractere "decodifica"
-  const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%/+=<>';
+  // Círculos de contorno flutuando nas laterais: [x, y, diâmetro, profundidade, cor].
+  // Mais profundos (maiores) = mais próximos = sobem mais rápido. Ficam em
+  // faixas laterais (x < 220 ou x > 860) para nunca cruzar os textos centrais.
+  const CIRCLES = [
+    [150, 80, 96, 0.55, ''],
+    [935, 300, 150, 0.95, ''],
+    [92, 640, 98, 0.6, ''],
+    [1000, 980, 64, 0.4, 'orange'],
+    [945, 1250, 100, 0.65, ''],
+    [120, 1560, 112, 0.75, ''],
+    [955, 1880, 160, 1.05, ''],
+    [56, 1180, 46, 0.3, 'magenta'],
+    [140, 2150, 120, 0.8, ''],
+    [1012, 1720, 40, 0.3, ''],
+  ];
+  const CIRCLE_SPEED = 26;   // px/s na profundidade 1
+  const WRAP_TOP = -260;
+  const WRAP_SPAN = STAGE_H + 520;
 
   const params = new URLSearchParams(location.search);
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -58,20 +77,16 @@
     outCubic: (p) => 1 - Math.pow(1 - p, 3),
     outQuart: (p) => 1 - Math.pow(1 - p, 4),
     outExpo: (p) => (p >= 1 ? 1 : 1 - Math.pow(2, -10 * p)),
-    inOutCubic: (p) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2),
+    outBack: (p) => 1 + 2.2 * Math.pow(p - 1, 3) + 1.2 * Math.pow(p - 1, 2),
     inOutSine: (p) => (1 - Math.cos(Math.PI * p)) / 2,
-    inOutQuart: (p) => (p < 0.5 ? 8 * p * p * p * p : 1 - Math.pow(-2 * p + 2, 4) / 2),
+    inOutCubic: (p) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2),
   };
   /** progresso 0→1 de t entre a e b, com easing */
   const seg = (t, a, b, ease = E.linear) => ease(clamp((t - a) / (b - a)));
   /** pulso 0→1→0 entre a e b */
   const pulse = (t, a, b) => Math.sin(Math.PI * seg(t, a, b));
   const pad = (n, len) => String(n).padStart(len, '0');
-  const hash = (a, b) => {
-    let h = (a * 374761393 + b * 668265263) | 0;
-    h = Math.imul(h ^ (h >>> 13), 1274126177);
-    return (h ^ (h >>> 16)) >>> 0;
-  };
+  const mod = (a, n) => ((a % n) + n) % n;
 
   /** Interpolação cúbica monotônica (Fritsch–Carlson). */
   function monotoneCurve(points) {
@@ -82,7 +97,6 @@
     for (let i = 0; i < n - 1; i++) d.push((ys[i + 1] - ys[i]) / (xs[i + 1] - xs[i]));
     const m = new Array(n).fill(0);
     for (let i = 1; i < n - 1; i++) m[i] = d[i - 1] * d[i] <= 0 ? 0 : (d[i - 1] + d[i]) / 2;
-    // m[0] = m[n-1] = 0 → arranque e chegada suaves
     for (let i = 0; i < n - 1; i++) {
       if (d[i] === 0) { m[i] = m[i + 1] = 0; continue; }
       const a = m[i] / d[i];
@@ -114,12 +128,9 @@
   const stage = document.getElementById('stage');
   const R = {};
   document.querySelectorAll('[data-ref]').forEach((el) => { R[el.dataset.ref] = el; });
-  const $$ = (sel) => Array.from(stage.querySelectorAll(sel));
-
-  const gridV = $$('.grid__v');
   const dots = Array.from(R.statusBusy.querySelectorAll('.dot'));
 
-  // Nome do evento: cada caractere vira um <span> para a digitação.
+  // Nome do evento: cada caractere vira um <span> para a revelação.
   const eventLines = Array.from(R.eventName.querySelectorAll('.event__line'));
   const lineTexts = eventLines.map((l) => l.textContent.trim());
   const chars = [];
@@ -130,10 +141,9 @@
       span.className = 'ch';
       span.textContent = ch;
       line.appendChild(span);
-      chars.push({ el: span, ch, state: -1, glyph: ch, blank: ch === ' ' });
+      chars.push(span);
     }
   });
-  const TYPE_END = TYPE_START + (chars.length - 1) * TYPE_STEP + SCRAMBLE;
 
   // Repete o nome na tela final.
   const finalLines = lineTexts.map((text) => {
@@ -143,48 +153,48 @@
     inner.textContent = text;
     line.appendChild(inner);
     R.finalEvent.appendChild(line);
-    return { line, inner };
+    return inner;
   });
 
-  // Escala técnica mínima: 5 marcas (0, 25, 50, 75, 100).
-  const ticks = [];
-  for (let i = 0; i <= 4; i++) {
-    const tick = document.createElement('span');
-    tick.className = 'tick';
-    tick.style.left = (CONTENT_W * i) / 4 + 'px';
-    R.scale.appendChild(tick);
-    ticks.push(tick);
-  }
+  // Círculos de fundo.
+  const circles = CIRCLES.map(([x, y, size, depth, color], i) => {
+    const el = document.createElement('span');
+    el.className = 'circle' + (color ? ` circle--${color}` : '');
+    el.style.width = el.style.height = size + 'px';
+    if (size < 70) el.style.borderWidth = '1.5px';
+    R.circles.appendChild(el);
+    return { el, x: x - size / 2, y: y - size / 2, size, depth, phase: i * 1.7 };
+  });
+
+  // Anel de progresso.
+  const RING_C = 2 * Math.PI * RING_R;
+  R.ringFill.style.strokeDasharray = `${RING_C} ${RING_C}`;
 
   /* --- layout (depende das fontes carregadas) ---------------------------- */
 
-  const L = { eventOffset: 0, dividerDelta: 0 };
-
-  function fitToWidth(el, width) {
-    el.style.fontSize = '100px';
-    const w = el.offsetWidth;
-    if (w > 0) el.style.fontSize = (100 * width) / w + 'px';
-  }
+  const L = { eventOffset: 0, orbFinalY: 1110 };
 
   function layout() {
-    fitToWidth(R.hl1Inner, CONTENT_W);
-    fitToWidth(R.hl2Inner, CONTENT_W);
-    // o tamanho da fonte do bloco define o respiro do acento
-    R.hl1.style.fontSize = R.hl1Inner.style.fontSize;
-    R.hl2.style.fontSize = R.hl2Inner.style.fontSize;
+    // título: "disponíveis." ocupa a largura útil; "Fotos" usa o mesmo corpo
+    R.hl2Inner.style.fontSize = '100px';
+    const w = R.hl2Inner.offsetWidth;
+    const fs = w > 0 ? (100 * HEADLINE_W) / w : 150;
+    R.headline.style.fontSize = fs + 'px';
+    R.hl2Inner.style.fontSize = '';
 
-    // Bloco final ancorado acima do limite inferior da área segura.
+    const headBottom = R.headline.offsetTop + R.headline.offsetHeight;
+
+    // bloco final o mais baixo possível dentro da área segura (até y = 1596)
     R.final.style.top = '0px';
-    const h = R.final.offsetHeight;
-    const top = Math.max(620, Math.min(700, 1596 - h));
-    R.final.style.top = top + 'px';
+    const fh = R.final.offsetHeight;
+    const finalTop = Math.min(1310, 1596 - fh);
+    R.final.style.top = finalTop + 'px';
 
-    // Cena 01: nome centralizado verticalmente; depois sobe para o topo.
-    const ev = R.event;
-    L.eventOffset = 880 - (ev.offsetTop + ev.offsetHeight / 2);
+    // orbe final centralizado entre título e bloco final
+    L.orbFinalY = (headBottom + finalTop) / 2;
 
-    // A barra (y = 1039) se transforma na linha divisória.
-    L.dividerDelta = top + R.dividerSlot.offsetTop - R.bar.offsetTop;
+    // Cena 01: nome centralizado; depois sobe.
+    L.eventOffset = 860 - (R.event.offsetTop + R.event.offsetHeight / 2);
   }
 
   function fitStage() {
@@ -204,7 +214,8 @@
     if (!c) { c = {}; cache.set(el, c); }
     if (c[prop] !== value) {
       c[prop] = value;
-      el.style[prop] = value;
+      if (prop.startsWith('--')) el.style.setProperty(prop, value);
+      else el.style[prop] = value;
     }
   }
   function setText(el, text) {
@@ -213,191 +224,142 @@
   const op = (el, v) => set(el, 'opacity', (+clamp(v)).toFixed(3));
   const tf = (el, v) => set(el, 'transform', v);
   const r2 = (v) => Math.round(v * 100) / 100;
+  const r3 = (v) => Math.round(v * 1000) / 1000;
+  const ty = (y) => `translate3d(0, ${r2(y)}px, 0)`;
+  const blur = (px) => (px > 0.05 ? `blur(${r2(px)}px)` : 'none');
 
-  function render(t) {
-    const M = reduceMotion.matches ? 0 : 1;  // multiplicador de movimento
-    const chromeOut = seg(t, 9300, 10000, E.inOutCubic); // guias saem para o preto
+  /** entrada suave: sobe, ganha nitidez e opacidade */
+  function softIn(el, k, M, dy = 40, bl = 14, extraY = 0) {
+    op(el, k);
+    tf(el, ty((1 - k) * dy * M + extraY));
+    set(el, 'filter', blur((1 - k) * bl * M));
+  }
 
-    // câmeras da paralaxe (1 → 0)
+  /**
+   * @param ta tempo total (ms), pode passar de DURATION — move o ambiente
+   */
+  function render(ta) {
+    const t = Math.min(ta, DURATION);          // tempo da narrativa
+    const M = reduceMotion.matches ? 0 : 1;    // multiplicador de movimento
+    const s = ta / 1000;
+
+    // câmeras da paralaxe (curso restante, em px)
     const camA = M * PARALLAX.loadRange * (1 - seg(t, 0, 6000, E.inOutSine));
     const camB = M * PARALLAX.revealRange * (1 - seg(t, 6000, 10000, E.inOutSine));
     const D = PARALLAX.depth;
 
-    /* Guias verticais */
-    const gv = seg(t, 0, 900, E.inOutQuart);
-    gridV.forEach((el) => {
-      tf(el, `scaleY(${M ? r2(gv) : 1})`);
-      op(el, (M ? 1 : gv) * (1 - chromeOut));
+    /* Círculos flutuantes */
+    op(R.circles, 1);
+    circles.forEach((c, i) => {
+      const k = seg(t, 100 + i * 90, 1100 + i * 90, E.outCubic);
+      const drift = M * CIRCLE_SPEED * c.depth * s;
+      const y = mod(c.y - drift + c.depth * (camA + camB) - WRAP_TOP, WRAP_SPAN) + WRAP_TOP;
+      const x = c.x + M * 12 * c.depth * Math.sin(s * 0.45 + c.phase);
+      op(c.el, k * (0.35 + 0.6 * Math.min(1, c.depth)));
+      tf(c.el, `translate3d(${r2(x)}px, ${r2(y)}px, 0) scale(${r3(lerp(0.7, 1, k))})`);
     });
 
-    /* CENA 01 — indicador de inicialização */
-    const bootIn = seg(t, 0, 180);
-    const bootOut = seg(t, 560, 780, E.inOutCubic);
-    op(R.boot, bootIn * (1 - bootOut));
-    tf(R.boot, `translate3d(0, ${r2(D.boot * camA)}px, 0) scale(${r2(1 - 0.06 * bootOut * M)})`);
-    op(R.bootSquare, M && Math.floor(t / 140) % 2 ? 0.25 : 1);
+    /* Progresso */
+    const p = progressAt(t);
+    const pInt = t >= 5000 ? 100 : Math.min(99, Math.floor(p));
+    const bump = pulse(t, 5000, 5600);          // destaque em 100%
+    const toFinal = seg(t, 6000, 6900, E.inOutCubic);
+    const breathe = M ? Math.sin(Math.max(0, ta - 6900) / 1000 * 1.6) * seg(ta, 6900, 7900) : 0;
 
-    /* Nome do evento — digitação com leve decodificação */
-    let lastOn = -1;
-    chars.forEach((c, i) => {
-      const ti = TYPE_START + i * TYPE_STEP;
-      let state;
-      if (!M) state = t >= TYPE_START ? 2 : 0;
-      else state = t < ti ? 0 : t < ti + SCRAMBLE && !c.blank ? 1 : 2;
-      if (state > 0) lastOn = i;
-      if (state !== c.state) {
-        c.el.classList.toggle('is-on', state > 0);
-        c.el.classList.toggle('is-scramble', state === 1);
-        if (state !== 1) { c.el.textContent = c.ch; c.glyph = c.ch; }
-        c.state = state;
-      }
-      if (state === 1) {
-        const g = GLYPHS[hash(i, Math.floor(t / 35)) % GLYPHS.length];
-        if (g !== c.glyph) { c.el.textContent = g; c.glyph = g; }
-      }
-    });
-    const cursorVisible = M && t >= TYPE_START && t < 1500;
-    const cursorBlinkOff = t > TYPE_END && Math.floor((t - TYPE_END) / 180) % 2 === 1;
-    chars.forEach((c, i) => {
-      const isCur = cursorVisible && i === lastOn;
-      c.el.classList.toggle('is-cursor', isCur);
-      c.el.classList.toggle('is-blink-off', isCur && cursorBlinkOff);
+    /* Orbe + anel + brilho */
+    // cena 01: ponto pulsante; cena 02: cresce com o progresso; 03: pulso; 04: posição final
+    const dotIn = seg(t, 0, 300, E.outCubic);
+    const blink = M && t < 1500 ? 0.75 + 0.25 * Math.cos(t / 120) : 1;
+    const grow = seg(t, 1500, 2200, E.inOutCubic);
+    const loadScale = lerp(0.09 * dotIn, 0.5, grow) + 0.35 * (p / 100);
+    const orbScale = lerp(loadScale, 1, toFinal) + 0.22 * bump * M + 0.025 * breathe;
+    const orbY = lerp(ORB_LOAD_Y + D.orb * camA, L.orbFinalY + D.orb * camB, toFinal);
+
+    op(R.orbwrap, 1);
+    tf(R.orbwrap, ty(orbY));
+    op(R.orb, dotIn * blink);
+    tf(R.orb, `scale(${r3(orbScale)})`);
+
+    const ringIn = seg(t, 1650, 2150, E.outCubic);
+    const ringOut = seg(t, 5050, 5900, E.outCubic);
+    op(R.ring, ringIn * (1 - ringOut));
+    tf(R.ring, `rotate(-90deg) scale(${r3(lerp(0.85, 1, ringIn) + 0.3 * ringOut * M)})`);
+    set(R.ringFill, 'strokeDashoffset', r2(RING_C * (1 - p / 100)));
+
+    [[R.ripple1, 5000], [R.ripple2, 5220]].forEach(([el, a]) => {
+      const k = seg(t, a, a + 1100, E.outCubic);
+      op(el, M && k > 0 && k < 1 ? 0.9 * (1 - k) : 0);
+      tf(el, `scale(${r3(1 + 1.8 * k)})`);
     });
 
-    // posição: centro (cena 01) → topo (cena 02)
+    const glowLevel = 0.18 + 0.55 * (p / 100) * grow;
+    const glowO = lerp(glowLevel, 0.85, toFinal) + 0.25 * bump + 0.06 * breathe;
+    const glowS = lerp(0.45 + 0.45 * (p / 100), 1, toFinal) + 0.12 * bump * M + 0.02 * breathe;
+    op(R.glow, glowO * dotIn);
+    tf(R.glow, `translate3d(0, ${r2(orbY)}px, 0) scale(${r3(glowS)})`);
+    op(R.glowWarm, (0.25 + 0.75 * bump + 0.55 * toFinal) * dotIn * grow);
+    tf(R.glowWarm, `translate3d(0, ${r2(orbY + 40)}px, 0) scale(${r3(glowS)})`);
+
+    /* Nome do evento — caracteres surgem com desfoque */
+    chars.forEach((el, i) => {
+      const a = 520 + i * 24;
+      const k = M ? seg(t, a, a + 460, E.outCubic) : seg(t, 520, 900);
+      op(el, k);
+      tf(el, ty((1 - k) * 22 * M));
+      set(el, 'filter', blur((1 - k) * 10 * M));
+    });
     let evY;
-    let evO;
+    let evO = 1;
     if (M) {
-      evY = L.eventOffset * (1 - seg(t, 1500, 2200, E.inOutQuart));
-      evO = 1;
+      evY = L.eventOffset * (1 - seg(t, 1500, 2250, E.inOutCubic));
     } else {
       evY = t < 1650 ? L.eventOffset : 0;
       evO = t < 1650 ? 1 - seg(t, 1500, 1650) : seg(t, 1650, 1900);
-      evO *= seg(t, TYPE_START, TYPE_START + 400);
     }
-    const evDim = 1 - 0.5 * seg(t, 6000, 6600, E.inOutCubic); // integra-se em cinza
     const evExit = seg(t, 7900, 8350, E.inOutCubic);
-    evY -= 28 * evExit * M;
-    evY += D.event * camA;
-    op(R.event, (t >= TYPE_START - 40 ? evO : 0) * evDim * (1 - evExit));
-    tf(R.event, `translate3d(0, ${r2(evY)}px, 0)`);
+    evY += D.event * camA - 30 * evExit * M;
+    op(R.event, evO * (1 - 0.45 * seg(t, 6000, 6600)) * (1 - evExit));
+    tf(R.event, ty(evY));
+    set(R.event, 'filter', blur(8 * evExit * M));
 
-    /* CENA 02 — carregamento */
-    const p = progressAt(t);                     // 0 → 100
-    const pInt = t >= 5000 ? 100 : Math.min(99, Math.floor(p));
+    /* CENA 02 — porcentagem e status */
     const loadIn = seg(t, 1650, 2150, E.outCubic);
-    const loadOut = seg(t, 6000, 6350, E.inOutCubic);
+    const pctOut = seg(t, 6000, 6450, E.inOutCubic);
+    setText(R.pctNum, pad(pInt, 2));
+    op(R.pct, loadIn * (1 - pctOut));
+    tf(R.pct, `translate3d(0, ${r2(((1 - loadIn) * 30 - 40 * pctOut) * M + D.pct * camA)}px, 0) scale(${r3((1 + 0.08 * bump * M) * (1 - 0.3 * pctOut * M))})`);
+    set(R.pct, 'filter', blur(((1 - loadIn) * 10 + pctOut * 14) * M));
 
-    const loaderY = D.loader * camA;
-    op(R.status, loadIn * (1 - loadOut));
-    tf(R.status, `translate3d(0, ${r2((1 - loadIn) * 18 * M + loaderY)}px, 0)`);
-
-    // status: PROCESSANDO… → PROCESSAMENTO CONCLUÍDO
+    const statusIn = seg(t, 1800, 2300, E.outCubic);
+    const statusOut = seg(t, 6000, 6350, E.inOutCubic);
+    op(R.status, statusIn * (1 - statusOut));
+    tf(R.status, ty((1 - statusIn) * 16 * M + D.status * camA));
     const swapOut = seg(t, 5000, 5260, E.inOutCubic);
     const swapIn = seg(t, 5120, 5440, E.outCubic);
     op(R.statusBusy, 1 - swapOut);
-    tf(R.statusBusy, `translate3d(0, ${r2(-40 * swapOut * M)}px, 0)`);
+    tf(R.statusBusy, ty(-40 * swapOut * M));
     op(R.statusDone, swapIn);
-    tf(R.statusDone, `translate3d(0, ${r2(40 * (1 - swapIn) * M)}px, 0)`);
-    const dotCount = M ? Math.floor(Math.max(0, t - 1650) / 260) % 4 : 3;
+    tf(R.statusDone, ty(40 * (1 - swapIn) * M));
+    const dotCount = M ? Math.floor(Math.max(0, t - 1800) / 260) % 4 : 3;
     dots.forEach((d, i) => op(d, i < dotCount ? 1 : 0.15));
 
-    // porcentagem
-    setText(R.pctNum, pad(pInt, 2));
-    R.pctSign.classList.toggle('is-full', pInt === 100);
-    const bump = pulse(t, 5000, 5520);           // destaque em 100%
-    const pctOut = seg(t, 6000, 6420, E.inOutCubic);
-    op(R.pct, loadIn * (1 - pctOut));
-    tf(R.pct, `translate3d(0, ${r2(((1 - loadIn) * 22 - 34 * pctOut) * M + D.pct * camA)}px, 0) scale(${r2((1 + 0.09 * bump * M) * (1 - 0.32 * pctOut * M) * 1000) / 1000})`);
-
-    // escala técnica
-    op(R.scale, 1);
-    tf(R.scale, `translate3d(0, ${r2(loaderY)}px, 0)`);
-    ticks.forEach((tick, i) => {
-      const k = seg(t, 1850 + i * 60, 2050 + i * 60);
-      op(tick, k * (1 - 0.6 * seg(t, 5400, 5900)) * (1 - loadOut));
-    });
-
-    /* Barra → linha divisória */
-    const trackIn = seg(t, 1700, 2100, E.inOutCubic);
-    const toDivider = seg(t, 6080, 6900, E.inOutQuart);
-    let barY;
-    let barO;
-    if (M) {
-      // parte acompanhando o carregamento, termina como divisória do ato 2
-      barY = lerp(loaderY, L.dividerDelta + D.divider * camB, toDivider);
-      barO = 1;
-    } else {
-      barY = t < 6300 ? 0 : L.dividerDelta;
-      barO = t < 6300 ? 1 - seg(t, 6100, 6300) : seg(t, 6300, 6550);
-    }
-    op(R.bar, (t >= 1700 ? barO : 0));
-    tf(R.bar, `translate3d(0, ${r2(barY)}px, 0)`);
-    tf(R.barTrack, `scaleX(${M ? r2(trackIn) : 1})`);
-    op(R.barTrack, (M ? 1 : trackIn) * (1 - seg(t, 5300, 5900)));
-    const thick = (1 + 2.2 * bump * M) * lerp(1, 0.5, toDivider); // 2px → 1px
-    tf(R.barFill, `scaleX(${(p / 100).toFixed(4)}) scaleY(${r2(thick)})`);
-    set(R.barFill, 'boxShadow', bump > 0.01 && M
-      ? `0 0 ${r2(28 * bump)}px rgba(255,255,255,${r2(0.65 * bump)})` : 'none');
-    op(R.barHead, loadIn * (1 - seg(t, 5000, 5320)));
-    tf(R.barHead, `translate3d(${r2((CONTENT_W * p) / 100)}px, 0, 0)`);
-
-    op(R.flash, 0.13 * pulse(t, 5000, 5380) * M);
-
     /* CENA 04 — revelação */
-    op(R.final, t >= 6000 ? 1 : 0);
-    tf(R.hl1, `translate3d(0, ${r2(D.hl1 * camB)}px, 0)`);
-    tf(R.hl2, `translate3d(0, ${r2(D.hl2 * camB)}px, 0)`);
-    tf(R.finalEvent, `translate3d(0, ${r2(D.finalEvent * camB)}px, 0)`);
-
-    // FOTOS: bloco branco varre da esquerda, revela o texto e recua
-    const wipeA = seg(t, 6250, 6620, E.inOutQuart);
-    const wipeB = seg(t, 6620, 7000, E.inOutQuart);
-    if (M) {
-      set(R.hl1Wipe, 'clipPath', `inset(0 ${r2(100 - 100 * wipeA)}% 0 ${r2(100 * wipeB)}%)`);
-      op(R.hl1Wipe, wipeB >= 1 ? 0 : 1);
-      op(R.hl1Inner, t >= 6620 ? 1 : 0);
-      tf(R.hl1Inner, `translate3d(${r2(-14 * (1 - seg(t, 6620, 7600, E.outCubic)))}px, 0, 0)`);
-    } else {
-      op(R.hl1Wipe, 0);
-      op(R.hl1Inner, seg(t, 6300, 6800));
-      tf(R.hl1Inner, 'none');
-    }
-
-    // DISPONÍVEIS.: sobe por trás de uma máscara e se expande levemente
-    const rise = seg(t, 6820, 7520, E.outExpo);
-    if (M) {
-      set(R.hl2, 'clipPath', rise >= 1 ? 'none' : 'inset(-45% -4% 0 -4%)');
-      op(R.hl2Inner, t >= 6820 ? 1 : 0);
-      tf(R.hl2Inner, `translate3d(0, ${r2(112 * (1 - rise))}%, 0) scaleX(${r2((0.965 + 0.035 * rise) * 1000) / 1000})`);
-    } else {
-      set(R.hl2, 'clipPath', 'none');
-      op(R.hl2Inner, seg(t, 6800, 7300));
-      tf(R.hl2Inner, 'none');
-    }
-    set(R.hl2Inner, 'transformOrigin', '0 100%');
-    const dot = seg(t, 7300, 7620, E.outQuart);
-    op(R.hl2Dot, M ? dot : 1);
-    tf(R.hl2Dot, `scale(${r2(M ? lerp(0.4, 1, dot) : 1)})`);
+    op(R.headline, t >= 6000 ? 1 : 0);
+    softIn(R.hl1, seg(t, 6250, 7000, E.outCubic), M, 70, 18, D.hl1 * camB);
+    softIn(R.hl2, seg(t, 6480, 7230, E.outCubic), M, 70, 18, D.hl2 * camB);
+    const dot = seg(t, 7150, 7550, E.outBack);
+    op(R.hl2Dot, M ? clamp(dot * 3) : 1);
+    tf(R.hl2Dot, `scale(${r3(M ? dot : 1)})`);
 
     /* CENA 05 — tela final */
-    finalLines.forEach(({ line, inner }, i) => {
-      const a = 8100 + i * 120;
-      const k = seg(t, a, a + 700, E.outExpo);
-      if (M) {
-        set(line, 'clipPath', k >= 1 ? 'none' : 'inset(-35% -2% 0 -2%)');
-        op(inner, t >= a ? 1 : 0);
-        tf(inner, `translate3d(0, ${r2(110 * (1 - k))}%, 0)`);
-      } else {
-        op(inner, seg(t, 8100, 8500));
-      }
+    op(R.final, t >= 7900 ? 1 : 0);
+    finalLines.forEach((el, i) => {
+      softIn(el, seg(t, 8050 + i * 130, 8700 + i * 130, E.outCubic), M, 34, 10);
     });
-    const copyIn = seg(t, 8550, 9100, E.outCubic);
-    op(R.copy, copyIn);
-    tf(R.copy, `translate3d(0, ${r2(16 * (1 - copyIn) * M + D.copy * camB)}px, 0)`);
-    const ctaIn = seg(t, 8850, 9400, E.outCubic);
-    op(R.cta, ctaIn);
-    tf(R.cta, `translate3d(0, ${r2(16 * (1 - ctaIn) * M + D.cta * camB)}px, 0)`);
+    tf(R.finalEvent, ty(D.finalEvent * camB));
+    softIn(R.copy, seg(t, 8450, 9050, E.outCubic), M, 26, 8, D.copy * camB);
+    softIn(R.cta, seg(t, 8750, 9350, E.outCubic), M, 26, 8, D.cta * camB);
+    set(R.cta, '--underline', `${r2(100 * seg(t, 9050, 9750, E.inOutCubic))}%`);
 
     // ?fade → fecha totalmente em preto (para gravação em loop)
     op(R.blackout, params.has('fade') ? seg(t, 9400, 10000, E.inOutCubic) : 0);
@@ -412,41 +374,39 @@
   let startAt = 0;
   let pausedAt = null;
   let raf = 0;
-  const frozen = params.has('t') ? clamp(parseFloat(params.get('t')) || 0, 0, DURATION) : null;
+  const frozen = params.has('t') ? Math.max(0, parseFloat(params.get('t')) || 0) : null;
 
   const elapsed = () => (pausedAt !== null ? pausedAt : performance.now() - startAt);
 
   function tick() {
-    const t = Math.min(elapsed(), DURATION);
+    const t = elapsed();
     render(t);
-    if (t < DURATION && pausedAt === null) {
+    const ambient = !reduceMotion.matches;  // após 10 s o ambiente continua vivo
+    if (pausedAt === null && (t < DURATION || ambient)) {
       raf = requestAnimationFrame(tick);
     } else {
       raf = 0;
-      if (t >= DURATION) setText(R.btnPause, 'Reproduzir');
     }
+    setText(R.btnPause, pausedAt !== null ? 'Continuar' : t >= DURATION ? 'Reproduzir' : 'Pausar');
   }
 
   function restart() {
     cancelAnimationFrame(raf);
     pausedAt = null;
     startAt = performance.now();
-    setText(R.btnPause, 'Pausar');
     tick();
   }
 
   function togglePause() {
-    if (elapsed() >= DURATION) return restart();
+    if (pausedAt === null && elapsed() >= DURATION) return restart();
     if (pausedAt === null) {
       pausedAt = elapsed();
-      setText(R.btnPause, 'Continuar');
     } else {
       startAt = performance.now() - pausedAt;
       pausedAt = null;
-      setText(R.btnPause, 'Pausar');
-      cancelAnimationFrame(raf);
-      tick();
     }
+    cancelAnimationFrame(raf);
+    tick();
   }
 
   R.btnRestart.addEventListener('click', restart);
@@ -457,7 +417,7 @@
     else if (e.key === ' ') { e.preventDefault(); togglePause(); }
   });
   window.addEventListener('resize', fitStage);
-  reduceMotion.addEventListener?.('change', () => { cache.clear(); if (!raf) render(Math.min(elapsed(), DURATION)); });
+  reduceMotion.addEventListener?.('change', () => { cache.clear(); cancelAnimationFrame(raf); tick(); });
 
   /* --- início ------------------------------------------------------------ */
 
@@ -465,11 +425,11 @@
   fitStage();
   render(0);
 
-  // Aguarda as fontes (com limite) para medir títulos e evitar troca no meio da peça.
-  const FONTS = ['400 100px Anton', '600 62px Archivo', '500 24px "Space Grotesk"', '400 20px "Space Mono"', '700 20px "Space Mono"'];
+  // Aguarda as fontes (com limite) para medir o título e evitar troca no meio da peça.
+  const FONTS = ['400 26px Poppins', '500 46px Poppins', '600 156px Poppins'];
   const fontsReady = document.fonts && document.fonts.load
     ? Promise.race([
-      Promise.all(FONTS.map((f) => document.fonts.load(f, 'FOTOS DISPONÍVEIS 4º 0123456789%').catch(() => null)))
+      Promise.all(FONTS.map((f) => document.fonts.load(f, 'Fotos disponíveis 4º 0123456789%').catch(() => null)))
         .then(() => document.fonts.ready),
       new Promise((r) => setTimeout(r, 2500)),
     ])
@@ -479,20 +439,21 @@
   window.story = {
     duration: DURATION,
     ready: fontsReady.then(() => undefined),
+    fontsOk: () => FONTS.every((f) => document.fonts.check(f)),
     seek(t) {
       cancelAnimationFrame(raf);
       raf = 0;
-      pausedAt = clamp(t, 0, DURATION);
+      pausedAt = Math.max(0, t);
       render(pausedAt);
     },
   };
 
   fontsReady.then(() => {
     layout();
+    cache.clear();
     if (frozen !== null) {
       pausedAt = frozen;
-      setText(R.btnPause, frozen >= DURATION ? 'Reproduzir' : 'Continuar');
-      render(frozen);
+      tick();
     } else {
       restart();
     }

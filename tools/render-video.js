@@ -18,7 +18,7 @@ const opt = (name, def) => {
   return i === -1 ? def : args[i + 1];
 };
 const FPS = Number(opt('fps', 30));
-const HOLD = Number(opt('hold', 2));        // segundos extras com a tela final
+const HOLD = Number(opt('hold', 2));        // segundos extras com a tela final (ambiente animado)
 const FADE = args.includes('--fade');
 const OUT = path.resolve(opt('out', 'video/fotos-disponiveis.mp4'));
 const BROWSER = process.env.CHROMIUM_PATH || undefined;
@@ -35,7 +35,7 @@ const BROWSER = process.env.CHROMIUM_PATH || undefined;
   await page.goto(url);
   await page.evaluate(() => window.story.ready);
   await page.waitForTimeout(300);
-  const fontsOk = await page.evaluate(() => document.fonts.check('100px Anton') && document.fonts.check('600 62px Archivo'));
+  const fontsOk = await page.evaluate(() => window.story.fontsOk());
   if (!fontsOk) console.warn('⚠ Fontes do Google não carregaram (sem internet?) — usando fontes de fallback.');
   const duration = await page.evaluate(() => window.story.duration);
 
@@ -49,7 +49,7 @@ const BROWSER = process.env.CHROMIUM_PATH || undefined;
   const frames = Math.round(((duration / 1000) + HOLD) * FPS);
   const stage = page.locator('#stage');
   for (let f = 0; f < frames; f++) {
-    const t = Math.min((f * 1000) / FPS, duration);
+    const t = (f * 1000) / FPS;  // após a duração, o ambiente segue animado
     await page.evaluate((ms) => window.story.seek(ms), t);
     const png = await stage.screenshot({ type: 'png', animations: 'disabled' });
     if (!ff.stdin.write(png)) await new Promise((r) => ff.stdin.once('drain', r));

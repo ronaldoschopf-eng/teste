@@ -9,7 +9,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wdth,wght@62..125,400..800&family=Space+Grotesk:wght@400;500&family=Space+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap">
   <link rel="stylesheet" href="css/story.css">
 </head>
 <body>
@@ -20,71 +20,58 @@
       Para trocar o evento, edite as linhas em .event__name e o link em .cta.
     -->
     <div class="stage" id="stage" role="img"
-         aria-label="Story animado: 4º Festival Barra Vento de Capoeira — fotos disponíveis. Os registros do evento já podem ser acessados.">
+         aria-label="Story animado: 4º Festival Barra Vento de Capoeira — fotos disponíveis. Os registros do evento já podem ser acessados em ronaldo-schopf.fotto.com.br.">
 
-      <!-- Grade técnica -->
-      <div class="grid" aria-hidden="true">
-        <span class="grid__v grid__v--l"></span>
-        <span class="grid__v grid__v--r"></span>
-      </div>
+      <!-- Brilho de fundo (segue o orbe) -->
+      <span class="glow" data-ref="glow" aria-hidden="true"></span>
+      <span class="glow glow--warm" data-ref="glowWarm" aria-hidden="true"></span>
 
-      <!-- CENA 01 — indicador de inicialização -->
-      <div class="boot" data-ref="boot" aria-hidden="true">
-        <span class="boot__square" data-ref="bootSquare"></span>
-        <span class="boot__label">INICIALIZANDO</span>
-      </div>
+      <!-- Círculos flutuantes (paralaxe de fundo) -->
+      <div class="circles" data-ref="circles" aria-hidden="true"></div>
 
-      <!-- Nome do evento (digitado na cena 01, sobe na cena 02) -->
+      <!-- Nome do evento (revelado na cena 01, sobe na cena 02) -->
       <div class="event" data-ref="event">
         <p class="event__name" data-ref="eventName">
-          <span class="event__line">4º FESTIVAL</span>
-          <span class="event__line">BARRA VENTO DE CAPOEIRA</span>
+          <span class="event__line">4º Festival</span>
+          <span class="event__line">Barra Vento de Capoeira</span>
         </p>
       </div>
 
-      <!-- CENAS 02–03 — carregamento -->
-      <div class="loader" aria-hidden="true">
-        <div class="loader__status" data-ref="status">
-          <span class="status status--busy" data-ref="statusBusy">PROCESSANDO REGISTROS<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></span>
-          <span class="status status--done" data-ref="statusDone"><span class="status__mark"></span>PROCESSAMENTO CONCLUÍDO</span>
-        </div>
-        <div class="loader__pct" data-ref="pct"><span data-ref="pctNum">00</span><span class="loader__sign" data-ref="pctSign">%</span></div>
-        <div class="loader__scale" data-ref="scale"></div>
+      <!-- CENAS 02–03 — porcentagem e status -->
+      <div class="pct" data-ref="pct" aria-hidden="true"><span data-ref="pctNum">00</span><span class="pct__sign">%</span></div>
+
+      <!-- Orbe + anel de progresso -->
+      <div class="orbwrap" data-ref="orbwrap" aria-hidden="true">
+        <svg class="ring" data-ref="ring" viewBox="0 0 400 400">
+          <circle class="ring__track" data-ref="ringTrack" cx="200" cy="200" r="170"></circle>
+          <circle class="ring__fill" data-ref="ringFill" cx="200" cy="200" r="170"></circle>
+        </svg>
+        <span class="ripple" data-ref="ripple1"></span>
+        <span class="ripple" data-ref="ripple2"></span>
+        <span class="orb" data-ref="orb"></span>
       </div>
 
-      <!-- Barra de progresso → linha divisória -->
-      <div class="bar" data-ref="bar" aria-hidden="true">
-        <span class="bar__track" data-ref="barTrack"></span>
-        <span class="bar__fill" data-ref="barFill"></span>
-        <span class="bar__head" data-ref="barHead"></span>
+      <div class="status" data-ref="status" aria-hidden="true">
+        <span class="status__item" data-ref="statusBusy">PROCESSANDO REGISTROS<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></span>
+        <span class="status__item" data-ref="statusDone">PROCESSAMENTO CONCLUÍDO</span>
       </div>
 
-      <!-- CENAS 04–05 — revelação e tela final -->
+      <!-- CENA 04 — revelação -->
+      <h1 class="headline" data-ref="headline">
+        <span class="hl" data-ref="hl1"><span class="hl__inner" data-ref="hl1Inner">Fotos</span></span>
+        <span class="hl" data-ref="hl2"><span class="hl__inner" data-ref="hl2Inner">disponíveis<span class="hl__dot" data-ref="hl2Dot">.</span></span></span>
+      </h1>
+
+      <!-- CENA 05 — tela final -->
       <section class="final" data-ref="final">
-        <h1 class="headline">
-          <span class="hl hl--1" data-ref="hl1">
-            <span class="hl__inner" data-ref="hl1Inner">FOTOS</span>
-            <span class="hl__wipe" data-ref="hl1Wipe" aria-hidden="true"></span>
-          </span>
-          <span class="hl hl--2" data-ref="hl2">
-            <span class="hl__inner" data-ref="hl2Inner">DISPONÍVEIS<span class="hl__dot" data-ref="hl2Dot">.</span></span>
-          </span>
-        </h1>
-
-        <div class="final__divider" data-ref="dividerSlot"></div>
-
         <p class="final__event" data-ref="finalEvent"><!-- preenchido a partir de .event__name --></p>
-
-        <p class="final__copy" data-ref="copy">OS REGISTROS DO EVENTO JÁ PODEM SER ACESSADOS.</p>
-
-        <!-- Link da galeria -->
+        <p class="final__copy" data-ref="copy">Os registros do evento já podem ser acessados.</p>
         <a class="cta" data-ref="cta" href="https://ronaldo-schopf.fotto.com.br/" target="_blank" rel="noopener">
-          <span class="cta__label">ACESSE A GALERIA ↗</span>
+          <span class="cta__label">ACESSE A GALERIA</span>
           <span class="cta__link">ronaldo-schopf.fotto.com.br</span>
         </a>
       </section>
 
-      <span class="flash" data-ref="flash" aria-hidden="true"></span>
       <span class="blackout" data-ref="blackout" aria-hidden="true"></span>
     </div>
 
