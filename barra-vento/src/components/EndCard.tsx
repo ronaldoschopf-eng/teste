@@ -22,8 +22,8 @@ const useEnter = (delay: number) => {
 };
 
 const COLLAGE = [
-  {dx: -265, dy: 30, rot: -9, delay: 10},
-  {dx: 265, dy: 30, rot: 9, delay: 14},
+  {dx: -255, dy: 30, rot: -9, delay: 10},
+  {dx: 255, dy: 30, rot: 9, delay: 14},
   {dx: 0, dy: -20, rot: 2, delay: 6},
 ];
 
@@ -31,7 +31,8 @@ const COLLAGE = [
 export const EndCard: React.FC<{photos: (string | null)[]}> = ({photos}) => {
   const frame = useCurrentFrame();
   const logo = useEnter(0);
-  const title = useEnter(4);
+  const tag = useEnter(2);
+  const title = useEnter(5);
   const button = useEnter(18);
   const footer = useEnter(24);
   const pulse = Math.sin((frame - TIMING.endCardIn) / 14);
@@ -53,15 +54,32 @@ export const EndCard: React.FC<{photos: (string | null)[]}> = ({photos}) => {
         )}
       </div>
 
+      {/* Etiqueta */}
+      <div style={{position: 'absolute', top: 392, width: '100%', display: 'flex', justifyContent: 'center', ...tag.style}}>
+        <span
+          style={{
+            padding: '12px 28px',
+            borderRadius: 40,
+            background: COLORS.lime,
+            color: COLORS.darkGreen,
+            fontSize: 34,
+            fontWeight: 800,
+            letterSpacing: 1,
+          }}
+        >
+          {TEXT.endCard.tag}
+        </span>
+      </div>
+
       {/* Título */}
       <div
         style={{
           position: 'absolute',
-          top: 400,
-          left: 90,
-          right: 90,
+          top: 480,
+          left: 80,
+          right: 80,
           textAlign: 'center',
-          fontSize: 88,
+          fontSize: 80,
           lineHeight: 1.08,
           fontWeight: 800,
           letterSpacing: -2,
@@ -78,7 +96,7 @@ export const EndCard: React.FC<{photos: (string | null)[]}> = ({photos}) => {
       ))}
 
       {/* Botão */}
-      <div style={{position: 'absolute', top: 1270, width: '100%', display: 'flex', justifyContent: 'center', ...button.style}}>
+      <div style={{position: 'absolute', top: 1260, width: '100%', display: 'flex', justifyContent: 'center', ...button.style}}>
         <div style={{position: 'relative'}}>
           {frame > TIMING.endCardIn + 30 ? (
             <div
@@ -118,8 +136,9 @@ export const EndCard: React.FC<{photos: (string | null)[]}> = ({photos}) => {
       <div
         style={{
           position: 'absolute',
-          top: 1470,
-          width: '100%',
+          top: 1452,
+          left: 80,
+          right: 80,
           textAlign: 'center',
           fontSize: 34,
           fontWeight: 600,
@@ -143,15 +162,15 @@ const CollagePhoto: React.FC<{src: string | null; index: number; dx: number; dy:
 }) => {
   const {p} = useEnter(delay);
   const frame = useCurrentFrame();
-  const w = 330;
-  const h = 412;
+  const w = 310;
+  const h = 388;
   const float = Math.sin((frame + index * 40) / 50) * 6;
   return (
     <div
       style={{
         position: 'absolute',
         left: 540 + dx - w / 2,
-        top: 930 + dy - h / 2 + float,
+        top: 960 + dy - h / 2 + float,
         width: w,
         height: h,
         borderRadius: 24,

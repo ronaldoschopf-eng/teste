@@ -1,11 +1,11 @@
 {
   "name": "barra-vento-reels",
   "private": true,
-  "description": "Vídeo vertical 1080x1920 @60fps — 4º Festival Barra Vento de Capoeira",
+  "description": "Vídeo vertical 1080x1920 @60fps — Abertura do Torneio Kizuna & Vai que Dá & Diretoria",
   "scripts": {
     "studio": "remotion studio",
-    "render": "remotion render BarraVento out/barra-vento.mp4 --codec=h264",
-    "still": "remotion still BarraVento out/frame-700.png --frame=700",
+    "render": "remotion render Torneio out/torneio-abertura.mp4 --codec=h264",
+    "still": "remotion still Torneio out/frame-960.png --frame=960",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

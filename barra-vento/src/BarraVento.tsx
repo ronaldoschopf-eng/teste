@@ -1,6 +1,6 @@
 import React from 'react';
 import {AbsoluteFill, Easing, Html5Audio, interpolate, useCurrentFrame} from 'remotion';
-import {PHOTOS, TIMING, VIDEO} from './config';
+import {FULL_TEXT, PHOTOS, TEXT_GROUPS, TextGroup as Group, TIMING, Token, VIDEO} from './config';
 import {MUSIC_SRC, PHOTO_FILES} from './assets';
 import {useFontsReady} from './fonts';
 import {EndCard} from './components/EndCard';
@@ -10,6 +10,15 @@ import {photoSrc} from './scenes/PhotoLayers';
 import {Scene1Intro} from './scenes/Scene1Intro';
 import {Collage, Scene3Rain} from './scenes/Scene3Rain';
 import {Scene5Click} from './scenes/Scene5Click';
+
+// Confere se os blocos de texto formam exatamente a frase do config.
+const joined = (Object.values(TEXT_GROUPS) as Group[])
+  .flatMap((g) => g.lines.flatMap((l): Token[] => l.tokens))
+  .map((t) => (typeof t === 'string' ? t : 'glow' in t ? t.glow : t.box.join(' ')))
+  .join(' ');
+if (joined !== FULL_TEXT) {
+  console.warn(`Os blocos de texto não formam FULL_TEXT:\n${joined}\n${FULL_TEXT}`);
+}
 
 export const BarraVento: React.FC = () => {
   const frame = useCurrentFrame();
@@ -35,7 +44,7 @@ export const BarraVento: React.FC = () => {
   return (
     <AbsoluteFill style={{background: '#FFFFFF'}}>
       {/* Cenas 1–2 */}
-      <Show from={TIMING.scene1.from} to={TIMING.wave.to}>
+      <Show from={TIMING.scene1.from} to={TIMING.scene1.to}>
         <Scene1Intro />
       </Show>
 

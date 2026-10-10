@@ -1,17 +1,31 @@
 import React, {useMemo} from 'react';
 import {measureText} from '@remotion/layout-utils';
 import {spring, useCurrentFrame, useVideoConfig} from 'remotion';
-import {COLORS, SAFE, TYPO, VIDEO} from '../config';
+import {COLORS, SAFE, TextLine, TYPO, VIDEO} from '../config';
 import {TEXT_FONT} from '../fonts';
 import {boxWidthAt, HighlightBox} from './HighlightBox';
 import {KineticWord} from './KineticWord';
+import {Sparks} from './Sparks';
+
+export type Theme = 'light' | 'dark';
 
 export type LineItem =
-  | {kind: 'word'; text: string; enter: number; color?: string; glow?: boolean}
+  | {kind: 'word'; text: string; enter: number; color: string; glow?: boolean}
   | {kind: 'box'; contents: string[]; swapFrames: number[]; enter: number};
 
-export const LINE_HEIGHT = Math.round(TYPO.kineticSize * 1.3);
-const BOX_MARGIN = 22;
+const BOX_MARGIN = 22; // respiro extra dos boxes por causa das barrinhas laterais
+const MAX_WIDTH = VIDEO.width - SAFE.side * 2;
+
+// Converte uma linha do config em itens com frame de entrada e cor.
+export const lineToItems = (line: TextLine, theme: Theme): LineItem[] => {
+  const color = theme === 'light' ? COLORS.nearBlack : COLORS.white;
+  return line.tokens.map((t, i) => {
+    const enter = line.start + i * TYPO.wordInterval;
+    if (typeof t === 'string') return {kind: 'word', text: t, enter, color};
+    if ('glow' in t) return {kind: 'word', text: t.glow, enter, color: COLORS.white, glow: true};
+    return {kind: 'box', contents: t.box, swapFrames: line.swaps ?? [], enter};
+  });
+};
 
 const measure = (text: string, fontSize: number) =>
   measureText({
@@ -22,8 +36,27 @@ const measure = (text: string, fontSize: number) =>
     letterSpacing: `${TYPO.letterSpacing}px`,
   }).width;
 
+// Largura total da linha no maior conteúdo de cada box.
+const naturalWidth = (items: LineItem[], fontSize: number) =>
+  items.reduce((sum, it, i) => {
+    const w = it.kind === 'word' ? measure(it.text, fontSize) : Math.max(...it.contents.map((c) => measure(c, fontSize))) + TYPO.boxPaddingX * 2 + BOX_MARGIN * 2;
+    return sum + w + (i > 0 ? TYPO.wordGap : 0);
+  }, 0);
+
+// Maior tamanho de fonte (até TYPO.kineticSize) em que a linha cabe na largura.
+// Abaixo de TYPO.minSize, a "câmera" desliza para a esquerda.
+export const fitFontSize = (items: LineItem[]) => {
+  let size = TYPO.kineticSize;
+  for (let i = 0; i < 3; i++) {
+    const w = naturalWidth(items, size);
+    if (w <= MAX_WIDTH) break;
+    size = Math.max(TYPO.minSize, Math.floor(size * (MAX_WIDTH / w) * 0.99));
+  }
+  return size;
+};
+
 // Calcula a posição de cada item e o deslocamento da "câmera" num frame.
-export const useLineLayout = (items: LineItem[], fontSize: number = TYPO.kineticSize) => {
+export const useLineLayout = (items: LineItem[], fontSize: number) => {
   const {fps} = useVideoConfig();
   const measured = useMemo(
     () => items.map((it) => (it.kind === 'word' ? [measure(it.text, fontSize)] : it.contents.map((c) => measure(c, fontSize)))),
@@ -35,7 +68,6 @@ export const useLineLayout = (items: LineItem[], fontSize: number = TYPO.kinetic
     let cameraEdge = 0;
     const positions = items.map((it, i) => {
       const w = it.kind === 'word' ? measured[i][0] : boxWidthAt(frame, measured[i], it.swapFrames);
-      // Boxes ganham respiro extra por causa das barrinhas laterais.
       const pad = it.kind === 'box' ? BOX_MARGIN : 0;
       const left = x + pad;
       x += w + TYPO.wordGap + pad * 2;
@@ -44,22 +76,20 @@ export const useLineLayout = (items: LineItem[], fontSize: number = TYPO.kinetic
       cameraEdge += cam * (left + w + pad - cameraEdge);
       return {left, width: w};
     });
-    const maxRight = VIDEO.width - SAFE.side * 2;
-    const shift = Math.max(0, cameraEdge - maxRight);
+    const shift = Math.max(0, cameraEdge - MAX_WIDTH);
     return {positions, shift, measured};
   };
 };
 
 type Props = {
   items: LineItem[];
-  y?: number;
+  y: number;
+  fontSize: number;
   pressScale?: number;
-  fontSize?: number;
-  style?: React.CSSProperties;
 };
 
-// Linha de tipografia cinética que desliza para a esquerda quando passa da largura.
-export const KineticLine: React.FC<Props> = ({items, y = TYPO.lineY, pressScale, fontSize = TYPO.kineticSize, style}) => {
+// Linha de tipografia cinética. Cada box solta faíscas ao entrar e a cada troca.
+export const KineticLine: React.FC<Props> = ({items, y, fontSize, pressScale}) => {
   const frame = useCurrentFrame();
   const layoutAt = useLineLayout(items, fontSize);
   const {positions, shift, measured} = layoutAt(frame);
@@ -74,7 +104,6 @@ export const KineticLine: React.FC<Props> = ({items, y = TYPO.lineY, pressScale,
         height: lineHeight,
         width: VIDEO.width,
         transform: `translateX(${-shift}px)`,
-        ...style,
       }}
     >
       {items.map((it, i) =>
@@ -84,22 +113,28 @@ export const KineticLine: React.FC<Props> = ({items, y = TYPO.lineY, pressScale,
             text={it.text}
             enterFrame={it.enter}
             x={positions[i].left}
-            color={it.color ?? COLORS.nearBlack}
+            color={it.color}
             glow={it.glow}
             fontSize={fontSize}
           />
         ) : (
-          <div key={i} style={{position: 'absolute', left: positions[i].left, top: 0}}>
-            <HighlightBox
-              contents={it.contents}
-              swapFrames={it.swapFrames}
-              enterFrame={it.enter}
-              widths={measured[i]}
-              height={lineHeight}
-              pressScale={pressScale}
-              fontSize={fontSize}
-            />
-          </div>
+          <React.Fragment key={i}>
+            <div style={{position: 'absolute', left: positions[i].left, top: 0}}>
+              <HighlightBox
+                contents={it.contents}
+                swapFrames={it.swapFrames}
+                enterFrame={it.enter}
+                widths={measured[i]}
+                height={lineHeight}
+                pressScale={pressScale}
+                fontSize={fontSize}
+              />
+            </div>
+            {[it.enter + 10, ...it.swapFrames.map((f) => f + 6)].map((f, k) => {
+              const p = layoutAt(f).positions[i];
+              return <Sparks key={`sp-${k}`} x={p.left + p.width + 14} y={-14} start={f} seed={`${it.contents[0]}-${k}`} />;
+            })}
+          </React.Fragment>
         ),
       )}
     </div>

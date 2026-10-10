@@ -1,42 +1,31 @@
-import React, {useMemo} from 'react';
+import React from 'react';
 import {AbsoluteFill, Easing, interpolate, useCurrentFrame} from 'remotion';
-import {COLORS, PHOTOS, TEXT, TIMING, TYPO} from '../config';
+import {PHOTOS, TEXT, TEXT_GROUPS, TIMING} from '../config';
 import {BlobBackground} from '../components/BlobBackground';
-import {KineticLine, LineItem} from '../components/KineticLine';
+import {TextGroup} from '../components/TextGroup';
 import {Notification} from '../components/Notification';
 import {PhotoLayers} from './PhotoLayers';
 
-const NOTIF_Y = [1010, 1200, 1390];
+const NOTIF_Y = [1000, 1190, 1380];
 const NOTIF_TILT = [-2, 1.5, -1];
 
-// Cena 3 (fundo escuro): chuva de fotos, notificações e "estão te esperando,".
-// Até o início do zoom-out (cena 4) as fotos ficam aqui; depois passam para
-// a camada <Collage/>, acima da revelação clara.
+// Cena 3 (fundo escuro): chuva de fotos e notificações, com
+// "ocorre o Torneio - [Kizuna & / Vai que Dá & / Diretoria.]" e
+// "Cobertura fotográfica completa!". Até o início do zoom-out (cena 4) as
+// fotos ficam aqui; depois passam para a camada <Collage/>.
 export const Scene3Rain: React.FC<{photos: string[]}> = ({photos}) => {
   const frame = useCurrentFrame();
-  const items = useMemo<LineItem[]>(
-    () =>
-      TEXT.scene3Words.map((text, i) => ({
-        kind: 'word' as const,
-        text,
-        enter: TIMING.scene3WordStart + i * TIMING.scene3WordInterval,
-        color: COLORS.white,
-        glow: text === TEXT.scene3Glow,
-      })),
-    [],
-  );
-  const textExit = interpolate(frame, [TIMING.gather.from - 14, TIMING.gather.from + 8], [0, 1], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-    easing: Easing.in(Easing.cubic),
-  });
+  const {torneio, cobertura} = TEXT_GROUPS;
+  const shade =
+    interpolate(frame, [torneio.lines[0].start - 16, torneio.lines[0].start + 6], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'}) *
+    interpolate(frame, [cobertura.exit, cobertura.exit + TIMING.groupExit], [1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
   const photosHere = frame < TIMING.zoomOut.from;
 
   return (
     <AbsoluteFill>
       <BlobBackground variant="dark" seed="s3" />
       {photosHere ? <PhotoLayers photos={photos} layers={[0, 1, 2]} /> : null}
-      {/* Notificações entre as fotos e o texto (acima dos cards, para leitura) */}
+      {/* Notificações por cima dos cards, para leitura */}
       {TEXT.notifications.map((n, i) => (
         <Notification key={i} title={n.title} body={n.body} enter={TIMING.notifications[i]} y={NOTIF_Y[i]} tilt={NOTIF_TILT[i]} />
       ))}
@@ -44,17 +33,16 @@ export const Scene3Rain: React.FC<{photos: string[]}> = ({photos}) => {
       <div
         style={{
           position: 'absolute',
-          left: -100,
-          right: -100,
-          top: TYPO.lineY - 260,
-          height: 520,
-          background: 'radial-gradient(ellipse at center, rgba(4, 25, 12, 0.72) 0%, rgba(4, 25, 12, 0) 68%)',
-          opacity: interpolate(frame, [TIMING.scene3WordStart - 10, TIMING.scene3WordStart + 10], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'}) * (1 - textExit),
+          left: -140,
+          right: -140,
+          top: (torneio.lines[0].y + torneio.lines[1].y) / 2 - 360,
+          height: 720,
+          background: 'radial-gradient(ellipse at center, rgba(4, 25, 12, 0.78) 0%, rgba(4, 25, 12, 0) 66%)',
+          opacity: shade,
         }}
       />
-      <AbsoluteFill style={{opacity: 1 - textExit, transform: `translateY(${-textExit * 120}px)`, filter: `blur(${textExit * 10}px)`}}>
-        <KineticLine items={items} fontSize={TYPO.scene3Size} />
-      </AbsoluteFill>
+      <TextGroup group={torneio} theme="dark" />
+      <TextGroup group={cobertura} theme="dark" />
     </AbsoluteFill>
   );
 };

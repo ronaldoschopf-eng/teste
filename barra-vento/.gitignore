@@ -2,3 +2,5 @@ node_modules/
 out/*
 !out/barra-vento.mp4
 !out/frame-700.png
+!out/torneio-abertura.mp4
+!out/frame-960.png
