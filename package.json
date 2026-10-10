@@ -4,7 +4,8 @@
   "description": "Story animado 9:16 — Fotos Disponíveis",
   "scripts": {
     "render": "node tools/render-video.js",
-    "render:fade": "node tools/render-video.js --fade --out video/fotos-disponiveis-fade.mp4"
+    "render:fade": "node tools/render-video.js --fade --out video/fotos-disponiveis-fade.mp4",
+    "render:pb": "node tools/render-video.js --page texto-pb.html --hold 1 --out video/fotos-disponiveis-pb.mp4"
   },
   "devDependencies": {
     "playwright": "1.56.1"

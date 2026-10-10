@@ -44,6 +44,19 @@ node tools/render-video.js --fps 60 --hold 3 --out video/meu-story.mp4
 
 Cada quadro é renderizado de forma determinística (`window.story.seek(t)`), então o vídeo sai sem quadros perdidos e com a sincronização exata.
 
+## Versão em preto e branco (`texto-pb.html`)
+
+Uma animação curta, de 6 s, só do texto **FOTOS DISPONÍVEIS**, em preto e branco puros. Abra `texto-pb.html`; os controles e os parâmetros `?t=` e `?clean` funcionam como no story principal. O vídeo pronto está em [`video/fotos-disponiveis-pb.mp4`](video/fotos-disponiveis-pb.mp4) (7 s, com 1 s de tela final). Para gerar de novo, rode `npm run render:pb`.
+
+| Tempo | O que acontece |
+| --- | --- |
+| 0–0,6 s | Cantos de visor de câmera se fecham sobre o quadro. |
+| 0,3–1,4 s | `FOTOS` sobe letra por letra de dentro de uma máscara. |
+| 0,9–2,6 s | `DISPONÍVEIS` sobe e o espaço entre as letras se fecha. |
+| 2,2–2,9 s | Uma barra se desenha sob o título, do centro para fora. |
+| 3,2–4,1 s | Clique de obturador: um flash branco e uma íris circular invertem a peça para preto sobre branco. |
+| 4,1–6 s | Tela final, com um zoom lento. |
+
 ## Linha do tempo
 
 | Cena | Tempo | O que acontece |

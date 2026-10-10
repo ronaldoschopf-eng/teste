@@ -1,0 +1,162 @@
+/* ==========================================================================
+   FOTOS DISPONÍVEIS — versão em preto e branco (1080 × 1920)
+   ========================================================================== */
+
+:root {
+  --black: #000000;
+  --white: #FFFFFF;
+  --f-sans: 'Poppins', 'Helvetica Neue', Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--black);
+  color: var(--white);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.viewport { position: fixed; inset: 0; }
+
+.stage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1080px;
+  height: 1920px;
+  background: var(--black);
+  overflow: hidden;
+  transform: translate(-50%, -50%) scale(var(--scale, 0.4));
+  font-family: var(--f-sans);
+  box-shadow: 0 0 0 2px #141414;
+}
+
+/* --- Camadas: a clara é um clone da escura com as cores invertidas ------- */
+
+.layer {
+  position: absolute;
+  inset: 0;
+  --fg: var(--white);
+  --bg: var(--black);
+  background: var(--bg);
+  color: var(--fg);
+}
+.layer--light {
+  --fg: var(--black);
+  --bg: var(--white);
+  clip-path: circle(0px at 50% 50%);
+}
+
+/* Cantos de visor de câmera */
+.frame { position: absolute; inset: 0; }
+.frame i {
+  position: absolute;
+  width: 90px;
+  height: 90px;
+  border: 0 solid var(--fg);
+  opacity: 0;
+}
+.frame i:nth-child(1) { left: 90px;  top: 300px;    border-width: 4px 0 0 4px; }
+.frame i:nth-child(2) { right: 90px; top: 300px;    border-width: 4px 4px 0 0; }
+.frame i:nth-child(3) { left: 90px;  bottom: 300px; border-width: 0 0 4px 4px; }
+.frame i:nth-child(4) { right: 90px; bottom: 300px; border-width: 0 4px 4px 0; }
+
+/* --- Título ---------------------------------------------------------------- */
+
+.title {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  margin: 0;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.word {
+  display: flex;
+  justify-content: center;
+  white-space: nowrap;
+  font-size: var(--fs, 200px);
+  letter-spacing: 0.02em;
+}
+.word--small {
+  font-weight: 300;
+  font-size: var(--fs-small, 120px);
+}
+
+/* Cada letra fica numa máscara: entra subindo de baixo da linha de base */
+.ch {
+  display: inline-block;
+  overflow: hidden;
+  padding: 0.12em 0 0.06em;
+  margin: -0.12em 0 -0.06em;
+}
+.ch > span {
+  display: inline-block;
+  transform: translateY(110%);
+  will-change: transform;
+}
+
+.bar {
+  left: 50%;
+  top: calc(50% + var(--bar-y, 230px));
+  width: 520px;
+  height: 6px;
+  margin-left: -260px;
+  position: absolute;
+  background: var(--fg);
+  transform: scaleX(0);
+}
+
+.flash {
+  position: absolute;
+  inset: 0;
+  background: var(--white);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* --- Controles ------------------------------------------------------------- */
+
+.controls {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid #222;
+  font: 500 12px/1 var(--f-sans);
+  letter-spacing: 0.06em;
+  opacity: 0.55;
+  transition: opacity 0.2s;
+}
+.controls:hover, .controls:focus-within { opacity: 1; }
+.controls__time { min-width: 64px; padding-left: 6px; font-variant-numeric: tabular-nums; }
+.controls button {
+  font: inherit;
+  letter-spacing: inherit;
+  color: var(--white);
+  background: transparent;
+  border: 1px solid #333;
+  border-radius: 6px;
+  padding: 7px 10px;
+  cursor: pointer;
+}
+.controls button:hover { border-color: var(--white); }
+.controls button:focus-visible { outline: 2px solid var(--white); outline-offset: 2px; }
+
+.is-clean .controls { display: none; }
+.is-clean .stage { box-shadow: none; }
