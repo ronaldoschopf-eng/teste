@@ -82,3 +82,20 @@ O título se ajusta sozinho: `disponíveis.` ocupa 860 px de largura, e `Fotos` 
 - **Fonte**: **Poppins**, com peso 600 no título, 500 no nome do evento e no link, e 400 na chamada. O título vai em caixa alta e baixa, como na referência.
 - **Área segura**: os textos ficam entre y = 370 e y = 1600 px, centralizados.
 - **Acessibilidade**: com `prefers-reduced-motion`, deslocamentos, desfoques, paralaxe e pulsos viram transições só de opacidade. O anel continua avançando.
+
+---
+
+# Logo animada — Ronaldo Schopf (4:5)
+
+Animação da logo em 1080 × 1350 px, 9 s, em [`logo/index.html`](logo/index.html). O vídeo pronto está em [`video/ronaldo-schopf-logo.mp4`](video/ronaldo-schopf-logo.mp4) (H.264, 30 fps, 11 s com 2 s de tela final).
+
+| Tempo | O que acontece |
+| --- | --- |
+| 0–2,3 s | A câmera começa próxima e inclinada e recua, abrindo espaço. A base branca surge como um ponto, vira uma linha, se abre em retângulo e inclina. A faixa laranja entra por trás da base. |
+| 2,3–4,9 s | `RONALDO` e `SCHOPF` são datilografados letra por letra, com cursor, batida em cada tecla e tranco do carro. No O, a estrela gira e se abre. |
+| 5,0–6,7 s | A estrela pulsa, uma cópia sobe da letra O e se transforma em uma estrela de 5 pontas. |
+| 6,7–9 s | Ela se divide em 5 estrelas, que pousam em arco sobre a logo e cintilam. |
+
+Cores: magenta `#B4407F`, branco `#FFFFFF`, laranja `#D4693F` / `#B9573A`. Fonte: Six Caps (Google Fonts), esticada para preencher a largura e inclinada junto com o cartão.
+
+`?t=6500` congela um quadro, `?clean` esconde os controles, `R` repete. Para gerar o vídeo de novo: `npm run render:logo`.
