@@ -62,7 +62,25 @@ Recriação de uma animação de referência, em laranja `#EA622F` e branco, com
 2. a tela vira branca a partir do centro e, logo em seguida, sem as formas, **Fotos Disponíveis** é datilografado em laranja letra por letra (máquina de escrever), com um cursor;
 3. 1 s parado no fim, com o cursor piscando.
 
-Para gerar de novo, rode `npm run render:formas`. O ciclo do nome do evento segue esta sequência (na segunda parte só há a digitação, que começa 12 quadros depois do fim do ciclo, com uma letra a cada 2 quadros):
+### Efeitos sonoros
+
+O vídeo tem uma trilha de efeitos sincronizada quadro a quadro. A trilha também fica separada em [`video/fotos-disponiveis-formas.wav`](video/fotos-disponiveis-formas.wav) (48 kHz, estéreo), para usar num editor. Todos os sons são sintetizados por `tools/render-audio.js`, sem amostras externas. Os tempos vêm de `window.story.cues()`, que usa os mesmos números da animação.
+
+| Momento | Som |
+| --- | --- |
+| Texto some | sopro suave descendo |
+| Arcos girando | sopro que sobe e passeia entre os lados (estéreo) |
+| Arcos viram pontos | três "pops" em notas subindo |
+| Pontos girando | brilho agudo com tremolo |
+| Pontos esticam / barras caem | "boing" para cima e glissando para baixo |
+| Letras se montam | um tique curto por letra, posicionado no estéreo conforme a letra |
+| Traços curvos | sopros curtos |
+| Marca-texto | ruído de caneta no papel, da esquerda para a direita |
+| Tela vira branca | sopro grande e baque grave |
+| Máquina de escrever | uma tecla por letra (estalo, corpo e a haste voltando) |
+| Fim da digitação | sino de máquina de escrever |
+
+Para gerar de novo (trilha e vídeo), rode `npm run render:formas`. O ciclo do nome do evento segue esta sequência (na segunda parte só há a digitação, que começa 12 quadros depois do fim do ciclo, com uma letra a cada 2 quadros):
 
 | Quadros | O que acontece |
 | --- | --- |

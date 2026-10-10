@@ -6,7 +6,7 @@
     "render": "node tools/render-video.js",
     "render:fade": "node tools/render-video.js --fade --out video/fotos-disponiveis-fade.mp4",
     "render:pb": "node tools/render-video.js --page texto-pb.html --hold 1 --out video/fotos-disponiveis-pb.mp4",
-    "render:formas": "node tools/render-video.js --page texto-formas.html --hold 0 --out video/fotos-disponiveis-formas.mp4"
+    "render:formas": "node tools/render-audio.js --page texto-formas.html --out video/fotos-disponiveis-formas.wav && node tools/render-video.js --page texto-formas.html --hold 0 --audio video/fotos-disponiveis-formas.wav --out video/fotos-disponiveis-formas.mp4"
   },
   "devDependencies": {
     "playwright": "1.56.1"

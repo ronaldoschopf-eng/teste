@@ -4,6 +4,7 @@
  *   npm run render                     → video/fotos-disponiveis.mp4
  *   node tools/render-video.js --fps 60 --hold 3 --fade --out saida.mp4
  *   node tools/render-video.js --page texto-pb.html --out video/texto-pb.mp4
+ *   node tools/render-video.js --page texto-formas.html --audio som.wav   (com trilha)
  *
  * Requer ffmpeg no PATH. Cada quadro é renderizado de forma determinística
  * via window.story.seek(t), então não há quadros perdidos.
@@ -22,6 +23,7 @@ const FPS = Number(opt('fps', 30));
 const HOLD = Number(opt('hold', 2));        // segundos extras com a tela final (ambiente animado)
 const FADE = args.includes('--fade');
 const PAGE = opt('page', 'index.html');     // ex.: --page texto-pb.html
+const AUDIO = opt('audio', null);           // WAV opcional para mixar (tools/render-audio.js)
 const OUT = path.resolve(opt('out', 'video/fotos-disponiveis.mp4'));
 const BROWSER = process.env.CHROMIUM_PATH || undefined;
 
@@ -44,6 +46,7 @@ const BROWSER = process.env.CHROMIUM_PATH || undefined;
   const ff = spawn('ffmpeg', [
     '-y', '-loglevel', 'error',
     '-f', 'image2pipe', '-framerate', String(FPS), '-i', '-',
+    ...(AUDIO ? ['-i', path.resolve(AUDIO), '-map', '0:v', '-map', '1:a', '-c:a', 'aac', '-b:a', '192k', '-shortest'] : []),
     '-c:v', 'libx264', '-preset', 'slow', '-crf', '14', '-tune', 'animation',
     '-pix_fmt', 'yuv420p', '-movflags', '+faststart', OUT,
   ], { stdio: ['pipe', 'inherit', 'inherit'] });

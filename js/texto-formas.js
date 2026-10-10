@@ -474,7 +474,34 @@
     : Promise.resolve();
 
   // Mesma API do story principal, usada por tools/render-video.js.
+  /**
+   * Pontos de sincronia para os efeitos sonoros (tools/render-audio.js), em
+   * ms da linha do tempo. Saem dos mesmos números que a animação usa.
+   */
+  function cues() {
+    const ms = (f) => (f * 1000) / FPS;
+    const list = [
+      { t: ms(0), kind: 'fade', dur: ms(7) },
+      { t: ms(5), kind: 'swirl', dur: ms(13) },
+      { t: ms(17), kind: 'pop', freq: 660 },
+      { t: ms(18.5), kind: 'pop', freq: 880 },
+      { t: ms(20), kind: 'pop', freq: 990 },
+      { t: ms(20), kind: 'shimmer', dur: ms(12) },
+      { t: ms(32.5), kind: 'stretch', dur: ms(2.5) },
+      { t: ms(35), kind: 'drop', dur: ms(3) },
+      { t: ms(49), kind: 'marker', dur: ms(9) },
+      { t: ms(OUTRO), kind: 'fade', dur: ms(7) },
+      { t: ms(OUTRO + 1), kind: 'wipe', dur: ms(10) },
+    ];
+    textA.glyphs.forEach((g) => list.push({ t: ms(g.bands[0].at), kind: 'tick', x: (g.cx - C.x) / (STAGE_W / 2) }));
+    textA.swooshes.forEach((w) => list.push({ t: ms(w.from), kind: 'swoosh', dur: ms(w.to - w.from) }));
+    textB.glyphs.forEach((g, i) => list.push({ t: ms(OUTRO + TYPE_START + i * TYPE_RATE), kind: 'key', x: (g.cx - C.x) / (STAGE_W / 2) }));
+    list.push({ t: ms(OUTRO + TYPE_START + TYPED), kind: 'bell' });
+    return list.sort((p, q) => p.t - q.t);
+  }
+
   window.story = {
+    cues,
     duration: DURATION,
     ready: fontsReady.then(() => undefined),
     fontsOk: () => FONTS.every((f) => document.fonts.check(f)),
