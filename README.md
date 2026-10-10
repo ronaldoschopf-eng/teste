@@ -70,7 +70,7 @@ Tudo se edita no `index.html`:
 - **Link da galeria**: o bloco `.cta` (o `href` e o texto em `.cta__link`).
 - **Chamada secundária**: `.final__copy`.
 
-Os títulos `FOTOS` e `DISPONÍVEIS.` se ajustam sozinhos à largura útil de 888 px.
+O título se ajusta sozinho: `disponíveis.` ocupa 860 px de largura, e `Fotos` usa o mesmo tamanho de fonte.
 
 ## Direção de arte
 
