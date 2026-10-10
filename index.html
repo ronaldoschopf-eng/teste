@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#000000">
+  <title>Fotos Disponíveis — Story</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wdth,wght@62..125,400..800&family=Space+Grotesk:wght@400;500&family=Space+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="css/story.css">
+</head>
+<body>
+  <main class="viewport">
+    <!--
+      Palco em 1080 × 1920 px (Instagram Stories). Tudo é posicionado nessa
+      escala e o palco inteiro é reduzido proporcionalmente para caber na tela.
+      Para trocar o evento, edite as linhas em .event__name e o bloco .cta.
+    -->
+    <div class="stage" id="stage" role="img"
+         aria-label="Story animado: 4º Festival Barra Vento de Capoeira — fotos disponíveis. Os registros do evento já podem ser acessados.">
+
+      <!-- Grade técnica -->
+      <div class="grid" aria-hidden="true">
+        <span class="grid__v grid__v--l"></span>
+        <span class="grid__v grid__v--r"></span>
+        <span class="grid__h grid__h--t"></span>
+        <span class="grid__h grid__h--b"></span>
+        <span class="cross cross--tl"></span>
+        <span class="cross cross--tr"></span>
+        <span class="cross cross--bl"></span>
+        <span class="cross cross--br"></span>
+      </div>
+
+      <!-- HUD superior -->
+      <header class="hud hud--top" aria-hidden="true">
+        <div class="hud__row">
+          <span>REG/SYS — V.04</span>
+          <span>TC <span data-ref="timecode">00:00:00:00</span></span>
+        </div>
+        <div class="hud__row">
+          <span class="hud__scene" data-ref="scene">01 / INICIALIZAÇÃO</span>
+          <span>12°58′S — 38°30′W</span>
+        </div>
+      </header>
+
+      <!-- CENA 01 — indicador de inicialização -->
+      <div class="boot" data-ref="boot" aria-hidden="true">
+        <span class="boot__square" data-ref="bootSquare"></span>
+        <span class="boot__label">INICIALIZANDO</span>
+        <span class="boot__line"><span data-ref="bootFill"></span></span>
+      </div>
+
+      <!-- Nome do evento (digitado na cena 01, sobe na cena 02) -->
+      <div class="event" data-ref="event">
+        <span class="event__label">EVENTO — REG. 001</span>
+        <p class="event__name" data-ref="eventName">
+          <span class="event__line">4º FESTIVAL</span>
+          <span class="event__line">BARRA VENTO DE CAPOEIRA</span>
+        </p>
+      </div>
+
+      <!-- CENAS 02–03 — carregamento -->
+      <div class="loader" aria-hidden="true">
+        <div class="loader__status" data-ref="status">
+          <span class="status status--busy" data-ref="statusBusy">PROCESSANDO REGISTROS<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></span>
+          <span class="status status--done" data-ref="statusDone"><span class="status__mark"></span>PROCESSAMENTO CONCLUÍDO</span>
+        </div>
+        <div class="loader__pct" data-ref="pct"><span data-ref="pctNum">00</span><span class="loader__sign" data-ref="pctSign">%</span></div>
+        <div class="loader__scale" data-ref="scale"></div>
+        <div class="loader__count" data-ref="count">REGISTROS <span data-ref="countNum">0000</span> / <span data-ref="countTotal">1284</span></div>
+      </div>
+
+      <!-- Barra de progresso → linha divisória -->
+      <div class="bar" data-ref="bar" aria-hidden="true">
+        <span class="bar__track" data-ref="barTrack"></span>
+        <span class="bar__fill" data-ref="barFill"></span>
+        <span class="bar__head" data-ref="barHead"></span>
+      </div>
+
+      <!-- CENAS 04–05 — revelação e tela final -->
+      <section class="final" data-ref="final">
+        <h1 class="headline">
+          <span class="hl hl--1" data-ref="hl1">
+            <span class="hl__inner" data-ref="hl1Inner">FOTOS</span>
+            <span class="hl__wipe" data-ref="hl1Wipe" aria-hidden="true"></span>
+          </span>
+          <span class="hl hl--2" data-ref="hl2">
+            <span class="hl__inner" data-ref="hl2Inner">DISPONÍVEIS<span class="hl__dot" data-ref="hl2Dot">.</span></span>
+          </span>
+        </h1>
+
+        <div class="final__divider" data-ref="dividerSlot"></div>
+
+        <p class="final__event" data-ref="finalEvent"><!-- preenchido a partir de .event__name --></p>
+
+        <p class="final__copy" data-ref="copy">OS REGISTROS DO EVENTO JÁ PODEM SER ACESSADOS.</p>
+
+        <!-- Área reservada: link da galeria, fotógrafo ou perfil -->
+        <div class="cta" data-ref="cta">
+          <span class="cta__label">→ ACESSE A GALERIA</span>
+          <span class="cta__slot">LINK  /  @FOTÓGRAFO</span>
+        </div>
+      </section>
+
+      <!-- HUD inferior -->
+      <footer class="hud hud--bottom" aria-hidden="true">
+        <div class="hud__row">
+          <span class="seq">SEQ <span class="seq__bars" data-ref="seq"><i></i><i></i><i></i><i></i><i></i></span></span>
+          <span>ACESSO: <span data-ref="access">RESTRITO</span></span>
+        </div>
+      </footer>
+
+      <span class="flash" data-ref="flash" aria-hidden="true"></span>
+      <span class="blackout" data-ref="blackout" aria-hidden="true"></span>
+    </div>
+
+    <!-- Controles de pré-visualização (fora do palco) -->
+    <nav class="controls" data-ref="controls" aria-label="Controles da pré-visualização">
+      <span class="controls__time" data-ref="ctrlTime">00.0 / 10.0</span>
+      <span class="controls__track"><span data-ref="ctrlFill"></span></span>
+      <button type="button" data-ref="btnPause" aria-keyshortcuts="Space">Pausar</button>
+      <button type="button" data-ref="btnRestart" aria-keyshortcuts="R">↻ Reiniciar</button>
+    </nav>
+  </main>
+
+  <script src="js/story.js"></script>
+</body>
+</html>

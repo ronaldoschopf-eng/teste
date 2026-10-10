@@ -1,0 +1,354 @@
+/* ==========================================================================
+   FOTOS DISPONÍVEIS — Story 9:16
+   Palco nativo 1080 × 1920 px. Todas as medidas abaixo estão nessa escala.
+   ========================================================================== */
+
+:root {
+  --black: #000000;
+  --white: #FFFFFF;
+  --grey: #808080;
+  --dark: #1A1A1A;
+
+  --margin: 96px;              /* margem lateral do palco */
+  --content: 888px;            /* 1080 − 2 × 96 */
+
+  --f-display: 'Anton', 'Archivo Black', Impact, 'Arial Narrow Bold', sans-serif;
+  --f-cond: 'Archivo', 'Arial Narrow', 'Roboto Condensed', sans-serif;
+  --f-sans: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+  --f-mono: 'Space Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--black);
+  color: var(--white);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
+}
+
+.viewport { position: fixed; inset: 0; }
+
+/* --- Palco --------------------------------------------------------------- */
+
+.stage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1080px;
+  height: 1920px;
+  background: var(--black);
+  overflow: hidden;
+  transform: translate(-50%, -50%) scale(var(--scale, 0.4));
+  transform-origin: 50% 50%;
+  box-shadow: 0 0 0 2px var(--dark);
+  font-family: var(--f-mono);
+}
+
+.stage > * { position: absolute; }
+
+/* Estado inicial (antes do JS assumir) — evita flash de conteúdo */
+.boot, .event, .loader > *, .bar, .final, .hud, .grid > * { opacity: 0; }
+
+/* --- Grade técnica ------------------------------------------------------- */
+
+.grid { inset: 0; pointer-events: none; }
+.grid > * { position: absolute; display: block; }
+
+.grid__v { top: 0; bottom: 0; width: 1px; background: var(--dark); transform-origin: 50% 0; }
+.grid__v--l { left: var(--margin); }
+.grid__v--r { left: calc(1080px - var(--margin) - 1px); }
+
+.grid__h { left: 0; right: 0; height: 1px; background: var(--dark); transform-origin: 0 50%; }
+.grid__h--t { top: 250px; }
+.grid__h--b { top: 1640px; }
+
+.cross { width: 17px; height: 17px; margin: -8px 0 0 -8px; }
+.cross::before, .cross::after { content: ''; position: absolute; background: var(--grey); }
+.cross::before { left: 8px; top: 0; width: 1px; height: 17px; }
+.cross::after  { top: 8px; left: 0; height: 1px; width: 17px; }
+.cross--tl { left: var(--margin); top: 250px; }
+.cross--tr { left: calc(1080px - var(--margin)); top: 250px; }
+.cross--bl { left: var(--margin); top: 1640px; }
+.cross--br { left: calc(1080px - var(--margin)); top: 1640px; }
+
+/* --- HUD ----------------------------------------------------------------- */
+
+.hud {
+  left: var(--margin);
+  width: var(--content);
+  font: 400 19px/1 var(--f-mono);
+  letter-spacing: 0.12em;
+  color: var(--grey);
+  padding: 0 18px;
+}
+.hud--top { top: 270px; }
+.hud--bottom { top: 1662px; }
+.hud__row { display: flex; justify-content: space-between; align-items: center; height: 32px; }
+.hud__scene { color: var(--white); }
+
+.seq { display: inline-flex; align-items: center; gap: 14px; }
+.seq__bars { display: inline-flex; gap: 6px; }
+.seq__bars i { display: block; width: 26px; height: 3px; background: var(--dark); }
+.seq__bars i.is-on { background: var(--white); }
+
+/* --- Cena 01 · inicialização -------------------------------------------- */
+
+.boot {
+  left: 0;
+  right: 0;
+  top: 944px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+}
+.boot__square { width: 14px; height: 14px; background: var(--white); }
+.boot__label { font: 400 18px/1 var(--f-mono); letter-spacing: 0.34em; color: var(--grey); padding-left: 0.34em; }
+.boot__line { position: relative; width: 132px; height: 1px; background: var(--dark); }
+.boot__line > span { position: absolute; inset: 0; background: var(--white); transform-origin: 0 50%; transform: scaleX(0); }
+
+/* --- Nome do evento ------------------------------------------------------ */
+
+.event {
+  left: var(--margin);
+  top: 398px;
+  width: var(--content);
+  padding-left: 18px;
+}
+.event__label {
+  display: block;
+  font: 400 18px/1 var(--f-mono);
+  letter-spacing: 0.24em;
+  color: var(--grey);
+  margin-bottom: 20px;
+}
+.event__name {
+  margin: 0;
+  font-family: var(--f-cond);
+  font-weight: 600;
+  font-stretch: 72%;
+  font-variation-settings: 'wdth' 72;
+  font-size: 62px;
+  line-height: 1.06;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+.event__line { display: block; white-space: pre; }
+
+.ch { position: relative; opacity: 0; }
+.ch.is-on { opacity: 1; }
+.ch.is-scramble { color: var(--grey); }
+.ch.is-cursor::after {
+  content: '';
+  position: absolute;
+  left: 100%;
+  top: 0.12em;
+  width: 0.42em;
+  height: 0.82em;
+  margin-left: 0.04em;
+  background: var(--white);
+}
+.ch.is-cursor.is-blink-off::after { opacity: 0; }
+
+/* --- Cenas 02–03 · carregamento ----------------------------------------- */
+
+.loader { inset: 0; pointer-events: none; }
+.loader > * { position: absolute; }
+
+/* barra em y = 1040 */
+.loader__status {
+  left: calc(var(--margin) + 18px);
+  top: 962px;
+  height: 40px;
+  width: 560px;
+  overflow: hidden;
+  font: 400 24px/40px var(--f-mono);
+  letter-spacing: 0.1em;
+}
+.status { position: absolute; left: 0; top: 0; white-space: nowrap; }
+.status--done { display: inline-flex; align-items: center; gap: 16px; }
+.status__mark { width: 12px; height: 12px; background: var(--white); }
+
+.loader__pct {
+  right: calc(var(--margin) + 18px);
+  top: 812px;
+  height: 200px;
+  display: flex;
+  align-items: flex-end;
+  font: 700 188px/0.8 var(--f-mono);
+  letter-spacing: -0.04em;
+  transform-origin: 100% 100%;
+  font-variant-numeric: tabular-nums;
+}
+.loader__sign { font-size: 0.42em; line-height: 1; margin-left: 0.12em; margin-bottom: 0.02em; color: var(--grey); letter-spacing: 0; }
+.loader__sign.is-full { color: var(--white); }
+
+.loader__scale {
+  left: var(--margin);
+  top: 1058px;
+  width: var(--content);
+  height: 60px;
+}
+.tick { position: absolute; top: 0; width: 1px; height: 8px; margin-left: -0.5px; background: var(--grey); }
+.tick--major { height: 16px; }
+.tick__label {
+  position: absolute;
+  top: 28px;
+  font: 400 16px/1 var(--f-mono);
+  letter-spacing: 0.08em;
+  color: var(--grey);
+  transform: translateX(-50%);
+}
+.tick__label--first { transform: none; }
+.tick__label--last { transform: translateX(-100%); }
+
+.loader__count {
+  left: calc(var(--margin) + 18px);
+  top: 1148px;
+  font: 400 19px/1 var(--f-mono);
+  letter-spacing: 0.12em;
+  color: var(--grey);
+}
+.loader__count [data-ref="countNum"] { color: var(--white); }
+
+/* --- Barra de progresso -------------------------------------------------- */
+
+.bar {
+  left: var(--margin);
+  top: 1039px;
+  width: var(--content);
+  height: 2px;
+}
+.bar > span { position: absolute; display: block; }
+.bar__track { inset: 0; background: var(--dark); transform-origin: 0 50%; }
+.bar__fill  { inset: 0; background: var(--white); transform-origin: 0 50%; transform: scaleX(0); }
+.bar__head  { left: 0; top: -10px; width: 2px; height: 22px; margin-left: -1px; background: var(--white); }
+
+/* --- Cenas 04–05 · revelação e tela final ------------------------------- */
+
+.final {
+  left: var(--margin);
+  top: 640px;
+  width: var(--content);
+}
+
+.headline { margin: 0; font-weight: 400; }
+
+.hl {
+  position: relative;
+  display: block;
+  font-family: var(--f-display);
+  text-transform: uppercase;
+  white-space: nowrap;
+  line-height: 0.9;
+  letter-spacing: -0.005em;
+}
+.hl__inner { display: inline-block; will-change: transform; }
+.hl--2 { margin-top: 0.14em; }      /* respiro para o acento de Í */
+.hl__dot { display: inline-block; transform-origin: 50% 85%; }
+
+.hl__wipe {
+  position: absolute;
+  left: -6px;
+  right: -6px;
+  top: 4%;
+  bottom: 2%;
+  background: var(--white);
+  clip-path: inset(0 100% 0 0);
+}
+
+.final__divider { height: 2px; margin: 64px 0 44px; }
+
+.final__event {
+  margin: 0;
+  padding-left: 18px;
+  font-family: var(--f-cond);
+  font-weight: 600;
+  font-stretch: 72%;
+  font-variation-settings: 'wdth' 72;
+  font-size: 50px;
+  line-height: 1.1;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+.final__line { display: block; position: relative; white-space: pre; }
+.final__line > span { display: inline-block; }
+
+.final__copy {
+  margin: 30px 0 0;
+  padding-left: 18px;
+  font: 500 24px/1.4 var(--f-sans);
+  letter-spacing: 0.14em;
+  color: var(--grey);
+  max-width: 760px;
+}
+
+.cta {
+  position: relative;
+  margin-top: 48px;
+  height: 76px;
+  padding: 0 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font: 400 20px/1 var(--f-mono);
+  letter-spacing: 0.14em;
+  border: 1px dashed rgba(128, 128, 128, 0.55);
+}
+.cta__label { color: var(--white); }
+.cta__slot { color: var(--grey); white-space: pre; }
+
+/* --- Sobreposições ------------------------------------------------------- */
+
+.flash, .blackout { inset: 0; pointer-events: none; opacity: 0; }
+.flash { background: var(--white); }
+.blackout { background: var(--black); }
+
+/* --- Controles de pré-visualização -------------------------------------- */
+
+.controls {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  font: 400 12px/1 var(--f-mono);
+  letter-spacing: 0.08em;
+  color: var(--grey);
+  background: rgba(0, 0, 0, 0.72);
+  border: 1px solid var(--dark);
+  opacity: 0.45;
+  transition: opacity 0.25s ease;
+}
+.controls:hover, .controls:focus-within { opacity: 1; }
+.controls__time { min-width: 92px; font-variant-numeric: tabular-nums; }
+.controls__track { position: relative; width: 72px; height: 1px; background: var(--dark); }
+.controls__track > span { position: absolute; inset: 0; background: var(--white); transform-origin: 0 50%; transform: scaleX(0); }
+.controls button {
+  font: inherit;
+  letter-spacing: inherit;
+  color: var(--white);
+  background: transparent;
+  border: 1px solid var(--dark);
+  padding: 7px 10px;
+  cursor: pointer;
+}
+.controls button:hover { border-color: var(--grey); }
+.controls button:focus-visible { outline: 1px solid var(--white); outline-offset: 2px; }
+
+.is-clean .controls { display: none; }
+.is-clean .stage { box-shadow: none; }
+
+@media (max-width: 520px) {
+  .controls { right: 8px; bottom: 8px; gap: 6px; padding: 6px; }
+  .controls__track { display: none; }
+  .controls__time { min-width: 0; }
+}
