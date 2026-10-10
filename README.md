@@ -24,7 +24,23 @@ A sequência começa sozinha. No fim, a tela final continua visível até ser re
 | Gravar a tela sem os controles | `?clean` |
 | Terminar com fade total para preto | `?fade` (por exemplo, `?clean&fade`) |
 
-Para exportar o vídeo do story, abra `?clean` numa janela com proporção 9:16 e grave a tela. Use também `?fade` se quiser que o vídeo termine em preto.
+## Vídeo MP4
+
+O vídeo pronto está em [`video/fotos-disponiveis.mp4`](video/fotos-disponiveis.mp4). Especificações:
+
+- 1080 × 1920 px, H.264, 30 fps;
+- 12 s de duração: os 10 s da animação mais 2 s de tela final, para dar tempo de leitura.
+
+Para gerar o vídeo de novo (por exemplo, depois de trocar o nome do evento), é preciso ter Node e ffmpeg instalados:
+
+```bash
+npm install
+npm run render          # gera video/fotos-disponiveis.mp4
+npm run render:fade     # versão que termina com fade total para preto
+node tools/render-video.js --fps 60 --hold 3 --out video/meu-story.mp4
+```
+
+Cada quadro é renderizado de forma determinística (`window.story.seek(t)`), então o vídeo sai sem quadros perdidos e com a sincronização exata.
 
 ## Linha do tempo
 

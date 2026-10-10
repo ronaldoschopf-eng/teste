@@ -504,6 +504,18 @@
     ])
     : Promise.resolve();
 
+  // API mínima para exportação quadro a quadro (tools/render-video.js).
+  window.story = {
+    duration: DURATION,
+    ready: fontsReady.then(() => undefined),
+    seek(t) {
+      cancelAnimationFrame(raf);
+      raf = 0;
+      pausedAt = clamp(t, 0, DURATION);
+      render(pausedAt);
+    },
+  };
+
   fontsReady.then(() => {
     layout();
     if (frozen !== null) {
