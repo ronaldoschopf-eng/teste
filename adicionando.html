@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#E9612E">
+  <title>Fotos Sendo Adicionadas — Story</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@1,300;1,800&display=swap">
+  <link rel="stylesheet" href="css/adicionando.css">
+</head>
+<body>
+  <main class="viewport">
+    <!--
+      Palco em 1080 × 1920 px (Instagram Stories), reduzido para caber na tela.
+      Para trocar o evento, edite .title; para o progresso final, data-progress
+      em .bar (0–1).
+    -->
+    <div class="stage" id="stage" role="img"
+         aria-label="Story animado: 4º Festival Barra Vento de Capoeira — fotos sendo adicionadas em ronaldo-schopf.fotto.com.br.">
+
+      <!-- Formas planas de fundo (paralaxe) -->
+      <div class="shapes" data-ref="shapes" aria-hidden="true"></div>
+
+      <p class="url" data-ref="url"><b data-split="words">ronaldo-schopf</b><span data-split="chars">.fotto.com.br</span></p>
+
+      <p class="title" data-ref="title" data-split="words">4º Festival Barra Vento de Capoeira</p>
+
+      <p class="label" data-ref="label"><span data-split="words">Fotos sendo</span> <b data-split="chars">adicionadas</b></p>
+
+      <div class="bar" data-ref="bar" data-progress="0.76" aria-hidden="true">
+        <svg class="bar__track" viewBox="0 0 811 68" preserveAspectRatio="none">
+          <rect data-ref="barTrack" x="1.5" y="1.5" width="808" height="65" rx="32.5" pathLength="1"></rect>
+        </svg>
+        <span class="bar__fill" data-ref="barFill"><span class="bar__stripes" data-ref="barStripes"></span></span>
+      </div>
+
+      <svg class="qr" data-ref="qr" viewBox="0 0 29 29" shape-rendering="crispEdges" aria-hidden="true"></svg>
+    </div>
+
+    <nav class="controls" aria-label="Controles da pré-visualização">
+      <span class="controls__time" data-ref="ctrlTime">00.0 / 10.0</span>
+      <button type="button" data-ref="btnPause" aria-keyshortcuts="Space">Pausar</button>
+      <button type="button" data-ref="btnRestart" aria-keyshortcuts="R">↻ Reiniciar</button>
+    </nav>
+  </main>
+
+  <script src="js/adicionando.js"></script>
+</body>
+</html>

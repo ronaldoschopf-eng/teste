@@ -82,3 +82,31 @@ O título se ajusta sozinho: `disponíveis.` ocupa 860 px de largura, e `Fotos` 
 - **Fonte**: **Poppins**, com peso 600 no título, 500 no nome do evento e no link, e 400 na chamada. O título vai em caixa alta e baixa, como na referência.
 - **Área segura**: os textos ficam entre y = 370 e y = 1600 px, centralizados.
 - **Acessibilidade**: com `prefers-reduced-motion`, deslocamentos, desfoques, paralaxe e pulsos viram transições só de opacidade. O anel continua avançando.
+
+---
+
+# Fotos sendo adicionadas — Story animado (9:16, flat)
+
+Segunda peça, em [`adicionando.html`](adicionando.html): a arte laranja "Fotos sendo adicionadas" animada em flat design, com paralaxe. Ela reproduz a arte estática ao pixel no quadro final: mesma posição, tipografia e cores.
+
+- **Cores**: laranja `#E9612E` (fundo) e branco `#FFFFFF`. As formas de fundo usam só branco translúcido sobre o laranja.
+- **Fonte**: **Montserrat Itálico**, peso 800 (negrito) e 300 (light), com espaçamento negativo calibrado contra a arte original.
+- **QR code**: redesenhado em vetor a partir da arte. Ele aponta para `https://www.fotto.com.br/ronaldo.schopf` e continua legível no quadro final.
+
+Os controles são os mesmos da outra peça: `?t=<ms>`, `?clean`, `R` e `Espaço`.
+
+| Cena | Tempo | O que acontece |
+| --- | --- | --- |
+| 01 · Barra | 0,2–6,8 s | O contorno da barra se desenha a partir da esquerda. O preenchimento surge como um ponto com um pequeno salto e cresce por uma curva contínua até 76 %. Listras diagonais em laranja suave correm dentro dele sem parar. |
+| 02 · Status | 1,5–3 s | `Fotos sendo` sobe por trás de uma máscara, palavra por palavra. As letras de `adicionadas` saltam em sequência. A partir de 7 s, uma onda leve percorre essas letras a cada 3,2 s. |
+| 03 · Evento | 2,9–4 s | O nome do evento entra palavra por palavra, subindo de trás da linha de base com uma leve inclinação que se desfaz. |
+| 04 · Link | 3,8–5 s | `ronaldo-schopf` desce do topo e `.fotto.com.br` é "digitado" caractere por caractere. |
+| 05 · QR | 5–7,2 s | Os três marcadores de posição giram e se encaixam, e os módulos aparecem em uma onda diagonal. |
+
+**Paralaxe**: uma "câmera" desce ao longo dos primeiros 8 s. Cada camada tem uma profundidade (`DEPTH` em `js/adicionando.js`): link 0,25, evento 0,45, status 0,65, barra 0,8 e QR 1,05. As camadas mais baixas começam mais longe e se acomodam mais rápido. As formas de fundo (`SHAPES`) têm profundidades próprias, entre 0,3 e 1,8, e seguem flutuando depois do fim.
+
+Para gerar o vídeo:
+
+```bash
+npm run render:adicionando   # gera video/fotos-sendo-adicionadas.mp4
+```

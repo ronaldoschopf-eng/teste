@@ -1,0 +1,181 @@
+/* ==========================================================================
+   FOTOS SENDO ADICIONADAS — Story 9:16, flat design
+   Palco nativo 1080 × 1920 px. Todas as medidas abaixo estão nessa escala.
+   ========================================================================== */
+
+:root {
+  --orange: #E9612E;
+  --white: #FFFFFF;
+
+  --f-sans: 'Montserrat', 'Helvetica Neue', Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: #1a1a1a;
+  color: var(--white);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.viewport { position: fixed; inset: 0; }
+
+/* --- Palco --------------------------------------------------------------- */
+
+.stage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1080px;
+  height: 1920px;
+  background: var(--orange);
+  overflow: hidden;
+  transform: translate(-50%, -50%) scale(var(--scale, 0.4));
+  transform-origin: 50% 50%;
+  font-family: var(--f-sans);
+  font-style: italic;
+  color: var(--white);
+}
+
+.stage > * { position: absolute; }
+
+/* Estado inicial (antes do JS assumir) — evita flash de conteúdo */
+.shapes, .url, .title, .label, .bar, .qr { opacity: 0; }
+
+/* --- Formas planas de fundo ---------------------------------------------- */
+
+.shapes { inset: 0; pointer-events: none; }
+.shape {
+  position: absolute;
+  left: 0;
+  top: 0;
+  will-change: transform;
+}
+.shape--disc { border-radius: 50%; background: rgba(255, 255, 255, 0.07); }
+.shape--ring { border-radius: 50%; border: 3px solid rgba(255, 255, 255, 0.22); }
+.shape--pill { border-radius: 999px; background: rgba(255, 255, 255, 0.08); }
+.shape--dot  { border-radius: 50%; background: rgba(255, 255, 255, 0.55); }
+
+/* --- Texto --------------------------------------------------------------- */
+
+.url, .title, .label {
+  left: 64px;
+  margin: 0;
+  white-space: nowrap;
+  line-height: 1;
+  will-change: transform;
+}
+.url b, .title, .label b { font-weight: 800; }
+.url > span, .label > span { font-weight: 300; }
+
+.url   { top: 98px;  font-size: 35px; letter-spacing: -0.095em; }
+.title { top: 676px; font-size: 53.5px; letter-spacing: -0.1125em; word-spacing: 0.075em; }
+.label { top: 857px; left: 60px; font-size: 54px; letter-spacing: -0.095em; word-spacing: -0.025em; }
+.url > span   { letter-spacing: -0.045em; }
+.label > span { letter-spacing: -0.05em; }
+
+/* palavra com máscara: o texto sobe por trás da linha de base */
+.w {
+  display: inline-block;
+  clip-path: inset(-40% -30% -8% -30%);
+}
+.url .w { clip-path: inset(0 -30% -40% -30%); }   /* o link desce de cima */
+.w > i {
+  display: inline-block;
+  font-style: inherit;
+  will-change: transform;
+}
+.c { display: inline-block; font-style: inherit; will-change: transform, opacity; }
+
+/* --- Barra de carregamento ----------------------------------------------- */
+
+.bar {
+  left: 62px;
+  top: 923px;
+  width: 811px;
+  height: 68px;
+  will-change: transform;
+}
+.bar__track { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.bar__track rect {
+  fill: none;
+  stroke: var(--white);
+  stroke-width: 3;
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: 1;
+}
+.bar__fill {
+  position: absolute;
+  left: 19px;
+  top: 15px;
+  width: 38px;
+  height: 38px;
+  border-radius: 19px;
+  background: var(--white);
+  overflow: hidden;
+  transform-origin: 19px 50%;
+}
+/* listras diagonais planas, em laranja bem suave, correndo dentro da barra */
+.bar__stripes {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -76px;
+  width: 1000px;
+  background: repeating-linear-gradient(-55deg,
+    rgba(233, 97, 46, 0.13) 0 19px,
+    rgba(233, 97, 46, 0) 19px 38px);
+}
+
+/* --- QR code -------------------------------------------------------------- */
+
+.qr {
+  left: 62px;
+  top: 1287px;
+  width: 264px;
+  height: 264px;
+  overflow: visible;
+  will-change: transform;
+}
+.qr rect, .qr g { fill: var(--white); transform-box: fill-box; transform-origin: 50% 50%; }
+.qr .finder-ring { fill: none; stroke: var(--white); }
+
+/* --- Controles de pré-visualização (fora do palco) ------------------------ */
+
+.controls {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  font: 500 12px/1 'Helvetica Neue', Arial, sans-serif;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 999px;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+}
+.controls:hover, .controls:focus-within { opacity: 1; }
+.controls__time { min-width: 76px; padding-left: 6px; font-variant-numeric: tabular-nums; }
+.controls button {
+  font: inherit;
+  letter-spacing: inherit;
+  color: var(--white);
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 999px;
+  padding: 7px 12px;
+  cursor: pointer;
+}
+.controls button:hover { border-color: var(--orange); }
+.controls button:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+
+.is-clean .controls { display: none; }
