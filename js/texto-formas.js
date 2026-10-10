@@ -14,8 +14,8 @@
      f 58–74   texto parado
 
    A peça tem um ciclo com o nome do evento e um segundo em que a tela
-   vira branca a partir do centro (f 1–11), as formas se repetem em laranja e
-   "Fotos Disponíveis" é datilografado letra por letra, com um cursor que
+   vira branca a partir do centro (f 1–11) e, sem as formas, "Fotos
+   Disponíveis" é datilografado letra por letra, com um cursor que
    continua piscando no fim (mais 1 s parado). No nome do evento, "Capoeira"
    ganha um marca-texto rosa que se desenha da esquerda para a direita.
 
@@ -35,8 +35,6 @@
   const CYCLE_MS = (CYCLE / FPS) * 1000;
   const OUTRO = CYCLE;                           // um ciclo com o nome do evento
   const END_HOLD = 30;                           // quadros parados no fim, com "Fotos Disponíveis"
-  const TOTAL = OUTRO + CYCLE + END_HOLD;        // em quadros
-  const DURATION = (TOTAL / FPS) * 1000;
   const TEXT_A = ['4º Festival', 'Barra Vento', 'de Capoeira'];
   const TEXT_B = ['Fotos', 'Disponíveis'];
   const TITLE_W = 528;                           // largura de "Disponíveis"
@@ -47,8 +45,11 @@
   const ORANGE = '#EA622F';
   const PINK = '#D12384';                        // marca-texto sob "Capoeira"
   const HIGHLIGHT = 'Capoeira';
-  const TYPE_START = 37;                         // quadro do ciclo em que a digitação começa
+  const TYPE_START = 12;                         // quadro (após a tela branca) em que a digitação começa
   const TYPE_RATE = 2;                           // quadros por letra
+  const TYPED = TEXT_B.join('').replace(/ /g, '').length * TYPE_RATE;
+  const TOTAL = OUTRO + TYPE_START + TYPED + END_HOLD;   // em quadros
+  const DURATION = (TOTAL / FPS) * 1000;
   let fg = WHITE;                                // cores do ciclo atual (invertidas no final)
   let bg = ORANGE;
 
@@ -386,8 +387,7 @@
     let text = textA;
     if (F >= OUTRO) {
       // último ciclo: o nome do evento some, a tela vira branca a partir
-      // do centro, as formas se repetem em laranja e "Fotos Disponíveis"
-      // entra num swipe up, palavra por palavra
+      // do centro e "Fotos Disponíveis" é datilografado, sem as formas
       f = F - OUTRO;                             // segue além do ciclo para o cursor piscar
       if (f < 7) drawText(textA, 1 - E.inOutSine(f / 7));
       const wipe = E.outCubic(span(f, 1, 11)) * Math.hypot(STAGE_W, STAGE_H) / 2;
@@ -401,10 +401,13 @@
     } else if (f < 7) {
       drawText(textA, 1 - E.inOutSine(f / 7));
     }
-    drawArcs(f);
-    drawBars(f);
-    if (text === textB) drawTyping(text, f);
-    else drawAssembly(text, f);
+    if (text === textB) {
+      drawTyping(text, f);                       // só a máquina de escrever, sem as formas
+    } else {
+      drawArcs(f);
+      drawBars(f);
+      drawAssembly(text, f);
+    }
   }
 
   /* --- palco e relógio --------------------------------------------------- */
