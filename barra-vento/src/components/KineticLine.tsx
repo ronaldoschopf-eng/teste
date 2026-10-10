@@ -18,7 +18,7 @@ const MAX_WIDTH = VIDEO.width - SAFE.side * 2;
 
 // Converte uma linha do config em itens com frame de entrada e cor.
 export const lineToItems = (line: TextLine, theme: Theme): LineItem[] => {
-  const color = theme === 'light' ? COLORS.nearBlack : COLORS.white;
+  const color = theme === 'light' ? COLORS.ink : COLORS.white;
   return line.tokens.map((t, i) => {
     const enter = line.start + i * TYPO.wordInterval;
     if (typeof t === 'string') return {kind: 'word', text: t, enter, color};

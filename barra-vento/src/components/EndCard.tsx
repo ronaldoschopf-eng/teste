@@ -3,8 +3,9 @@ import {AbsoluteFill, Img, interpolate, spring, useCurrentFrame, useVideoConfig}
 import {COLORS, SAFE, TEXT, TIMING} from '../config';
 import {LOGO_SRC} from '../assets';
 import {FONT_FAMILY} from '../fonts';
-import {BerimbauIcon} from './BerimbauLogo';
+import {LogoIcon} from './LogoIcon';
 import {BlobBackground} from './BlobBackground';
+import {dotPattern} from './Halftone';
 import {PhotoPlaceholder} from './PhotoPlaceholder';
 
 const useEnter = (delay: number) => {
@@ -48,8 +49,8 @@ export const EndCard: React.FC<{photos: (string | null)[]}> = ({photos}) => {
           <Img src={LOGO_SRC} style={{height: 130, objectFit: 'contain'}} />
         ) : (
           <div style={{display: 'flex', alignItems: 'center', gap: 22}}>
-            <BerimbauIcon size={92} />
-            <span style={{fontSize: 42, fontWeight: 800, color: COLORS.darkGreen, letterSpacing: -0.5}}>{TEXT.endCard.logoText}</span>
+            <LogoIcon size={92} />
+            <span style={{fontSize: 42, fontWeight: 800, color: COLORS.deep, letterSpacing: -0.5}}>{TEXT.endCard.logoText}</span>
           </div>
         )}
       </div>
@@ -60,8 +61,8 @@ export const EndCard: React.FC<{photos: (string | null)[]}> = ({photos}) => {
           style={{
             padding: '12px 28px',
             borderRadius: 40,
-            background: COLORS.lime,
-            color: COLORS.darkGreen,
+            background: COLORS.pink,
+            color: COLORS.deep,
             fontSize: 34,
             fontWeight: 800,
             letterSpacing: 1,
@@ -83,7 +84,7 @@ export const EndCard: React.FC<{photos: (string | null)[]}> = ({photos}) => {
           lineHeight: 1.08,
           fontWeight: 800,
           letterSpacing: -2,
-          color: COLORS.nearBlack,
+          color: COLORS.ink,
           ...title.style,
         }}
       >
@@ -104,7 +105,7 @@ export const EndCard: React.FC<{photos: (string | null)[]}> = ({photos}) => {
                 position: 'absolute',
                 inset: 0,
                 borderRadius: 80,
-                border: `4px solid ${COLORS.lime}`,
+                border: `4px solid ${COLORS.pink}`,
                 transform: `scale(${1 + ring * 0.25}, ${1 + ring * 0.6})`,
                 opacity: (1 - ring) * 0.9,
               }}
@@ -114,19 +115,19 @@ export const EndCard: React.FC<{photos: (string | null)[]}> = ({photos}) => {
             style={{
               padding: '36px 92px',
               borderRadius: 80,
-              background: COLORS.darkGreen,
+              background: COLORS.deep,
               color: COLORS.white,
               fontSize: 56,
               fontWeight: 800,
               letterSpacing: -0.5,
-              boxShadow: '0 24px 50px rgba(11, 61, 30, 0.35)',
+              boxShadow: '0 24px 50px rgba(90, 11, 51, 0.35)',
               transform: `scale(${1 + pulse * 0.025})`,
               display: 'flex',
               alignItems: 'center',
               gap: 22,
             }}
           >
-            <span style={{width: 18, height: 18, borderRadius: 9, background: COLORS.lime}} />
+            <span style={{width: 18, height: 18, borderRadius: 9, background: COLORS.pink}} />
             {TEXT.endCard.button}
           </div>
         </div>
@@ -177,12 +178,14 @@ const CollagePhoto: React.FC<{src: string | null; index: number; dx: number; dy:
         border: '6px solid #FFFFFF',
         overflow: 'hidden',
         background: '#FFFFFF',
-        boxShadow: '0 30px 60px rgba(11, 61, 30, 0.28)',
+        boxShadow: '0 30px 60px rgba(90, 11, 51, 0.28)',
         opacity: Math.min(1, p * 2),
         transform: `perspective(1400px) translateY(${(1 - p) * 220}px) rotateX(${(1 - p) * 30}deg) rotate(${rot * p}deg) scale(${0.7 + 0.3 * p})`,
       }}
     >
       {src ? <Img src={src} style={{width: '100%', height: '100%', objectFit: 'cover'}} /> : <PhotoPlaceholder index={index + 3} />}
+      {/* Textura de meio-tom e reflexo, como foto impressa */}
+      <div style={{position: 'absolute', inset: 0, ...dotPattern('rgba(90, 11, 51, 0.35)', 8, 1.6), mixBlendMode: 'multiply'}} />
     </div>
   );
 };

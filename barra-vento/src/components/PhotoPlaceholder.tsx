@@ -2,22 +2,62 @@ import React from 'react';
 import {COLORS} from '../config';
 
 const GRADIENTS = [
-  [COLORS.green, COLORS.lime],
-  [COLORS.darkGreen, COLORS.yellow],
-  [COLORS.lime, COLORS.yellow],
-  [COLORS.green, COLORS.yellow],
-  [COLORS.darkGreen, COLORS.lime],
+  [COLORS.pink, COLORS.orange],
+  [COLORS.deep, COLORS.pink],
+  [COLORS.orange, COLORS.orangeSoft],
+  [COLORS.pinkSoft, COLORS.orange],
+  [COLORS.pink, COLORS.pinkSoft],
 ];
 
-// Silhuetas simples de capoeiristas (ginga, chute alto, aú).
-const POSES = [
-  // ginga
-  'M100 52 a16 16 0 1 1 0.1 0 Z M92 76 L80 128 L54 170 L64 176 L92 136 L104 132 L132 176 L144 170 L118 126 L110 78 Z M86 84 L54 110 L60 118 L92 98 Z M112 84 L146 70 L150 80 L116 98 Z',
-  // chute (meia-lua)
-  'M74 60 a16 16 0 1 1 0.1 0 Z M70 84 L82 132 L70 178 L82 180 L98 134 L104 120 L160 70 L152 60 L100 100 L86 80 Z M68 90 L40 120 L48 126 L78 104 Z',
-  // aú (estrela)
-  'M100 150 a16 16 0 1 1 0.1 0 Z M92 128 L56 104 L28 40 L40 36 L66 92 L100 110 L134 92 L160 36 L172 40 L144 104 L108 128 Z M88 132 L70 150 L76 158 L96 140 Z M112 132 L130 150 L124 158 L104 140 Z',
+type Pose = {
+  head: [number, number];
+  limbs: string[]; // polilinhas "x,y x,y ..." (tronco, braços, pernas)
+  ball: [number, number];
+  net?: number; // x da rede (vista lateral)
+};
+
+// Jogadas de vôlei em silhueta (viewBox 200 × 250, chão em y ≈ 228).
+const POSES: Pose[] = [
+  // cortada: salto, braço de ataque no alto, bola acima da mão
+  {
+    head: [92, 70],
+    limbs: ['94,84 86,140', '97,94 116,72 130,50', '91,94 74,104 66,122', '86,140 102,168 90,196', '86,140 76,170 68,198'],
+    ball: [142, 36],
+    net: 172,
+  },
+  // bloqueio: braços esticados para cima, junto à rede
+  {
+    head: [88, 80],
+    limbs: ['88,94 88,150', '85,100 80,62 78,30', '91,100 98,62 102,30', '88,150 82,190 80,226', '88,150 96,190 98,226'],
+    ball: [118, 24],
+    net: 128,
+  },
+  // levantamento: mãos acima da testa, bola logo acima
+  {
+    head: [100, 82],
+    limbs: ['100,96 100,152', '96,102 82,86 90,64', '104,102 118,86 110,64', '100,152 88,188 90,226', '100,152 112,188 114,226'],
+    ball: [100, 46],
+  },
+  // manchete (defesa): base baixa, braços unidos à frente
+  {
+    head: [80, 110],
+    limbs: ['88,124 70,168', '88,126 132,152', '86,132 130,158', '70,168 96,196 92,228', '70,168 56,200 42,228'],
+    ball: [146, 140],
+  },
+  // saque: bola lançada, braço armado atrás da cabeça
+  {
+    head: [100, 78],
+    limbs: ['100,92 96,150', '102,98 82,76 94,56', '100,98 122,78 132,60', '96,150 108,190 112,226', '96,150 84,192 76,226'],
+    ball: [126, 30],
+  },
 ];
+
+const Ball: React.FC<{x: number; y: number}> = ({x, y}) => (
+  <g transform={`translate(${x} ${y})`}>
+    <circle r="14" fill="#FFFFFF" stroke={COLORS.deep} strokeWidth="3" />
+    <path d="M-13 -4 C -4 -2 4 -8 8 -11 M-6 12 C -4 2 4 -2 13 0 M2 -14 C -2 -4 0 6 6 12" fill="none" stroke={COLORS.deep} strokeWidth="2.5" />
+  </g>
+);
 
 export const PhotoPlaceholder: React.FC<{index: number}> = ({index}) => {
   const [a, b] = GRADIENTS[index % GRADIENTS.length];
@@ -30,13 +70,29 @@ export const PhotoPlaceholder: React.FC<{index: number}> = ({index}) => {
           <stop offset="0" stopColor={a} />
           <stop offset="1" stopColor={b} />
         </linearGradient>
+        <pattern id={`${id}-net`} width="8" height="8" patternUnits="userSpaceOnUse">
+          <path d="M0 0 L8 8 M8 0 L0 8" stroke="#FFFFFF" strokeWidth="1.2" opacity="0.7" />
+        </pattern>
       </defs>
       <rect width="200" height="250" fill={`url(#${id})`} />
-      <circle cx={index % 2 ? 160 : 44} cy="46" r="26" fill="#FFFFFF" opacity="0.28" />
-      <ellipse cx="100" cy="226" rx="90" ry="14" fill="#000" opacity="0.12" />
-      <g transform="translate(0 30)" fill={COLORS.darkGreen} opacity="0.85">
-        <path d={pose} />
+      {/* quadra */}
+      <rect y="228" width="200" height="22" fill={COLORS.deep} opacity="0.18" />
+      <line x1="0" y1="228" x2="200" y2="228" stroke="#FFFFFF" strokeWidth="2" opacity="0.6" />
+      {pose.net ? (
+        <g>
+          <rect x={pose.net - 1.5} y="96" width="3" height="132" fill={COLORS.deep} opacity="0.6" />
+          <rect x={pose.net - 7} y="104" width="14" height="70" fill={`url(#${id}-net)`} />
+          <rect x={pose.net - 8} y="100" width="16" height="6" fill="#FFFFFF" opacity="0.9" />
+        </g>
+      ) : null}
+      <ellipse cx="96" cy="230" rx="44" ry="6" fill="#000" opacity="0.12" />
+      <g stroke={COLORS.deep} strokeWidth="14" strokeLinecap="round" strokeLinejoin="round" fill="none" opacity="0.9">
+        {pose.limbs.map((l, i) => (
+          <polyline key={i} points={l} />
+        ))}
       </g>
+      <circle cx={pose.head[0]} cy={pose.head[1]} r="13" fill={COLORS.deep} opacity="0.9" />
+      <Ball x={pose.ball[0]} y={pose.ball[1]} />
     </svg>
   );
 };

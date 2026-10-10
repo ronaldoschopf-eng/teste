@@ -20,14 +20,15 @@ export const SAFE = {
 };
 
 export const COLORS = {
-  darkGreen: '#0B3D1E',
-  green: '#1F7A3A',
-  lime: '#B6F23A',
-  yellow: '#FFD400',
+  deep: '#5A0B33', // rosa-escuro (fundo escuro, barrinhas, botão)
+  pink: '#FF1F7A', // rosa pink (highlight box, destaques)
+  pinkSoft: '#FF8DC0',
+  orange: '#FF7A1A', // laranja (rabisco, faíscas, brilho)
+  orangeSoft: '#FFB070',
   white: '#FFFFFF',
-  nearBlack: '#111111',
-  gray: '#7A8079',
-  notificationBg: 'rgba(242, 243, 245, 0.94)',
+  ink: '#2A0717', // texto sobre fundo claro
+  gray: '#8A6B78',
+  notificationBg: 'rgba(255, 244, 248, 0.95)',
 };
 
 // -----------------------------------------------------------------------------
@@ -36,9 +37,9 @@ export const COLORS = {
 // Frase completa. Os blocos de TEXT_GROUPS, lidos em ordem, precisam formar
 // exatamente esta frase (o vídeo avisa no console se não formarem).
 export const FULL_TEXT =
-  'ABERTURA amanhã, a partir das 8 horas ocorre o Torneio - Kizuna & Vai que Dá & Diretoria. Cobertura fotográfica completa! Suas fotos estarão no link da bio.';
+  'Amanhã, a partir das 8 horas ocorre o Torneio - Kizuna & Vai que Dá & Diretoria. Cobertura fotográfica completa! Suas fotos estarão no link da bio.';
 
-// Um token é uma palavra, uma palavra com brilho amarelo ({glow}) ou um
+// Um token é uma palavra, uma palavra com brilho laranja ({glow}) ou um
 // highlight box ({box}) cujos conteúdos se alternam com wipe vertical.
 export type Token = string | {glow: string} | {box: string[]};
 
@@ -57,17 +58,11 @@ const Y2 = 750; // segunda linha
 
 export const TEXT_GROUPS = {
   // Cena 1 (fundo claro)
-  abertura: {
-    lines: [
-      {tokens: [{box: ['ABERTURA']}], start: 12, y: Y1},
-      {tokens: ['amanhã,'], start: 40, y: Y2},
-    ],
-    exit: 112,
-  },
   horario: {
     lines: [
-      {tokens: ['a', 'partir', 'das'], start: 118, y: Y1},
-      {tokens: [{box: ['8 horas']}], start: 142, y: Y2},
+      {tokens: [{box: ['Amanhã,']}], start: 14, y: Y1 - 40},
+      {tokens: ['a', 'partir', 'das'], start: 60, y: Y2 - 50},
+      {tokens: [{box: ['8 horas']}], start: 88, y: Y2 + 150},
     ],
     exit: 206, // sai junto com a onda
   },
@@ -99,16 +94,16 @@ export const TEXT_GROUPS = {
 export const TEXT = {
   notifications: [
     {title: '📸 Fotos do Torneio', body: 'Sua foto está pronta!'},
-    {title: '📸 Fotos do Torneio', body: 'Você apareceu na roda!'},
+    {title: '📸 Fotos do Torneio', body: 'Você apareceu na quadra!'},
     {title: '📸 Fotos do Torneio', body: 'Baixe agora 👀'},
   ],
   notificationTime: 'agora',
 
-  floatingEmojis: ['🔥', '😍', '📸', '🤸'],
+  floatingEmojis: ['🔥', '😍', '📸', '🏐'],
 
   endCard: {
-    logoText: 'Barra Vento Capoeira',
-    tag: 'ABERTURA AMANHÃ · 8H',
+    logoText: 'Torneio de Vôlei',
+    tag: 'AMANHÃ · A PARTIR DAS 8H',
     title: 'Cobertura fotográfica completa 📸',
     button: 'Link na bio',
     footer: 'Torneio Kizuna & Vai que Dá & Diretoria',
@@ -185,6 +180,17 @@ export const PHOTOS = {
 export const BACKGROUND = {
   blur: 160, // blur efetivo dos blobs (px)
   grainOpacity: 0.07,
+};
+
+// Meio-tom (halftone).
+export const HALFTONE = {
+  pitch: 24, // distância entre pontos dos fundos (px)
+  angle: 45, // inclinação da retícula
+  contrast: 40, // limiar que transforma a densidade em pontos
+  drift: 0.12, // deslocamento da retícula por frame (px)
+  intensity: 1, // força dos pontos nos fundos (0–1)
+  tonePitch: 7, // retícula fina sobre o vídeo todo
+  toneOpacity: 0.35,
 };
 
 export const MOTION_BLUR = {

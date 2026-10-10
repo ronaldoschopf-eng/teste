@@ -37,7 +37,7 @@ export const Scene3Rain: React.FC<{photos: string[]}> = ({photos}) => {
           right: -140,
           top: (torneio.lines[0].y + torneio.lines[1].y) / 2 - 360,
           height: 720,
-          background: 'radial-gradient(ellipse at center, rgba(4, 25, 12, 0.78) 0%, rgba(4, 25, 12, 0) 66%)',
+          background: 'radial-gradient(ellipse at center, rgba(42, 4, 24, 0.78) 0%, rgba(42, 4, 24, 0) 66%)',
           opacity: shade,
         }}
       />

@@ -2,6 +2,7 @@ import React from 'react';
 import {Easing, interpolate, spring, useCurrentFrame, useVideoConfig} from 'remotion';
 import {COLORS, TIMING, TYPO} from '../config';
 import {FONT_FAMILY} from '../fonts';
+import {dotPattern} from './Halftone';
 import {Scribble} from './Scribble';
 
 type Props = {
@@ -27,7 +28,7 @@ export const boxWidthAt = (frame: number, widths: number[], swapFrames: number[]
   return w + TYPO.boxPaddingX * 2;
 };
 
-// Retângulo verde-limão que "abre" (scaleX 0 → 1) com barrinhas nas laterais.
+// Retângulo rosa que "abre" (scaleX 0 → 1) com barrinhas nas laterais.
 export const HighlightBox: React.FC<Props> = ({
   contents,
   swapFrames,
@@ -68,7 +69,7 @@ export const HighlightBox: React.FC<Props> = ({
     fontWeight: TYPO.kineticWeight,
     fontSize,
     letterSpacing: TYPO.letterSpacing,
-    color: COLORS.darkGreen,
+    color: COLORS.white,
   };
 
   const halfOpen = (width / 2) * open;
@@ -81,7 +82,7 @@ export const HighlightBox: React.FC<Props> = ({
         width: 6,
         height: height + 32,
         borderRadius: 3,
-        background: COLORS.darkGreen,
+        background: COLORS.deep,
         opacity: barOpacity,
       }}
     />
@@ -90,14 +91,25 @@ export const HighlightBox: React.FC<Props> = ({
   return (
     <div style={{position: 'absolute', width, height, transform: `scale(${pressScale})`}}>
       <Scribble width={width} height={height} start={enterFrame + 8} />
+      {/* Sombra "pop art" em pontos de meio-tom */}
       <div
         style={{
           position: 'absolute',
           inset: 0,
-          background: COLORS.lime,
+          borderRadius: 10,
+          transform: `translate(16px, 16px) scaleX(${open})`,
+          ...dotPattern(COLORS.deep, 11, 3),
+          opacity: 0.85,
+        }}
+      />
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background: COLORS.pink,
           borderRadius: 10,
           transform: `scaleX(${open})`,
-          boxShadow: '0 18px 40px rgba(11, 61, 30, 0.18)',
+          boxShadow: '0 18px 40px rgba(90, 11, 51, 0.18)',
         }}
       />
       {bar(-1)}

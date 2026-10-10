@@ -13,7 +13,7 @@ type Props = {
 };
 
 // "Faíscas": traços curvos e bolinhas que aparecem, se espalham e somem.
-export const Sparks: React.FC<Props> = ({x, y, start, seed, angle = -45, size = 1, color = COLORS.yellow}) => {
+export const Sparks: React.FC<Props> = ({x, y, start, seed, angle = -45, size = 1, color = COLORS.orange}) => {
   const frame = useCurrentFrame();
   const t = frame - start;
   if (t < 0 || t > 40) return null;

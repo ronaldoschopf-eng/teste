@@ -7,7 +7,7 @@ export const Scribble: React.FC<{width: number; height: number; start: number; c
   width,
   height,
   start,
-  color = COLORS.yellow,
+  color = COLORS.orange,
 }) => {
   const frame = useCurrentFrame();
   const draw = interpolate(frame, [start, start + TIMING.scribbleDraw], [1, 0], {

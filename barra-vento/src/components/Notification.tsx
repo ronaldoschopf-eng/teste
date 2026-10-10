@@ -7,22 +7,22 @@ const AppIcon: React.FC = () => (
   <svg width={96} height={96} viewBox="0 0 96 96">
     <defs>
       <linearGradient id="app-icon" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stopColor="#2FA352" />
-        <stop offset="1" stopColor={COLORS.green} />
+        <stop offset="0" stopColor={COLORS.orange} />
+        <stop offset="1" stopColor={COLORS.pink} />
       </linearGradient>
     </defs>
     <rect width="96" height="96" rx="22" fill="url(#app-icon)" />
     {/* câmera simples */}
     <rect x="20" y="32" width="56" height="40" rx="9" fill="#FFFFFF" />
     <rect x="36" y="25" width="24" height="10" rx="4" fill="#FFFFFF" />
-    <circle cx="48" cy="52" r="12" fill={COLORS.green} />
-    <circle cx="48" cy="52" r="6.5" fill={COLORS.lime} />
+    <circle cx="48" cy="52" r="12" fill={COLORS.pink} />
+    <circle cx="48" cy="52" r="6.5" fill={COLORS.orangeSoft} />
   </svg>
 );
 
 type Props = {title: string; body: string; enter: number; y: number; tilt?: number};
 
-// Notificação estilo iMessage: cartão cinza-claro com ícone verde.
+// Notificação estilo iMessage: cartão claro com ícone rosa e laranja.
 export const Notification: React.FC<Props> = ({title, body, enter, y, tilt = 0}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
@@ -55,10 +55,10 @@ export const Notification: React.FC<Props> = ({title, body, enter, y, tilt = 0})
       <AppIcon />
       <div style={{flex: 1, minWidth: 0}}>
         <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'baseline'}}>
-          <span style={{fontSize: 40, fontWeight: 700, color: COLORS.nearBlack}}>{title}</span>
+          <span style={{fontSize: 40, fontWeight: 700, color: COLORS.ink}}>{title}</span>
           <span style={{fontSize: 30, fontWeight: 500, color: COLORS.gray}}>{TEXT.notificationTime}</span>
         </div>
-        <div style={{fontSize: 38, fontWeight: 500, color: '#3A3F3B', marginTop: 4}}>{body}</div>
+        <div style={{fontSize: 38, fontWeight: 500, color: '#5A3A48', marginTop: 4}}>{body}</div>
       </div>
     </div>
   );

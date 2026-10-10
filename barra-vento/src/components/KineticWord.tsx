@@ -27,13 +27,13 @@ type Props = {
 };
 
 // Uma palavra que entra com spring: sobe 40px, ganha opacidade, perde blur.
-export const KineticWord: React.FC<Props> = ({text, enterFrame, x, color = COLORS.nearBlack, glow, fontSize = TYPO.kineticSize}) => {
+export const KineticWord: React.FC<Props> = ({text, enterFrame, x, color = COLORS.ink, glow, fontSize = TYPO.kineticSize}) => {
   const frame = useCurrentFrame();
   const {style} = useWordEntrance(enterFrame);
   const pulse = glow ? 0.5 + 0.5 * Math.sin((frame - enterFrame) / 9) : 0;
   const glowOn = glow ? Math.min(1, Math.max(0, (frame - enterFrame - 10) / 20)) : 0;
   const glowShadow = glow
-    ? `0 0 ${18 + pulse * 22}px rgba(255, 212, 0, ${(0.55 + pulse * 0.4) * glowOn}), 0 0 ${50 + pulse * 40}px rgba(255, 212, 0, ${(0.35 + pulse * 0.3) * glowOn})`
+    ? `0 0 ${18 + pulse * 22}px rgba(255, 122, 26, ${(0.6 + pulse * 0.4) * glowOn}), 0 0 ${50 + pulse * 40}px rgba(255, 31, 122, ${(0.4 + pulse * 0.3) * glowOn})`
     : undefined;
 
   return (
@@ -50,7 +50,7 @@ export const KineticWord: React.FC<Props> = ({text, enterFrame, x, color = COLOR
         fontWeight: TYPO.kineticWeight,
         fontSize,
         letterSpacing: TYPO.letterSpacing,
-        color: glow ? mixToYellow(glowOn * (0.35 + pulse * 0.25)) : color,
+        color: glow ? mixToOrange(glowOn * (0.3 + pulse * 0.25)) : color,
         textShadow: glowShadow,
         ...style,
       }}
@@ -60,10 +60,10 @@ export const KineticWord: React.FC<Props> = ({text, enterFrame, x, color = COLOR
   );
 };
 
-// Mistura branco → amarelo para o brilho (palavras brancas da cena escura).
-const mixToYellow = (t: number) => {
+// Mistura branco → laranja para o brilho (palavras brancas da cena escura).
+const mixToOrange = (t: number) => {
   const r = 255;
-  const g = Math.round(255 - (255 - 212) * t);
-  const b = Math.round(255 - 255 * t);
+  const g = Math.round(255 - (255 - 122) * t);
+  const b = Math.round(255 - (255 - 26) * t);
   return `rgb(${r}, ${g}, ${b})`;
 };

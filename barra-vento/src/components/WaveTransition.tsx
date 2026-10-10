@@ -19,7 +19,7 @@ const wavePath = (edge: number, phase: number, amp: number) => {
 
 type Props = {from: number; to: number; children: React.ReactNode};
 
-// Transição em onda: faixas amarela e verde-limão sobem na frente e a cena
+// Transição em onda: faixas laranja e rosa sobem na frente e a cena
 // nova (children) é revelada por baixo, recortada pela mesma onda.
 export const WaveTransition: React.FC<Props> = ({from, to, children}) => {
   const frame = useCurrentFrame();
@@ -37,8 +37,8 @@ export const WaveTransition: React.FC<Props> = ({from, to, children}) => {
   return (
     <AbsoluteFill>
       <svg width={W} height={H} style={{position: 'absolute', inset: 0}}>
-        <path d={wavePath(edge - 120, phase + 0.6, amp)} fill={COLORS.yellow} />
-        <path d={wavePath(edge - 60, phase + 0.3, amp)} fill={COLORS.lime} />
+        <path d={wavePath(edge - 120, phase + 0.6, amp)} fill={COLORS.orange} />
+        <path d={wavePath(edge - 60, phase + 0.3, amp)} fill={COLORS.pink} />
       </svg>
       <AbsoluteFill style={{clipPath: `path('${wavePath(edge, phase, amp)}')`}}>{children}</AbsoluteFill>
     </AbsoluteFill>

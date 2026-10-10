@@ -1,6 +1,7 @@
 import React from 'react';
 import {Easing, Img, interpolate, random, useCurrentFrame} from 'remotion';
 import {PHOTOS, TIMING, VIDEO} from '../config';
+import {dotPattern} from './Halftone';
 import {PhotoPlaceholder} from './PhotoPlaceholder';
 
 const GRID_SIZE = PHOTOS.grid.cols * PHOTOS.grid.rows;
@@ -118,8 +119,11 @@ export const FallingPhoto: React.FC<Props> = ({index, src}) => {
         opacity,
       }}
     >
+      {/* Sombra em pontos (pop art) */}
+      <div style={{position: 'absolute', inset: 0, borderRadius: radius, transform: 'translate(18px, 22px)', ...dotPattern('rgba(42, 4, 24, 0.55)', 12, 3.4)}} />
       <div
         style={{
+          position: 'relative',
           width: '100%',
           height: '100%',
           borderRadius: radius,
@@ -134,6 +138,8 @@ export const FallingPhoto: React.FC<Props> = ({index, src}) => {
         ) : (
           <PhotoPlaceholder index={index} />
         )}
+        {/* Textura de meio-tom e reflexo, como foto impressa */}
+        <div style={{position: 'absolute', inset: 0, ...dotPattern('rgba(90, 11, 51, 0.35)', 8, 1.6), mixBlendMode: 'multiply'}} />
       </div>
     </div>
   );

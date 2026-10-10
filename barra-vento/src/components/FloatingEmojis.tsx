@@ -35,7 +35,7 @@ export const FloatingEmojis: React.FC<{start: number}> = ({start}) => {
               fontFamily: FONT_FAMILY,
               opacity: Math.min(1, p * 1.5),
               transform: `perspective(800px) rotateY(${Math.sin(t * 1.1 + ph) * 25}deg) rotate(${Math.sin(t * 1.4 + ph) * 12}deg) scale(${p})`,
-              filter: 'drop-shadow(0 16px 20px rgba(11, 61, 30, 0.22))',
+              filter: 'drop-shadow(0 16px 20px rgba(90, 11, 51, 0.22))',
             }}
           >
             {emoji}

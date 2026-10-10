@@ -4,6 +4,7 @@ import {FULL_TEXT, PHOTOS, TEXT_GROUPS, TextGroup as Group, TIMING, Token, VIDEO
 import {MUSIC_SRC, PHOTO_FILES} from './assets';
 import {useFontsReady} from './fonts';
 import {EndCard} from './components/EndCard';
+import {ScreenTone} from './components/Halftone';
 import {Show} from './components/Show';
 import {WaveTransition} from './components/WaveTransition';
 import {photoSrc} from './scenes/PhotoLayers';
@@ -86,6 +87,9 @@ export const BarraVento: React.FC = () => {
           <EndCard photos={[0, 1, 2].map((i) => photoSrc(PHOTO_FILES, i + 3))} />
         </AbsoluteFill>
       </Show>
+
+      {/* Retícula fina sobre o vídeo todo */}
+      <ScreenTone />
 
       {MUSIC_SRC ? (
         <Html5Audio

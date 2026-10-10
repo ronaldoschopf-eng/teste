@@ -9,7 +9,7 @@ type Props = {
   to: {x: number; y: number}; // ponta do cursor no momento do clique
 };
 
-// Mão/cursor que entra numa curva, "clica" (aperta) e solta um ripple verde.
+// Mão/cursor que entra numa curva, "clica" (aperta) e solta um ripple rosa.
 export const Cursor: React.FC<Props> = ({enter, click, from, to}) => {
   const frame = useCurrentFrame();
   if (frame < enter) return null;
@@ -47,11 +47,11 @@ export const Cursor: React.FC<Props> = ({enter, click, from, to}) => {
         <path
           d="M8 0 C 18 0 24 8 24 18 L 24 70 C 28 62 42 60 48 70 C 52 62 66 62 70 74 C 76 66 90 68 92 80 L 92 122 C 92 150 74 170 46 170 L 34 170 C 16 170 4 158 -6 140 L -26 100 C -32 88 -18 78 -8 88 L -8 88 L -8 18 C -8 8 -2 0 8 0 Z"
           fill="#FFFFFF"
-          stroke={COLORS.nearBlack}
+          stroke={COLORS.ink}
           strokeWidth={7}
           strokeLinejoin="round"
         />
-        <path d="M24 70 L24 104 M48 70 L48 104 M70 74 L70 106" stroke={COLORS.nearBlack} strokeWidth={6} strokeLinecap="round" />
+        <path d="M24 70 L24 104 M48 70 L48 104 M70 74 L70 106" stroke={COLORS.ink} strokeWidth={6} strokeLinecap="round" />
       </svg>
     </div>
   );
@@ -77,8 +77,8 @@ export const Ripple: React.FC<{x: number; y: number; start: number}> = ({x, y, s
               width: r * 2,
               height: r * 2,
               borderRadius: '50%',
-              border: `${10 * (1 - p) + 2}px solid ${COLORS.green}`,
-              background: d === 0 ? `rgba(31, 122, 58, ${0.18 * (1 - p)})` : undefined,
+              border: `${10 * (1 - p) + 2}px solid ${COLORS.pink}`,
+              background: d === 0 ? `rgba(255, 31, 122, ${0.18 * (1 - p)})` : undefined,
               opacity: 1 - p,
             }}
           />
