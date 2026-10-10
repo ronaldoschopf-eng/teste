@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#000000">
+  <title>Fotos Disponíveis — Formas</title>
+
+  <!-- Reaproveita a fonte, o palco e os controles da versão P&B -->
+  <link rel="stylesheet" href="css/texto-pb.css">
+  <style>
+    .stage canvas { position: absolute; inset: 0; width: 1080px; height: 1920px; }
+  </style>
+</head>
+<body>
+  <main class="viewport">
+    <!-- Palco em 1080 × 1920 px: tudo é desenhado no canvas, branco sobre preto. -->
+    <div class="stage" id="stage" role="img" aria-label="Animação em preto e branco: Fotos Disponíveis.">
+      <canvas width="1080" height="1920"></canvas>
+    </div>
+
+    <nav class="controls" aria-label="Controles da pré-visualização">
+      <span class="controls__time" data-ref="time">0.0</span>
+      <button type="button" data-ref="pause" aria-keyshortcuts="Space">Pausar</button>
+      <button type="button" data-ref="restart" aria-keyshortcuts="R">↻ Reiniciar</button>
+    </nav>
+  </main>
+
+  <script src="js/texto-formas.js"></script>
+</body>
+</html>

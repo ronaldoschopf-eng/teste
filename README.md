@@ -54,6 +54,19 @@ Uma animação curta, de 6 s, só com o texto **Fotos Disponíveis** (só as ini
 | 0,8–2,6 s | `Disponíveis` sobe e o espaço entre as letras se fecha até -50. |
 | 0–6 s | Zoom lento e contínuo no título. |
 
+## Versão com formas (`texto-formas.html`)
+
+Recriação de uma animação de referência, com **Fotos Disponíveis** no lugar do texto original: branco sobre preto, na mesma fonte, tamanho e espaçamento da versão P&B. Tudo é desenhado num canvas e roda em loop de 74 quadros a 30 fps (≈ 2,47 s). O vídeo [`video/fotos-disponiveis-formas.mp4`](video/fotos-disponiveis-formas.mp4) tem dois ciclos (≈ 4,9 s), como a referência. Para gerar de novo, rode `npm run render:formas`.
+
+| Quadros | O que acontece |
+| --- | --- |
+| 0–7 | O texto some. |
+| 5–20 | Três arcos entram de fora girando, encolhem e engrossam até virar três pontos. |
+| 20–32 | Os pontos giram devagar em triângulo e param. |
+| 32–38 | Os pontos se esticam em barras verticais, que caem e afinam. |
+| 37–58 | Pedaços das letras se encaixam do centro para as bordas, com traços curvos, tracinhos e pontos que se desenham e somem. |
+| 58–74 | Texto parado. |
+
 ## Linha do tempo
 
 | Cena | Tempo | O que acontece |
