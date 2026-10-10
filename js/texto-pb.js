@@ -16,7 +16,7 @@
   const DURATION = 6000;
   const STAGE_W = 1080;
   const STAGE_H = 1920;
-  const TITLE_W = 880;                          // largura de "Disponíveis" no fim
+  const TITLE_W = 528;                          // largura de "Disponíveis" no fim
   const SPACING = -0.05;                        // espaçamento entre letras: -50 (milésimos de em)
 
   const params = new URLSearchParams(location.search);
