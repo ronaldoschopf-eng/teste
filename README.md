@@ -56,7 +56,7 @@ Uma animação curta, de 6 s, só com o texto **Fotos Disponíveis** (só as ini
 
 ## Versão com formas (`texto-formas.html`)
 
-Recriação de uma animação de referência, em laranja `#EA622F` e branco, com a mesma fonte, tamanho e espaçamento da versão P&B. Tudo é desenhado num canvas, em ciclos de 74 quadros a 30 fps (≈ 2,47 s). O vídeo [`video/fotos-disponiveis-formas.mp4`](video/fotos-disponiveis-formas.mp4) tem 5,0 s:
+Recriação de uma animação de referência, em laranja `#EA622F` e branco, com a mesma fonte, tamanho e espaçamento da versão P&B. Tudo é desenhado num canvas, em ciclos de 74 quadros a 30 fps (≈ 2,47 s). O vídeo [`video/fotos-disponiveis-formas.mp4`](video/fotos-disponiveis-formas.mp4) tem 4,9 s:
 
 1. um ciclo com **4º Festival Barra Vento de Capoeira** (três linhas), branco sobre laranja. Depois que as letras se montam, um marca-texto rosa `#D12384` se desenha da esquerda para a direita atrás de **Capoeira**;
 2. a tela vira branca a partir do centro e, logo em seguida, sem as formas, **Fotos Disponíveis** é datilografado em laranja letra por letra (máquina de escrever), com um cursor;
