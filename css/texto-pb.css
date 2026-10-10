@@ -65,7 +65,8 @@ html, body {
   justify-content: center;
   white-space: nowrap;
   font-size: var(--fs, 200px);
-  letter-spacing: 0.02em;
+  letter-spacing: -0.05em;   /* -50 */
+  margin-right: 0.05em;      /* compensa o espaço após a última letra */
 }
 .word--small {
   font-size: var(--fs-small, 120px);
@@ -75,12 +76,13 @@ html, body {
 .ch {
   display: inline-block;
   overflow: hidden;
-  padding: 0.12em 0 0.06em;
-  margin: -0.12em 0 -0.06em;
+  /* folga para acentos, descendentes e o espaçamento negativo não cortarem */
+  padding: 0.12em 0.2em 0.3em;
+  margin: -0.12em -0.2em -0.3em;
 }
 .ch > span {
   display: inline-block;
-  transform: translateY(110%);
+  transform: translateY(130%);
   will-change: transform;
 }
 

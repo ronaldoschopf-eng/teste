@@ -46,12 +46,12 @@ Cada quadro é renderizado de forma determinística (`window.story.seek(t)`), en
 
 ## Versão em preto e branco (`texto-pb.html`)
 
-Uma animação curta, de 6 s, só com o texto **FOTOS DISPONÍVEIS**, branco sobre preto, sem nenhum outro elemento. A fonte é a **Batica Sans Regular** (`fonts/batica-sans-regular.otf`), carregada localmente. Abra `texto-pb.html`; os controles e os parâmetros `?t=` e `?clean` funcionam como no story principal. O vídeo pronto está em [`video/fotos-disponiveis-pb.mp4`](video/fotos-disponiveis-pb.mp4) (7 s, com 1 s de tela final). Para gerar de novo, rode `npm run render:pb`.
+Uma animação curta, de 6 s, só com o texto **Fotos Disponíveis** (só as iniciais maiúsculas), branco sobre preto, sem nenhum outro elemento. A fonte é a **Batica Sans Regular** (`fonts/batica-sans-regular.otf`), carregada localmente, com espaçamento entre letras de -50 (`-0.05em`) e as duas palavras no mesmo tamanho. Abra `texto-pb.html`; os controles e os parâmetros `?t=` e `?clean` funcionam como no story principal. O vídeo pronto está em [`video/fotos-disponiveis-pb.mp4`](video/fotos-disponiveis-pb.mp4) (7 s, com 1 s de tela final). Para gerar de novo, rode `npm run render:pb`.
 
 | Tempo | O que acontece |
 | --- | --- |
-| 0,2–1,3 s | `FOTOS` sobe letra por letra de dentro de uma máscara. |
-| 0,8–2,6 s | `DISPONÍVEIS` sobe e o espaço entre as letras se fecha. |
+| 0,2–1,3 s | `Fotos` sobe letra por letra de dentro de uma máscara. |
+| 0,8–2,6 s | `Disponíveis` sobe e o espaço entre as letras se fecha até -50. |
 | 0–6 s | Zoom lento e contínuo no título. |
 
 ## Linha do tempo

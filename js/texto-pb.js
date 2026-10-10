@@ -3,8 +3,8 @@
    --------------------------------------------------------------------------
    Só o texto, branco sobre preto. Tudo é uma função pura do tempo: render(t).
 
-     0,2–1,3 s  "FOTOS" sobe letra por letra de dentro de uma máscara
-     0,8–2,6 s  "DISPONÍVEIS" sobe e o espaçamento entre letras se fecha
+     0,2–1,3 s  "Fotos" sobe letra por letra de dentro de uma máscara
+     0,8–2,6 s  "Disponíveis" sobe e o espaçamento entre letras se fecha
      0,0–6,0 s  zoom lento contínuo no título
 
    Parâmetros de URL: ?t=<ms> congela um quadro · ?clean esconde os controles
@@ -16,8 +16,8 @@
   const DURATION = 6000;
   const STAGE_W = 1080;
   const STAGE_H = 1920;
-  const TITLE_W = 880;                          // largura de "DISPONÍVEIS" no fim
-  const SPACING = 0.12;                         // espaçamento final de "DISPONÍVEIS" (em)
+  const TITLE_W = 880;                          // largura de "Disponíveis" no fim
+  const SPACING = -0.05;                        // espaçamento entre letras: -50 (milésimos de em)
 
   const params = new URLSearchParams(location.search);
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -50,13 +50,13 @@
   const bigCh = [...big.querySelectorAll('.ch > span')];
   const smallCh = [...small.querySelectorAll('.ch > span')];
 
-  /** ajusta os tamanhos de fonte para "DISPONÍVEIS" ocupar TITLE_W */
+  /** ajusta o tamanho da fonte para "Disponíveis" ocupar TITLE_W */
   function layout() {
     setSpacing(SPACING);
     stage.style.setProperty('--fs-small', '100px');
     const fsSmall = 100 * (TITLE_W / small.offsetWidth);
     stage.style.setProperty('--fs-small', `${fsSmall.toFixed(1)}px`);
-    stage.style.setProperty('--fs', `${(fsSmall * 1.95).toFixed(1)}px`);
+    stage.style.setProperty('--fs', `${fsSmall.toFixed(1)}px`);
   }
 
   function fitStage() {
@@ -72,7 +72,7 @@
     const still = reduceMotion.matches;
     bigCh.forEach((c, i) => setLetter(c, prog(t, 200 + i * 80, 750), still));
     smallCh.forEach((c, i) => setLetter(c, prog(t, 800 + i * 45, 700), still));
-    setSpacing(still ? SPACING : lerp(0.6, SPACING, prog(t, 800, 1800, E.outCubic)));
+    setSpacing(still ? SPACING : lerp(0.25, SPACING, prog(t, 800, 1800, E.outCubic)));
     const zoom = still ? 1 : 1 + 0.035 * clamp(t / DURATION);
     title.style.transform = `translateY(-50%) scale(${zoom.toFixed(4)})`;
   }
@@ -80,7 +80,7 @@
   // a margem negativa compensa o espaço após a última letra (centraliza)
   function setSpacing(em) {
     small.style.letterSpacing = `${em.toFixed(4)}em`;
-    small.style.marginRight = `-${em.toFixed(4)}em`;
+    small.style.marginRight = `${(-em).toFixed(4)}em`;
   }
 
   function setLetter(el, p, still) {
@@ -88,7 +88,7 @@
       el.style.transform = 'none';
       el.style.opacity = p.toFixed(3);
     } else {
-      el.style.transform = `translateY(${((1 - p) * 110).toFixed(2)}%)`;
+      el.style.transform = `translateY(${((1 - p) * 130).toFixed(2)}%)`;
       el.style.opacity = '1';
     }
   }
@@ -145,7 +145,7 @@
   const FONTS = ['400 200px "Batica Sans"'];
   const fontsReady = document.fonts && document.fonts.load
     ? Promise.race([
-      Promise.all(FONTS.map((f) => document.fonts.load(f, 'FOTOS DISPONÍVEIS').catch(() => null)))
+      Promise.all(FONTS.map((f) => document.fonts.load(f, 'Fotos Disponíveis').catch(() => null)))
         .then(() => document.fonts.ready),
       new Promise((r) => setTimeout(r, 2500)),
     ])
