@@ -14,7 +14,7 @@
      f 58–74   texto parado
 
    A peça tem um ciclo de "Fotos Disponíveis" e um segundo em que a tela
-   vira branca a partir do centro (f 1–11) e "Link na BIO" se monta em preto
+   vira branca a partir do centro (f 1–11) e "Link na BIO" se monta em laranja
    com o mesmo movimento, terminando parado por mais 1 s.
 
    As medidas da referência foram convertidas para U (o tamanho de fonte da
@@ -42,9 +42,12 @@
   const LINE_H = 0.88;                           // entrelinha
   const FONT = '"Batica Sans", "Helvetica Neue", Arial, sans-serif';
   const WHITE = '#FFFFFF';
-  const BLACK = '#000000';
+  const ORANGE = '#EA622F';
+  const NEON = 'rgba(234, 98, 47, 0.75)';        // brilho leve em volta de "Link na BIO"
+  const ITALIC = new Set(['BIO']);               // palavras inclinadas (a fonte só tem o regular)
+  const SKEW = -0.21;                            // inclinação do itálico sintético (≈ 12°)
   let fg = WHITE;                                // cores do ciclo atual (invertidas no final)
-  let bg = BLACK;
+  let bg = ORANGE;
 
   const params = new URLSearchParams(location.search);
   const canvas = document.querySelector('canvas');
@@ -158,7 +161,7 @@
     setFont(fs);
     U = 110 * (TITLE_W / 460);                   // "famolus": 460 px de largura a 110 px de fonte
     textA = build(TEXT_A, 20251010);
-    textB = build(TEXT_B, 20251011);
+    textB = { ...build(TEXT_B, 20251011), neon: true };
   }
 
   /** posiciona as letras de uma frase (linhas centradas) e sorteia os detalhes da montagem */
@@ -175,6 +178,7 @@
       const x0 = C.x - textW(text) / 2;
       [...text].forEach((ch, i) => {
         if (ch === ' ') return;
+        const word = text.slice(text.lastIndexOf(' ', i) + 1).split(' ')[0];
         const x = x0 + ctx.measureText(text.slice(0, i)).width;
         const gm = ctx.measureText(ch);
         const gTop = baseline - gm.actualBoundingBoxAscent;
@@ -190,7 +194,7 @@
           dy: (0.1 + rnd() * 0.3) * U,
         }));
         glyphs.push({
-          ch, line: li, x, baseline, cx, cy, w, top: gTop, bot: gBot, start, bands,
+          ch, line: li, italic: ITALIC.has(word), x, baseline, cx, cy, w, top: gTop, bot: gBot, start, bands,
           arc: rnd() < 0.3 ? {
             x: cx + (rnd() - 0.5) * 0.4 * U,
             y: cy + (rnd() - 0.3) * 0.4 * U,
@@ -267,14 +271,24 @@
     });
   }
 
+  /** desenha uma letra; as palavras em itálico são inclinadas a partir da linha de base */
+  function glyph(g, x, y) {
+    if (!g.italic) return ctx.fillText(g.ch, x, y);
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.transform(1, 0, SKEW, 1, 0, 0);
+    ctx.fillText(g.ch, 0, 0);
+    ctx.restore();
+  }
+
   function drawText({ glyphs }, alpha) {
     ctx.globalAlpha = alpha;
     ctx.fillStyle = fg;
-    for (const g of glyphs) ctx.fillText(g.ch, g.x, g.baseline);
+    for (const g of glyphs) glyph(g, g.x, g.baseline);
     ctx.globalAlpha = 1;
   }
 
-  function drawAssembly({ glyphs, swooshes }, f) {
+  function drawAssembly({ glyphs, swooshes, neon }, f) {
     if (f < 36) return;
     const yoff = (1 - E.outCubic(span(f, 37, 51))) * 0.3 * U;
     ctx.fillStyle = fg;
@@ -283,16 +297,24 @@
       // a letra surge em três faixas horizontais que se encaixam
       const h = (g.bot - g.top) + 0.3 * U;
       const y0 = g.top - 0.15 * U;
-      g.bands.forEach((b, k) => {
+      ctx.save();
+      if (neon) {
+        ctx.shadowColor = NEON;
+        ctx.shadowBlur = 0.2 * fs;
+      }
+      const done = Math.max(...g.bands.map((b) => b.at)) + 4;
+      if (f >= done) glyph(g, g.x, g.baseline + yoff);   // montada: sem recorte, o brilho fica inteiro
+      else g.bands.forEach((b, k) => {
         if (f < b.at) return;
         const p = E.outCubic(span(f, b.at, b.at + 4));
         ctx.save();
         ctx.beginPath();
         ctx.rect(g.x - 0.3 * U, y0 + yoff + (h * k) / 3, g.w + 0.6 * U, h / 3 + 0.5);
         ctx.clip();
-        ctx.fillText(g.ch, g.x + b.dx * (1 - p), g.baseline + yoff + b.dy * (1 - p));
+        glyph(g, g.x + b.dx * (1 - p), g.baseline + yoff + b.dy * (1 - p));
         ctx.restore();
       });
+      ctx.restore();
 
       // traço curvo que se desenha e se recolhe
       if (g.arc) {
@@ -329,19 +351,19 @@
   function render(t) {
     const F = ((t / 1000) * FPS) % TOTAL;        // quadro na linha do tempo inteira
     ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.fillStyle = BLACK;
+    ctx.fillStyle = ORANGE;
     ctx.fillRect(0, 0, STAGE_W, STAGE_H);
     ctx.lineCap = 'round';
     ctx.textBaseline = 'alphabetic';
     setFont(fs);
 
     fg = WHITE;
-    bg = BLACK;
+    bg = ORANGE;
     let f = F % CYCLE;
     let text = textA;
     if (F >= OUTRO) {
       // último ciclo: "Fotos Disponíveis" some, a tela vira branca a partir
-      // do centro e "Link na BIO" se monta em preto com o mesmo movimento
+      // do centro e "Link na BIO" se monta em laranja com o mesmo movimento
       f = Math.min(F - OUTRO, CYCLE - 0.01);
       if (f < 7) drawText(textA, 1 - E.inOutSine(f / 7));
       const wipe = E.outCubic(span(f, 1, 11)) * Math.hypot(STAGE_W, STAGE_H) / 2;
@@ -349,7 +371,7 @@
       ctx.beginPath();
       ctx.arc(C.x, C.y, wipe + 1, 0, Math.PI * 2);
       ctx.fill();
-      fg = BLACK;
+      fg = ORANGE;
       bg = WHITE;
       text = textB;
     } else if (f < 7) {
