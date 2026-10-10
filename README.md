@@ -46,11 +46,15 @@ Cada quadro é renderizado de forma determinística (`window.story.seek(t)`), en
 
 | Cena | Tempo | O que acontece |
 | --- | --- | --- |
-| 01 · Inicialização | 0–1,5 s | A grade técnica é desenhada, o indicador central pisca e o nome do evento é digitado caractere por caractere, com uma leve "decodificação". |
-| 02 · Carregamento | 1,5–5 s | O nome sobe para o topo. A barra fina avança de 0 a 100 % por uma curva contínua que passa por 08, 17, 34, 52, 76 e 91 %. A porcentagem e o contador de registros acompanham a barra, ao lado de `PROCESSANDO REGISTROS...`. |
+| 01 · Inicialização | 0–1,5 s | Duas guias verticais finas são desenhadas, o indicador central pisca e o nome do evento é digitado caractere por caractere, com uma leve "decodificação". |
+| 02 · Carregamento | 1,5–5 s | O nome sobe para o topo. A barra fina avança de 0 a 100 % por uma curva contínua que passa por 08, 17, 34, 52, 76 e 91 %. A porcentagem acompanha a barra, ao lado de `PROCESSANDO REGISTROS...`. |
 | 03 · Conclusão | 5–6 s | A barra chega a 100 % no mesmo quadro em que a cena muda. A porcentagem pulsa, a barra engrossa com um flash branco sutil, o status passa para `PROCESSAMENTO CONCLUÍDO` e há uma pausa. |
 | 04 · Revelação | 6–8 s | O `100%` diminui e some. A barra vira a linha divisória. `FOTOS` é revelada por uma máscara horizontal (um bloco branco varre a palavra e recua) e `DISPONÍVEIS.` sobe por trás de uma máscara. |
-| 05 · Tela final | 8–10 s | O nome do evento aparece abaixo da linha, seguido da chamada secundária e da área reservada para o link. A moldura técnica some no preto. |
+| 05 · Tela final | 8–10 s | O nome do evento aparece abaixo da linha, seguido da chamada secundária e do link da galeria, [ronaldo-schopf.fotto.com.br](https://ronaldo-schopf.fotto.com.br/). As guias somem no preto. |
+
+### Paralaxe
+
+Os textos ficam em camadas com profundidades diferentes (`PARALLAX` em `js/story.js`). Duas "câmeras" percorrem a peça, uma no carregamento (0–6 s) e outra na revelação (6–10 s). Cada camada se desloca na proporção da sua profundidade, e quanto mais baixa na tela, maior a profundidade. Por isso os textos começam afastados e se acomodam em velocidades diferentes, sem se sobrepor. No fim de cada ato, todos chegam exatamente à posição final. Com `prefers-reduced-motion`, a paralaxe é desligada.
 
 Todos os elementos derivam de uma única função `render(t)` em `js/story.js`, então a sincronização é exata e qualquer instante pode ser reproduzido.
 
@@ -59,9 +63,8 @@ Todos os elementos derivam de uma única função `render(t)` em `js/story.js`, 
 Tudo se edita no `index.html`:
 
 - **Nome do evento**: as duas linhas `<span class="event__line">`. A tela final copia esse texto automaticamente.
-- **Área de link / fotógrafo**: o bloco `.cta` (`→ ACESSE A GALERIA` e `LINK / @FOTÓGRAFO`).
+- **Link da galeria**: o bloco `.cta` (o `href` e o texto em `.cta__link`).
 - **Chamada secundária**: `.final__copy`.
-- **Total de registros do contador**: `data-ref="countTotal"`.
 
 Os títulos `FOTOS` e `DISPONÍVEIS.` se ajustam sozinhos à largura útil de 888 px.
 
@@ -72,6 +75,6 @@ Os títulos `FOTOS` e `DISPONÍVEIS.` se ajustam sozinhos à largura útil de 88
   - **Anton** na mensagem principal;
   - **Archivo** condensada no nome do evento;
   - **Space Grotesk** na chamada secundária;
-  - **Space Mono** na interface, nas porcentagens e no HUD.
+  - **Space Mono** nas porcentagens e nos indicadores.
 - **Área segura**: o conteúdo fica entre y = 250 e y = 1600 px, com margens laterais de 96 px.
 - **Acessibilidade**: com `prefers-reduced-motion`, deslocamentos, máscaras, flash e piscadas viram transições só de opacidade. A barra continua avançando.

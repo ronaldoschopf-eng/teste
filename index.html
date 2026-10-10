@@ -17,7 +17,7 @@
     <!--
       Palco em 1080 × 1920 px (Instagram Stories). Tudo é posicionado nessa
       escala e o palco inteiro é reduzido proporcionalmente para caber na tela.
-      Para trocar o evento, edite as linhas em .event__name e o bloco .cta.
+      Para trocar o evento, edite as linhas em .event__name e o link em .cta.
     -->
     <div class="stage" id="stage" role="img"
          aria-label="Story animado: 4º Festival Barra Vento de Capoeira — fotos disponíveis. Os registros do evento já podem ser acessados.">
@@ -26,36 +26,16 @@
       <div class="grid" aria-hidden="true">
         <span class="grid__v grid__v--l"></span>
         <span class="grid__v grid__v--r"></span>
-        <span class="grid__h grid__h--t"></span>
-        <span class="grid__h grid__h--b"></span>
-        <span class="cross cross--tl"></span>
-        <span class="cross cross--tr"></span>
-        <span class="cross cross--bl"></span>
-        <span class="cross cross--br"></span>
       </div>
-
-      <!-- HUD superior -->
-      <header class="hud hud--top" aria-hidden="true">
-        <div class="hud__row">
-          <span>REG/SYS — V.04</span>
-          <span>TC <span data-ref="timecode">00:00:00:00</span></span>
-        </div>
-        <div class="hud__row">
-          <span class="hud__scene" data-ref="scene">01 / INICIALIZAÇÃO</span>
-          <span>12°58′S — 38°30′W</span>
-        </div>
-      </header>
 
       <!-- CENA 01 — indicador de inicialização -->
       <div class="boot" data-ref="boot" aria-hidden="true">
         <span class="boot__square" data-ref="bootSquare"></span>
         <span class="boot__label">INICIALIZANDO</span>
-        <span class="boot__line"><span data-ref="bootFill"></span></span>
       </div>
 
       <!-- Nome do evento (digitado na cena 01, sobe na cena 02) -->
       <div class="event" data-ref="event">
-        <span class="event__label">EVENTO — REG. 001</span>
         <p class="event__name" data-ref="eventName">
           <span class="event__line">4º FESTIVAL</span>
           <span class="event__line">BARRA VENTO DE CAPOEIRA</span>
@@ -70,7 +50,6 @@
         </div>
         <div class="loader__pct" data-ref="pct"><span data-ref="pctNum">00</span><span class="loader__sign" data-ref="pctSign">%</span></div>
         <div class="loader__scale" data-ref="scale"></div>
-        <div class="loader__count" data-ref="count">REGISTROS <span data-ref="countNum">0000</span> / <span data-ref="countTotal">1284</span></div>
       </div>
 
       <!-- Barra de progresso → linha divisória -->
@@ -98,20 +77,12 @@
 
         <p class="final__copy" data-ref="copy">OS REGISTROS DO EVENTO JÁ PODEM SER ACESSADOS.</p>
 
-        <!-- Área reservada: link da galeria, fotógrafo ou perfil -->
-        <div class="cta" data-ref="cta">
-          <span class="cta__label">→ ACESSE A GALERIA</span>
-          <span class="cta__slot">LINK  /  @FOTÓGRAFO</span>
-        </div>
+        <!-- Link da galeria -->
+        <a class="cta" data-ref="cta" href="https://ronaldo-schopf.fotto.com.br/" target="_blank" rel="noopener">
+          <span class="cta__label">ACESSE A GALERIA ↗</span>
+          <span class="cta__link">ronaldo-schopf.fotto.com.br</span>
+        </a>
       </section>
-
-      <!-- HUD inferior -->
-      <footer class="hud hud--bottom" aria-hidden="true">
-        <div class="hud__row">
-          <span class="seq">SEQ <span class="seq__bars" data-ref="seq"><i></i><i></i><i></i><i></i><i></i></span></span>
-          <span>ACESSO: <span data-ref="access">RESTRITO</span></span>
-        </div>
-      </footer>
 
       <span class="flash" data-ref="flash" aria-hidden="true"></span>
       <span class="blackout" data-ref="blackout" aria-hidden="true"></span>

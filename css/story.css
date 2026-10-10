@@ -52,7 +52,7 @@ html, body {
 .stage > * { position: absolute; }
 
 /* Estado inicial (antes do JS assumir) — evita flash de conteúdo */
-.boot, .event, .loader > *, .bar, .final, .hud, .grid > * { opacity: 0; }
+.boot, .event, .loader > *, .bar, .final, .grid > * { opacity: 0; }
 
 /* --- Grade técnica ------------------------------------------------------- */
 
@@ -63,38 +63,6 @@ html, body {
 .grid__v--l { left: var(--margin); }
 .grid__v--r { left: calc(1080px - var(--margin) - 1px); }
 
-.grid__h { left: 0; right: 0; height: 1px; background: var(--dark); transform-origin: 0 50%; }
-.grid__h--t { top: 250px; }
-.grid__h--b { top: 1640px; }
-
-.cross { width: 17px; height: 17px; margin: -8px 0 0 -8px; }
-.cross::before, .cross::after { content: ''; position: absolute; background: var(--grey); }
-.cross::before { left: 8px; top: 0; width: 1px; height: 17px; }
-.cross::after  { top: 8px; left: 0; height: 1px; width: 17px; }
-.cross--tl { left: var(--margin); top: 250px; }
-.cross--tr { left: calc(1080px - var(--margin)); top: 250px; }
-.cross--bl { left: var(--margin); top: 1640px; }
-.cross--br { left: calc(1080px - var(--margin)); top: 1640px; }
-
-/* --- HUD ----------------------------------------------------------------- */
-
-.hud {
-  left: var(--margin);
-  width: var(--content);
-  font: 400 19px/1 var(--f-mono);
-  letter-spacing: 0.12em;
-  color: var(--grey);
-  padding: 0 18px;
-}
-.hud--top { top: 270px; }
-.hud--bottom { top: 1662px; }
-.hud__row { display: flex; justify-content: space-between; align-items: center; height: 32px; }
-.hud__scene { color: var(--white); }
-
-.seq { display: inline-flex; align-items: center; gap: 14px; }
-.seq__bars { display: inline-flex; gap: 6px; }
-.seq__bars i { display: block; width: 26px; height: 3px; background: var(--dark); }
-.seq__bars i.is-on { background: var(--white); }
 
 /* --- Cena 01 · inicialização -------------------------------------------- */
 
@@ -109,8 +77,6 @@ html, body {
 }
 .boot__square { width: 14px; height: 14px; background: var(--white); }
 .boot__label { font: 400 18px/1 var(--f-mono); letter-spacing: 0.34em; color: var(--grey); padding-left: 0.34em; }
-.boot__line { position: relative; width: 132px; height: 1px; background: var(--dark); }
-.boot__line > span { position: absolute; inset: 0; background: var(--white); transform-origin: 0 50%; transform: scaleX(0); }
 
 /* --- Nome do evento ------------------------------------------------------ */
 
@@ -119,13 +85,6 @@ html, body {
   top: 398px;
   width: var(--content);
   padding-left: 18px;
-}
-.event__label {
-  display: block;
-  font: 400 18px/1 var(--f-mono);
-  letter-spacing: 0.24em;
-  color: var(--grey);
-  margin-bottom: 20px;
 }
 .event__name {
   margin: 0;
@@ -192,29 +151,10 @@ html, body {
   left: var(--margin);
   top: 1058px;
   width: var(--content);
-  height: 60px;
+  height: 20px;
 }
-.tick { position: absolute; top: 0; width: 1px; height: 8px; margin-left: -0.5px; background: var(--grey); }
-.tick--major { height: 16px; }
-.tick__label {
-  position: absolute;
-  top: 28px;
-  font: 400 16px/1 var(--f-mono);
-  letter-spacing: 0.08em;
-  color: var(--grey);
-  transform: translateX(-50%);
-}
-.tick__label--first { transform: none; }
-.tick__label--last { transform: translateX(-100%); }
+.tick { position: absolute; top: 0; width: 1px; height: 12px; margin-left: -0.5px; background: var(--grey); }
 
-.loader__count {
-  left: calc(var(--margin) + 18px);
-  top: 1148px;
-  font: 400 19px/1 var(--f-mono);
-  letter-spacing: 0.12em;
-  color: var(--grey);
-}
-.loader__count [data-ref="countNum"] { color: var(--white); }
 
 /* --- Barra de progresso -------------------------------------------------- */
 
@@ -290,18 +230,25 @@ html, body {
 
 .cta {
   position: relative;
-  margin-top: 48px;
-  height: 76px;
-  padding: 0 18px;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font: 400 20px/1 var(--f-mono);
-  letter-spacing: 0.14em;
-  border: 1px dashed rgba(128, 128, 128, 0.55);
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 56px;
+  padding: 26px 18px 0;
+  color: var(--white);
+  text-decoration: none;
+  border-top: 1px solid var(--dark);
 }
-.cta__label { color: var(--white); }
-.cta__slot { color: var(--grey); white-space: pre; }
+.cta__label {
+  font: 400 18px/1 var(--f-mono);
+  letter-spacing: 0.24em;
+  color: var(--grey);
+}
+.cta__link {
+  font: 500 40px/1.1 var(--f-sans);
+  letter-spacing: 0.01em;
+  color: var(--white);
+}
 
 /* --- Sobreposições ------------------------------------------------------- */
 

@@ -27,13 +27,19 @@
     [3550, 52], [4050, 76], [4550, 91], [5000, 100],
   ];
 
-  const SCENES = [
-    [0, '01 / INICIALIZAÇÃO'],
-    [1500, '02 / CARREGAMENTO'],
-    [5000, '03 / CONCLUSÃO'],
-    [6000, '04 / REVELAÇÃO'],
-    [8000, '05 / ACESSO LIBERADO'],
-  ];
+  // Paralaxe: cada camada de texto tem uma profundidade. Duas "câmeras"
+  // percorrem a peça (carregamento e revelação); o deslocamento de cada camada
+  // é profundidade × curso restante da câmera, e chega a zero no fim de cada
+  // ato. Profundidades crescem de cima para baixo, então os textos começam
+  // afastados e se acomodam em velocidades diferentes, sem se sobrepor.
+  const PARALLAX = {
+    loadRange: 220,      // px de curso da câmera no ato 1 (0–6 s)
+    revealRange: 280,    // px de curso da câmera no ato 2 (6–10 s)
+    depth: {
+      boot: 0.6, event: 0.25, pct: 0.5, loader: 0.8,
+      hl1: 0.4, hl2: 0.65, divider: 0.8, finalEvent: 0.95, copy: 1.1, cta: 1.25,
+    },
+  };
 
   const TYPE_START = 620;   // início da digitação do nome
   const TYPE_STEP = 22;     // ms por caractere
@@ -53,6 +59,7 @@
     outQuart: (p) => 1 - Math.pow(1 - p, 4),
     outExpo: (p) => (p >= 1 ? 1 : 1 - Math.pow(2, -10 * p)),
     inOutCubic: (p) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2),
+    inOutSine: (p) => (1 - Math.cos(Math.PI * p)) / 2,
     inOutQuart: (p) => (p < 0.5 ? 8 * p * p * p * p : 1 - Math.pow(-2 * p + 2, 4) / 2),
   };
   /** progresso 0→1 de t entre a e b, com easing */
@@ -110,14 +117,7 @@
   const $$ = (sel) => Array.from(stage.querySelectorAll(sel));
 
   const gridV = $$('.grid__v');
-  const gridH = $$('.grid__h');
-  const crosses = $$('.cross');
-  const huds = $$('.hud');
-  const loaderParts = [R.status, R.count];
-  const seqBars = Array.from(R.seq.children);
   const dots = Array.from(R.statusBusy.querySelectorAll('.dot'));
-
-  const TOTAL_RECORDS = parseInt(R.countTotal.textContent, 10) || 1284;
 
   // Nome do evento: cada caractere vira um <span> para a digitação.
   const eventLines = Array.from(R.eventName.querySelectorAll('.event__line'));
@@ -146,24 +146,14 @@
     return { line, inner };
   });
 
-  // Escala técnica: 21 marcas, rótulos a cada 25%.
+  // Escala técnica mínima: 5 marcas (0, 25, 50, 75, 100).
   const ticks = [];
-  for (let i = 0; i <= 20; i++) {
-    const x = (CONTENT_W * i) / 20;
-    const major = i % 5 === 0;
+  for (let i = 0; i <= 4; i++) {
     const tick = document.createElement('span');
-    tick.className = 'tick' + (major ? ' tick--major' : '');
-    tick.style.left = x + 'px';
+    tick.className = 'tick';
+    tick.style.left = (CONTENT_W * i) / 4 + 'px';
     R.scale.appendChild(tick);
-    let label = null;
-    if (major) {
-      label = document.createElement('span');
-      label.className = 'tick__label' + (i === 0 ? ' tick__label--first' : i === 20 ? ' tick__label--last' : '');
-      label.style.left = x + 'px';
-      label.textContent = pad(i * 5, 2);
-      R.scale.appendChild(label);
-    }
-    ticks.push({ tick, label, major, i });
+    ticks.push(tick);
   }
 
   /* --- layout (depende das fontes carregadas) ---------------------------- */
@@ -226,36 +216,26 @@
 
   function render(t) {
     const M = reduceMotion.matches ? 0 : 1;  // multiplicador de movimento
-    const chromeOut = seg(t, 9300, 10000, E.inOutCubic); // moldura técnica sai para o preto
+    const chromeOut = seg(t, 9300, 10000, E.inOutCubic); // guias saem para o preto
 
-    /* Grade, cruzes e HUD */
+    // câmeras da paralaxe (1 → 0)
+    const camA = M * PARALLAX.loadRange * (1 - seg(t, 0, 6000, E.inOutSine));
+    const camB = M * PARALLAX.revealRange * (1 - seg(t, 6000, 10000, E.inOutSine));
+    const D = PARALLAX.depth;
+
+    /* Guias verticais */
     const gv = seg(t, 0, 900, E.inOutQuart);
     gridV.forEach((el) => {
       tf(el, `scaleY(${M ? r2(gv) : 1})`);
       op(el, (M ? 1 : gv) * (1 - chromeOut));
     });
-    const gh = seg(t, 150, 1050, E.inOutQuart);
-    gridH.forEach((el) => {
-      tf(el, `scaleX(${M ? r2(gh) : 1})`);
-      op(el, (M ? 1 : gh) * (1 - chromeOut));
-    });
-    crosses.forEach((el) => op(el, seg(t, 400, 800) * (1 - chromeOut)));
-    huds.forEach((el) => op(el, seg(t, 200, 650) * (1 - chromeOut)));
-
-    setText(R.timecode, timecode(t));
-    let sceneIdx = 0;
-    SCENES.forEach(([start], i) => { if (t >= start) sceneIdx = i; });
-    setText(R.scene, SCENES[sceneIdx][1]);
-    seqBars.forEach((b, i) => b.classList.toggle('is-on', i <= sceneIdx));
-    setText(R.access, t >= 8000 ? 'LIBERADO' : 'RESTRITO');
 
     /* CENA 01 — indicador de inicialização */
     const bootIn = seg(t, 0, 180);
     const bootOut = seg(t, 560, 780, E.inOutCubic);
     op(R.boot, bootIn * (1 - bootOut));
-    tf(R.boot, `scale(${r2(1 - 0.06 * bootOut * M) })`);
+    tf(R.boot, `translate3d(0, ${r2(D.boot * camA)}px, 0) scale(${r2(1 - 0.06 * bootOut * M)})`);
     op(R.bootSquare, M && Math.floor(t / 140) % 2 ? 0.25 : 1);
-    tf(R.bootFill, `scaleX(${r2(seg(t, 120, 560, E.inOutCubic))})`);
 
     /* Nome do evento — digitação com leve decodificação */
     let lastOn = -1;
@@ -298,6 +278,7 @@
     const evDim = 1 - 0.5 * seg(t, 6000, 6600, E.inOutCubic); // integra-se em cinza
     const evExit = seg(t, 7900, 8350, E.inOutCubic);
     evY -= 28 * evExit * M;
+    evY += D.event * camA;
     op(R.event, (t >= TYPE_START - 40 ? evO : 0) * evDim * (1 - evExit));
     tf(R.event, `translate3d(0, ${r2(evY)}px, 0)`);
 
@@ -307,11 +288,9 @@
     const loadIn = seg(t, 1650, 2150, E.outCubic);
     const loadOut = seg(t, 6000, 6350, E.inOutCubic);
 
-    loaderParts.forEach((el, i) => {
-      const k = seg(t, 1650 + i * 120, 2150 + i * 120, E.outCubic);
-      op(el, k * (1 - loadOut));
-      tf(el, `translate3d(0, ${r2((1 - k) * 18 * M)}px, 0)`);
-    });
+    const loaderY = D.loader * camA;
+    op(R.status, loadIn * (1 - loadOut));
+    tf(R.status, `translate3d(0, ${r2((1 - loadIn) * 18 * M + loaderY)}px, 0)`);
 
     // status: PROCESSANDO… → PROCESSAMENTO CONCLUÍDO
     const swapOut = seg(t, 5000, 5260, E.inOutCubic);
@@ -329,19 +308,14 @@
     const bump = pulse(t, 5000, 5520);           // destaque em 100%
     const pctOut = seg(t, 6000, 6420, E.inOutCubic);
     op(R.pct, loadIn * (1 - pctOut));
-    tf(R.pct, `translate3d(0, ${r2(((1 - loadIn) * 22 - 34 * pctOut) * M)}px, 0) scale(${r2((1 + 0.09 * bump * M) * (1 - 0.32 * pctOut * M) * 1000) / 1000})`);
-
-    // contador de registros
-    setText(R.countNum, pad(Math.round((TOTAL_RECORDS * p) / 100), 4));
+    tf(R.pct, `translate3d(0, ${r2(((1 - loadIn) * 22 - 34 * pctOut) * M + D.pct * camA)}px, 0) scale(${r2((1 + 0.09 * bump * M) * (1 - 0.32 * pctOut * M) * 1000) / 1000})`);
 
     // escala técnica
     op(R.scale, 1);
-    ticks.forEach(({ tick, label, major, i }) => {
-      const k = seg(t, 1800 + i * 16, 1980 + i * 16);
-      const settle = 1 - 0.55 * seg(t, 5400, 5900);
-      const v = k * settle * (1 - loadOut) * (major ? 1 : 0.6);
-      op(tick, v);
-      if (label) op(label, v);
+    tf(R.scale, `translate3d(0, ${r2(loaderY)}px, 0)`);
+    ticks.forEach((tick, i) => {
+      const k = seg(t, 1850 + i * 60, 2050 + i * 60);
+      op(tick, k * (1 - 0.6 * seg(t, 5400, 5900)) * (1 - loadOut));
     });
 
     /* Barra → linha divisória */
@@ -350,7 +324,8 @@
     let barY;
     let barO;
     if (M) {
-      barY = L.dividerDelta * toDivider;
+      // parte acompanhando o carregamento, termina como divisória do ato 2
+      barY = lerp(loaderY, L.dividerDelta + D.divider * camB, toDivider);
       barO = 1;
     } else {
       barY = t < 6300 ? 0 : L.dividerDelta;
@@ -371,6 +346,9 @@
 
     /* CENA 04 — revelação */
     op(R.final, t >= 6000 ? 1 : 0);
+    tf(R.hl1, `translate3d(0, ${r2(D.hl1 * camB)}px, 0)`);
+    tf(R.hl2, `translate3d(0, ${r2(D.hl2 * camB)}px, 0)`);
+    tf(R.finalEvent, `translate3d(0, ${r2(D.finalEvent * camB)}px, 0)`);
 
     // FOTOS: bloco branco varre da esquerda, revela o texto e recua
     const wipeA = seg(t, 6250, 6620, E.inOutQuart);
@@ -416,10 +394,10 @@
     });
     const copyIn = seg(t, 8550, 9100, E.outCubic);
     op(R.copy, copyIn);
-    tf(R.copy, `translate3d(0, ${r2(16 * (1 - copyIn) * M)}px, 0)`);
+    tf(R.copy, `translate3d(0, ${r2(16 * (1 - copyIn) * M + D.copy * camB)}px, 0)`);
     const ctaIn = seg(t, 8850, 9400, E.outCubic);
     op(R.cta, ctaIn);
-    tf(R.cta, `translate3d(0, ${r2(16 * (1 - ctaIn) * M)}px, 0)`);
+    tf(R.cta, `translate3d(0, ${r2(16 * (1 - ctaIn) * M + D.cta * camB)}px, 0)`);
 
     // ?fade → fecha totalmente em preto (para gravação em loop)
     op(R.blackout, params.has('fade') ? seg(t, 9400, 10000, E.inOutCubic) : 0);
@@ -427,13 +405,6 @@
     /* Controles */
     setText(R.ctrlTime, `${(t / 1000).toFixed(1).padStart(4, '0')} / ${(DURATION / 1000).toFixed(1)}`);
     tf(R.ctrlFill, `scaleX(${(t / DURATION).toFixed(4)})`);
-  }
-
-  function timecode(t) {
-    const totalFrames = Math.floor((t / 1000) * 30);
-    const ff = totalFrames % 30;
-    const ss = Math.floor(totalFrames / 30);
-    return `00:00:${pad(ss, 2)}:${pad(ff, 2)}`;
   }
 
   /* --- relógio ----------------------------------------------------------- */
