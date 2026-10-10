@@ -91,11 +91,11 @@ Animação da logo em 1080 × 1350 px, 9 s, em [`logo/index.html`](logo/index.ht
 
 | Tempo | O que acontece |
 | --- | --- |
-| 0–2,3 s | A câmera começa próxima e inclinada e recua, abrindo espaço. A base branca surge como um ponto, vira uma linha, se abre em retângulo e inclina. A faixa laranja entra por trás da base. |
+| 0–2,3 s | A câmera começa próxima e inclinada e recua, abrindo espaço. A base branca surge como um ponto, vira uma linha, se abre em retângulo e inclina, sobre fundo preto. |
 | 2,3–4,9 s | `RONALDO` e `SCHOPF` são datilografados letra por letra, com cursor, batida em cada tecla e tranco do carro. No O, a estrela gira e se abre. |
-| 5,0–6,7 s | A estrela pulsa, uma cópia sobe da letra O e se transforma em uma estrela de 5 pontas. |
-| 6,7–9 s | Ela se divide em 5 estrelas, que pousam em arco sobre a logo e cintilam. |
+| 5,0–6,7 s | A estrela pulsa e uma cópia sobe da letra O, girando como uma moeda, passando de magenta a branco e encolhendo. |
+| 6,7–9 s | Ela se divide em 5 estrelas idênticas à do O (mesmo formato e inclinação), que pousam em arco sobre a logo e cintilam. |
 
-Cores: magenta `#B4407F`, branco `#FFFFFF`, laranja `#D4693F` / `#B9573A`. Fonte: Six Caps (Google Fonts), esticada para preencher a largura e inclinada junto com o cartão.
+Cores: magenta `#B4407F`, branco `#FFFFFF`, fundo preto `#000000`. Fonte: Six Caps (Google Fonts), esticada para preencher a largura e inclinada junto com o cartão.
 
 `?t=6500` congela um quadro, `?clean` esconde os controles, `R` repete. Para gerar o vídeo de novo: `npm run render:logo`.
