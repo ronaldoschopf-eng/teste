@@ -91,10 +91,10 @@ Animação da logo em 1080 × 1350 px, 9 s, em [`logo/index.html`](logo/index.ht
 
 | Tempo | O que acontece |
 | --- | --- |
-| 0–2,3 s | A câmera começa próxima e inclinada e recua, abrindo espaço. A base branca surge como um ponto, vira uma linha, se abre em retângulo e inclina, sobre fundo preto. |
+| 0–2,3 s | A câmera começa próxima e inclinada e recua, abrindo espaço. A base branca surge como um ponto, vira uma linha, se abre em retângulo e inclina, sobre fundo preto. Uma retícula (halftone) magenta surge junto: um halo em volta do cartão e uma sombra retícula deslocada para baixo e à direita. |
 | 2,3–4,9 s | `RONALDO` e `SCHOPF` são datilografados letra por letra, com cursor, batida em cada tecla e tranco do carro. No O, a estrela gira e se abre. |
-| 5,0–6,7 s | A estrela pulsa e uma cópia sobe da letra O, girando como uma moeda, passando de magenta a branco e encolhendo. |
-| 6,7–9 s | Ela se divide em 5 estrelas idênticas à do O (mesmo formato e inclinação), que pousam em arco sobre a logo e cintilam. |
+| 5,0–6,7 s | A estrela pulsa, uma cópia sobe da letra O (soltando uma onda na retícula) e se transforma em uma estrela de 5 pontas. |
+| 6,7–9 s | Ela se divide em 5 estrelas, com uma nova onda na retícula, que pousam em arco sobre a logo e cintilam. |
 
 Cores: magenta `#B4407F`, branco `#FFFFFF`, fundo preto `#000000`. Fonte: Six Caps (Google Fonts), esticada para preencher a largura e inclinada junto com o cartão.
 

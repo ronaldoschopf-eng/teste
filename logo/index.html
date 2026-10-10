@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Six+Caps&display=swap">
 <style>
   /* Palco 1080 × 1350 (4:5). Cartão branco inclinado no centro sobre fundo
-     preto, estrelas sobre o topo. Peça de visual único (escuro). */
+     preto com retícula (halftone), estrelas sobre o topo. Peça de visual único (escuro). */
   :root {
     --magenta: #b4407f;
     --white: #ffffff;
@@ -33,11 +33,12 @@
   .camera { inset: 0; transform-origin: 540px 800px; will-change: transform; }
 
 
+  .tone { left: -80px; top: -80px; width: 1240px; height: 1510px; }
   .card {
     left: 220px; top: 400px; width: 640px; height: 800px;
     background: var(--white); border-radius: 58px;
     transform-origin: 50% 50%;
-      }
+  }
   .line { left: 60px; height: 0; overflow: visible; }
   .line__inner { left: 0; white-space: nowrap; transform-origin: 0 0; font-family: var(--display); color: var(--magenta); -webkit-text-stroke: .03em var(--magenta); }
   .line__inner > * { position: relative; display: inline-block; vertical-align: baseline; transform-origin: 50% 100%; }
@@ -45,7 +46,7 @@
   .oglyph path { fill: var(--magenta); }
 
   .fx { inset: 0; width: 1080px; height: 1350px; overflow: visible; }
-  .fx path { fill: var(--white); }
+  .fx path { fill: var(--white); stroke: var(--white); stroke-linejoin: round; }
   .fx .halo { fill: url(#halo); stroke: none; }
 
   .controls {
@@ -68,8 +69,9 @@
 </head>
 <body>
 <main class="viewport">
-  <div class="stage" id="stage" role="img" aria-label="Logo animada Ronaldo Schopf: um cartão branco inclinado recebe o nome em magenta, letra por letra, e a estrela da letra O se multiplica em cinco estrelas iguais acima da logo.">
+  <div class="stage" id="stage" role="img" aria-label="Logo animada Ronaldo Schopf: um cartão branco inclinado recebe o nome em magenta, letra por letra, e a estrela da letra O vira cinco estrelas acima da logo.">
     <div class="camera" id="camera">
+      <canvas class="tone" id="tone" width="1240" height="1510" aria-hidden="true"></canvas>
       <div class="card" id="card">
         <div class="line" id="line1"><div class="line__inner"></div></div>
         <div class="line" id="line2"><div class="line__inner"></div></div>
@@ -97,8 +99,8 @@
    ser reproduzido (?t=6500) e o vídeo é exportado sem quadros perdidos.
    0–2300   câmera recua e o cartão branco se abre e inclina
    2300–4900 RONALDO / SCHOPF datilografados; a estrela gira dentro do O
-   5300–6500 uma cópia da estrela sobe, gira e encolhe
-   6750–8000 ela se divide em 5 estrelas iguais acima da logo
+   5200–6600 uma cópia da estrela sobe e vira estrela de 5 pontas
+   6700–8000 ela se divide em 5 estrelas acima da logo
    ?clean esconde os controles · ?t=<ms> congela um quadro · R repete */
 (() => {
   'use strict';
@@ -114,10 +116,7 @@
   const STAR_FINAL = [                      // 5 estrelas em arco acima do cartão
     [372, 262], [486, 228], [600, 216], [714, 228], [828, 262],
   ];
-  const STAR_C = [600, 262];                // onde a estrela se divide
-  const STAR_H = 150;                       // altura de cada estrela final (px)
-  const SKEW_K = Math.tan((SKEW * Math.PI) / 180);
-  const starScale = () => STAR_H / 2 / oStar.ry;
+  const STAR_R = 46;
 
   const params = new URLSearchParams(location.search);
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -140,6 +139,22 @@
     const p = 0.72;
     return Math.pow(Math.pow(Math.abs(Math.cos(a)) / rx, p) + Math.pow(Math.abs(Math.sin(a)) / ry, p), -1 / p);
   };
+  // Estrela de 5 pontas: raio do contorno na direção a.
+  const PENTA = Array.from({ length: 10 }, (_, i) => {
+    const ang = -Math.PI / 2 + (i * Math.PI) / 5, r = i % 2 ? 0.46 : 1;
+    return [Math.cos(ang) * r, Math.sin(ang) * r];
+  });
+  const pentaR = (a, R) => {
+    const dx = Math.cos(a), dy = Math.sin(a);
+    for (let i = 0; i < 10; i++) {
+      const [x1, y1] = PENTA[i], [x2, y2] = PENTA[(i + 1) % 10];
+      const ex = x2 - x1, ey = y2 - y1, den = dx * ey - dy * ex;
+      if (Math.abs(den) < 1e-9) continue;
+      const s = (x1 * ey - y1 * ex) / den, u = (x1 * dy - y1 * dx) / den;
+      if (s > 0 && u >= -1e-9 && u <= 1 + 1e-9) return s * R;
+    }
+    return R * 0.46;
+  };
   const N = 200;
   const shapePath = (cx, cy, radius, rot = 0) => {
     let d = '';
@@ -150,6 +165,10 @@
     }
     return d + 'Z';
   };
+  const pentaPath = (cx, cy, R) => {
+    return PENTA.map(([x, y], i) => (i ? 'L' : 'M') + (cx + x * R).toFixed(2) + ' ' + (cy + y * R).toFixed(2)).join('') + 'Z';
+  };
+
   /* --- montagem das letras -------------------------------------------- */
   const letters = [];            // { el, line, at }
   let oStar = null;              // { cx, cy, rx, ry } no palco, com cartão em repouso
@@ -233,6 +252,59 @@
     return p;
   });
 
+  /* --- retícula (halftone) ----------------------------------------------
+     Pontos magenta numa grade a 45°, como impressão em retícula. O tamanho
+     de cada ponto vem de um campo de intensidade: um halo em volta do
+     cartão, a "sombra" retícula do cartão deslocada para baixo e à direita
+     e ondas que partem da estrela quando ela sai do O e quando se divide. */
+  const tone = $('tone'), tctx = tone.getContext('2d');
+  const TONE_OFF = 80, CELL = 19;
+  const smooth = (a, b, v) => { const x = clamp((v - a) / (b - a)); return x * x * (3 - 2 * x); };
+  function drawTone(t, cardT) {
+    const { j, sk, sx, sy } = cardT;
+    tctx.setTransform(1, 0, 0, 1, 0, 0);
+    tctx.clearRect(0, 0, tone.width, tone.height);
+    const show = E.outCubic(seg(t, 500, 2300));
+    if (show <= 0) return;
+    tctx.translate(TONE_OFF, TONE_OFF);
+    tctx.fillStyle = '#b4407f';
+    const tk = Math.tan((sk * Math.PI) / 180);
+    // distância (px, positiva para dentro) de um ponto à forma do cartão
+    const inCard = (x, y) => {
+      const y1 = y - 400 - CARD.h / 2, x1 = x - j - tk * y1 - 540;
+      const x0 = x1 / Math.max(sx, 1e-3), y0 = y1 / Math.max(sy, 1e-3);
+      return Math.min(CARD.w / 2 - Math.abs(x0), CARD.h / 2 - Math.abs(y0));
+    };
+    const ring = (d, t0, speed, w, amp) => {
+      const e = t - t0;
+      if (e < 0 || e > 2400) return 0;
+      const r = (e / 1000) * speed;
+      return amp * Math.exp(-Math.pow((d - r) / w, 2)) * (1 - e / 2400);
+    };
+    const drift = t / 1000;
+    const c45 = Math.SQRT1_2, R = 1100;
+    for (let u = -R; u <= R; u += CELL) {
+      for (let v = -R; v <= R; v += CELL) {
+        const x = 540 + (u - v) * c45, y = 760 + (u + v) * c45;
+        if (x < -TONE_OFF || x > 1080 + TONE_OFF || y < -TONE_OFF || y > 1350 + TONE_OFF) continue;
+        const dx = (x - 560) / 560, dy = (y - 800) / 640;
+        const dist = Math.hypot(dx, dy);
+        let I = 0.4 * (1 - smooth(0.25, 1.0, dist)) * (0.9 + 0.1 * Math.sin(drift * 1.3 + dx * 3 + dy * 2));
+        I = Math.max(I, 0.95 * smooth(-30, 60, inCard(x - 38, y - 44)));   // sombra retícula
+        if (oStar) {
+          I += ring(Math.hypot(x - oStar.cx, y - oStar.cy), 5300, 650, 60, 0.5);
+          I += ring(Math.hypot(x - 600, y - 262), 6750, 750, 70, 0.55);
+        }
+        I = clamp(I * show);
+        const r = CELL * 0.5 * Math.sqrt(I);
+        if (r < 0.6) continue;
+        tctx.beginPath();
+        tctx.arc(x, y, r, 0, Math.PI * 2);
+        tctx.fill();
+      }
+    }
+  }
+
   function render(t) {
     // 1 · câmera recua e dá espaço ao cartão
     const cam = E.outQuint(seg(t, 150, 2300));
@@ -251,6 +323,7 @@
     card.style.transform =
       `translate(${jolt.toFixed(2)}px, 0) skewX(${(SKEW * tilt).toFixed(3)}deg) scale(${lerp(0.02, 1, open1).toFixed(4)}, ${lerp(0.012, 1, open2).toFixed(4)})`;
     card.style.borderRadius = lerp(4, 58, open2).toFixed(1) + 'px';
+    drawTone(t, { j: jolt, sk: SKEW * tilt, sx: lerp(0.02, 1, open1), sy: lerp(0.012, 1, open2) });
 
     // 3 · datilografia
     let last = -1;
@@ -285,23 +358,24 @@
     caret.style.height = cb.h + 'px';
     caret.style.transform = `translate(${cb.x.toFixed(1)}px, ${cb.y}px)`;
 
-    // 4 · cópia da estrela sobe, gira, encolhe e se divide em 5 iguais a ela
-    const rise = E.inOutCubic(seg(t, 5300, 6500));
+    // 4 · cópia da estrela sobe, vira 5 pontas e se divide em 5
+    const rise = E.inOutCubic(seg(t, 5300, 6400));
+    const shape = E.inOutCubic(seg(t, 5800, 6700));
     const split = seg(t, 6750, 8000);
-    const skewM = (y) => `matrix(1, 0, ${SKEW_K.toFixed(4)}, 1, ${(-SKEW_K * y).toFixed(2)}, 0)`;
-    // flip = giro em torno do eixo vertical (como moeda): só a largura varia
-    const starD = (x, y, s, flip = 0) => shapePath(x, y, (a) => sparkleR(a, oStar.rx * s * Math.max(0.12, Math.abs(Math.cos(flip))), oStar.ry * s));
     if (oStar && t >= 5300 && split < 1) {
-      const x = lerp(oStar.cx, STAR_C[0], rise) + Math.sin(Math.PI * rise) * 70;
-      const y = lerp(oStar.cy, STAR_C[1], rise);
-      const s = lerp(1, starScale(), rise) * (1 + 0.25 * Math.sin(Math.PI * rise));
-      morph.setAttribute('d', starD(x, y, s, rise * Math.PI * 2));   // uma volta completa
-      const c = E.inOutCubic(seg(rise, 0.4, 0.8));
-      morph.style.fill = `rgb(${lerp(180, 255, c) | 0}, ${lerp(64, 255, c) | 0}, ${lerp(127, 255, c) | 0})`;
-      morph.style.transform = skewM(y);
+      const end = [600, 262];
+      const x = lerp(oStar.cx, end[0], rise) + Math.sin(Math.PI * rise) * 60;
+      const y = lerp(oStar.cy, end[1], rise);
+            const rot = shape * (Math.PI * 2 / 5) * 2;          // dá uma volta enquanto muda
+      const radius = (a) => lerp(sparkleR(a - rot, lerp(oStar.rx, STAR_R * 1.7, rise), lerp(oStar.ry, STAR_R * 1.7, rise)), pentaR(a - rot, STAR_R * 1.5), shape);
+      morph.setAttribute('d', shapePath(x, y, radius));
+      morph.style.strokeWidth = 4 * shape;
+      const c = E.inOutCubic(seg(rise, 0.45, 0.8));
+      morph.style.fill = morph.style.stroke = `rgb(${lerp(180, 255, c) | 0}, ${lerp(64, 255, c) | 0}, ${lerp(127, 255, c) | 0})`;
+      morph.style.transform = `matrix(1, 0, ${(Math.tan(SKEW * Math.PI / 180) * (1 - rise)).toFixed(4)}, 1, ${(-Math.tan(SKEW * Math.PI / 180) * (1 - rise) * y).toFixed(2)}, 0)`;
       morph.style.opacity = split > 0 ? 1 - seg(t, 6750, 6900) : 1;
       halo.setAttribute('cx', x); halo.setAttribute('cy', y);
-      halo.setAttribute('r', (150 * rise * (1 - seg(t, 6750, 7100))).toFixed(1));
+      halo.setAttribute('r', (140 * rise * (1 - seg(t, 6750, 7100))).toFixed(1));
     } else {
       morph.setAttribute('d', '');
       halo.setAttribute('r', 0);
@@ -310,14 +384,15 @@
     starEls.forEach((p, i) => {
       const order = [2, 1, 3, 0, 4].indexOf(i);           // do centro para fora
       const k = seg(t, 6750 + order * 110, 7500 + order * 110);
-      if (!oStar || k <= 0) { p.setAttribute('d', ''); return; }
+      if (k <= 0) { p.setAttribute('d', ''); return; }
       const m = E.outBack(k, 1.6);
       const [fx, fy] = STAR_FINAL[i];
-      const x = lerp(STAR_C[0], fx, E.outCubic(k)), y = lerp(STAR_C[1], fy, E.outCubic(k)) - Math.sin(Math.PI * k) * 40;
-      const twinkle = t > 8200 ? 1 + 0.06 * Math.sin((t - 8200) / 260 + i * 1.3) : 1;
-      const s = starScale() * Math.max(0.6, m) * twinkle;
-      p.setAttribute('d', starD(x, y, s, (1 - E.outCubic(k)) * Math.PI));
-      p.style.transform = skewM(y);
+      const x = lerp(600, fx, E.outCubic(k)), y = lerp(262, fy, E.outCubic(k)) - Math.sin(Math.PI * k) * 40;
+      const twinkle = t > 8200 ? 1 + 0.07 * Math.sin((t - 8200) / 260 + i * 1.3) : 1;
+      const r = STAR_R * lerp(1.5, 1, E.outCubic(k)) * Math.max(0.6, m) * twinkle;
+      p.setAttribute('d', pentaPath(x, y, r));
+      p.style.strokeWidth = 5;
+      p.setAttribute('transform', `rotate(${((1 - E.outCubic(k)) * (i - 2) * 40).toFixed(2)} ${x.toFixed(1)} ${y.toFixed(1)})`);
     });
 
     $('time').textContent = (Math.min(t, DURATION) / 1000).toFixed(1) + ' s';
