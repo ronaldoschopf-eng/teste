@@ -2,10 +2,18 @@
    FOTOS DISPONÍVEIS — versão em preto e branco (1080 × 1920)
    ========================================================================== */
 
+@font-face {
+  font-family: 'Batica Sans';
+  src: url('../fonts/batica-sans-regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+
 :root {
   --black: #000000;
   --white: #FFFFFF;
-  --f-sans: 'Poppins', 'Helvetica Neue', Arial, sans-serif;
+  --f-sans: 'Batica Sans', 'Helvetica Neue', Arial, sans-serif;
 }
 
 * { box-sizing: border-box; }
@@ -34,36 +42,6 @@ html, body {
   box-shadow: 0 0 0 2px #141414;
 }
 
-/* --- Camadas: a clara é um clone da escura com as cores invertidas ------- */
-
-.layer {
-  position: absolute;
-  inset: 0;
-  --fg: var(--white);
-  --bg: var(--black);
-  background: var(--bg);
-  color: var(--fg);
-}
-.layer--light {
-  --fg: var(--black);
-  --bg: var(--white);
-  clip-path: circle(0px at 50% 50%);
-}
-
-/* Cantos de visor de câmera */
-.frame { position: absolute; inset: 0; }
-.frame i {
-  position: absolute;
-  width: 90px;
-  height: 90px;
-  border: 0 solid var(--fg);
-  opacity: 0;
-}
-.frame i:nth-child(1) { left: 90px;  top: 300px;    border-width: 4px 0 0 4px; }
-.frame i:nth-child(2) { right: 90px; top: 300px;    border-width: 4px 4px 0 0; }
-.frame i:nth-child(3) { left: 90px;  bottom: 300px; border-width: 0 0 4px 4px; }
-.frame i:nth-child(4) { right: 90px; bottom: 300px; border-width: 0 4px 4px 0; }
-
 /* --- Título ---------------------------------------------------------------- */
 
 .title {
@@ -77,8 +55,9 @@ html, body {
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  font-weight: 700;
+  font-weight: 400;
   line-height: 1;
+  color: var(--white);
 }
 
 .word {
@@ -89,7 +68,6 @@ html, body {
   letter-spacing: 0.02em;
 }
 .word--small {
-  font-weight: 300;
   font-size: var(--fs-small, 120px);
 }
 
@@ -106,25 +84,6 @@ html, body {
   will-change: transform;
 }
 
-.bar {
-  left: 50%;
-  top: calc(50% + var(--bar-y, 230px));
-  width: 520px;
-  height: 6px;
-  margin-left: -260px;
-  position: absolute;
-  background: var(--fg);
-  transform: scaleX(0);
-}
-
-.flash {
-  position: absolute;
-  inset: 0;
-  background: var(--white);
-  opacity: 0;
-  pointer-events: none;
-}
-
 /* --- Controles ------------------------------------------------------------- */
 
 .controls {
@@ -138,7 +97,7 @@ html, body {
   border-radius: 10px;
   background: rgba(0, 0, 0, 0.7);
   border: 1px solid #222;
-  font: 500 12px/1 var(--f-sans);
+  font: 500 12px/1 'Helvetica Neue', Arial, sans-serif;
   letter-spacing: 0.06em;
   opacity: 0.55;
   transition: opacity 0.2s;

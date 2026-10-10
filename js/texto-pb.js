@@ -1,15 +1,11 @@
 /* ==========================================================================
-   FOTOS DISPONÍVEIS — versão em preto e branco
+   FOTOS DISPONÍVEIS — versão em preto e branco (fonte Batica Sans)
    --------------------------------------------------------------------------
-   Assim como o story principal, tudo é uma função pura do tempo: render(t).
+   Só o texto, branco sobre preto. Tudo é uma função pura do tempo: render(t).
 
-     0,0–0,6 s  cantos de visor de câmera se fecham sobre o quadro
-     0,3–1,4 s  "FOTOS" sobe letra por letra de dentro de uma máscara
-     0,9–2,6 s  "DISPONÍVEIS" sobe e o espaçamento entre letras se fecha
-     2,2–2,9 s  barra sob o título se desenha a partir do centro
-     3,2–4,1 s  clique de obturador: flash branco e uma íris circular
-                inverte a peça para preto sobre branco
-     4,1–6,0 s  tela final (zoom lento contínuo)
+     0,2–1,3 s  "FOTOS" sobe letra por letra de dentro de uma máscara
+     0,8–2,6 s  "DISPONÍVEIS" sobe e o espaçamento entre letras se fecha
+     0,0–6,0 s  zoom lento contínuo no título
 
    Parâmetros de URL: ?t=<ms> congela um quadro · ?clean esconde os controles
    Teclado: R reinicia · Espaço pausa/continua
@@ -21,7 +17,7 @@
   const STAGE_W = 1080;
   const STAGE_H = 1920;
   const TITLE_W = 880;                          // largura de "DISPONÍVEIS" no fim
-  const IRIS_MAX = Math.hypot(STAGE_W, STAGE_H) / 2 + 20;
+  const SPACING = 0.12;                         // espaçamento final de "DISPONÍVEIS" (em)
 
   const params = new URLSearchParams(location.search);
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -30,9 +26,7 @@
   const lerp = (a, b, p) => a + (b - a) * p;
   const E = {
     outCubic: (p) => 1 - Math.pow(1 - p, 3),
-    outQuart: (p) => 1 - Math.pow(1 - p, 4),
     outExpo: (p) => (p >= 1 ? 1 : 1 - Math.pow(2, -10 * p)),
-    inOutQuart: (p) => (p < 0.5 ? 8 * p ** 4 : 1 - Math.pow(-2 * p + 2, 4) / 2),
   };
   /** progresso de t entre start e start + dur, com easing */
   const prog = (t, start, dur, ease = E.outExpo) => ease(clamp((t - start) / dur));
@@ -40,9 +34,10 @@
   /* --- montagem ---------------------------------------------------------- */
 
   const stage = document.getElementById('stage');
-  const dark = stage.querySelector('.layer--dark');
+  const title = stage.querySelector('.title');
+  const [big, small] = title.querySelectorAll('[data-word]');
 
-  for (const word of dark.querySelectorAll('[data-word]')) {
+  for (const word of [big, small]) {
     for (const c of word.dataset.word) {
       const mask = document.createElement('span');
       mask.className = 'ch';
@@ -52,39 +47,16 @@
       word.appendChild(mask);
     }
   }
-
-  // A camada clara é um clone exato, com as cores invertidas pelo CSS.
-  const light = dark.cloneNode(true);
-  light.classList.replace('layer--dark', 'layer--light');
-  light.setAttribute('aria-hidden', 'true');
-  dark.after(light);
-
-  const layers = [dark, light].map((el) => {
-    const [big, small] = el.querySelectorAll('.word');
-    return {
-      el,
-      title: el.querySelector('.title'),
-      big,
-      small,
-      bigCh: [...big.querySelectorAll('.ch > span')],
-      smallCh: [...small.querySelectorAll('.ch > span')],
-      corners: [...el.querySelectorAll('.frame i')],
-      bar: el.querySelector('.bar'),
-    };
-  });
-  const flash = stage.querySelector('.flash');
+  const bigCh = [...big.querySelectorAll('.ch > span')];
+  const smallCh = [...small.querySelectorAll('.ch > span')];
 
   /** ajusta os tamanhos de fonte para "DISPONÍVEIS" ocupar TITLE_W */
   function layout() {
-    const probe = layers[0].small;
-    probe.style.letterSpacing = '0.12em';
-    probe.style.marginRight = '-0.12em';
+    setSpacing(SPACING);
     stage.style.setProperty('--fs-small', '100px');
-    const w = probe.offsetWidth;
-    const fsSmall = 100 * (TITLE_W / w);
+    const fsSmall = 100 * (TITLE_W / small.offsetWidth);
     stage.style.setProperty('--fs-small', `${fsSmall.toFixed(1)}px`);
     stage.style.setProperty('--fs', `${(fsSmall * 1.95).toFixed(1)}px`);
-    stage.style.setProperty('--bar-y', `${(fsSmall * 1.95 * 0.5 + fsSmall * 0.5 + 70).toFixed(0)}px`);
   }
 
   function fitStage() {
@@ -98,42 +70,17 @@
 
   function render(t) {
     const still = reduceMotion.matches;
+    bigCh.forEach((c, i) => setLetter(c, prog(t, 200 + i * 80, 750), still));
+    smallCh.forEach((c, i) => setLetter(c, prog(t, 800 + i * 45, 700), still));
+    setSpacing(still ? SPACING : lerp(0.6, SPACING, prog(t, 800, 1800, E.outCubic)));
+    const zoom = still ? 1 : 1 + 0.035 * clamp(t / DURATION);
+    title.style.transform = `translateY(-50%) scale(${zoom.toFixed(4)})`;
+  }
 
-    // cantos do visor: aparecem afastados e se fecham sobre o quadro
-    const pf = prog(t, 0, 600, E.outQuart);
-    const off = still ? 0 : lerp(60, 0, pf);
-    const sx = [-1, 1, -1, 1];
-    const sy = [-1, -1, 1, 1];
-
-    // letras de "FOTOS"
-    const big = (i) => prog(t, 300 + i * 80, 750, E.outExpo);
-    // letras de "DISPONÍVEIS"
-    const small = (i) => prog(t, 900 + i * 45, 700, E.outExpo);
-    const spacing = lerp(0.6, 0.12, prog(t, 900, 1700, E.outCubic));
-
-    const bar = prog(t, 2200, 700, E.outExpo);
-    const zoom = still ? 1 : 1 + 0.035 * clamp(t / DURATION) + 0.01 * Math.max(0, t - DURATION) / DURATION;
-
-    for (const L of layers) {
-      L.corners.forEach((c, i) => {
-        c.style.opacity = pf.toFixed(3);
-        c.style.transform = `translate(${sx[i] * off}px, ${sy[i] * off}px)`;
-      });
-      L.bigCh.forEach((c, i) => setLetter(c, big(i), still));
-      L.smallCh.forEach((c, i) => setLetter(c, small(i), still));
-      // margem negativa compensa o espaço após a última letra (centraliza)
-      const ls = `${(still ? 0.12 : spacing).toFixed(4)}em`;
-      L.small.style.letterSpacing = ls;
-      L.small.style.marginRight = `-${ls}`;
-      L.bar.style.transform = `scaleX(${bar.toFixed(4)})`;
-      L.title.style.transform = `translateY(-50%) scale(${zoom.toFixed(4)})`;
-    }
-
-    // obturador: flash rápido + íris que inverte para preto sobre branco
-    const fl = t < 3200 ? 0 : 1 - prog(t, 3200, 450, E.outCubic);
-    flash.style.opacity = (still ? fl * 0.4 : fl * 0.85).toFixed(3);
-    const iris = prog(t, 3200, 900, E.inOutQuart);
-    light.style.clipPath = `circle(${(iris * IRIS_MAX).toFixed(1)}px at 50% 50%)`;
+  // a margem negativa compensa o espaço após a última letra (centraliza)
+  function setSpacing(em) {
+    small.style.letterSpacing = `${em.toFixed(4)}em`;
+    small.style.marginRight = `-${em.toFixed(4)}em`;
   }
 
   function setLetter(el, p, still) {
@@ -195,7 +142,7 @@
   fitStage();
   render(0);
 
-  const FONTS = ['700 200px Poppins', '300 100px Poppins'];
+  const FONTS = ['400 200px "Batica Sans"'];
   const fontsReady = document.fonts && document.fonts.load
     ? Promise.race([
       Promise.all(FONTS.map((f) => document.fonts.load(f, 'FOTOS DISPONÍVEIS').catch(() => null)))
