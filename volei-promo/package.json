@@ -1,0 +1,25 @@
+{
+  "name": "volei-promo",
+  "private": true,
+  "description": "Vídeo promocional 9:16 (Remotion) — cobertura fotográfica do vôlei, 20% OFF",
+  "scripts": {
+    "studio": "remotion studio",
+    "render": "remotion render VoleiPromo out/volei-promo.mp4",
+    "still": "remotion still VoleiPromo out/still.png --frame=240",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@fontsource/anton": "5.2.7",
+    "@fontsource/barlow-condensed": "5.2.7",
+    "@fontsource/jetbrains-mono": "5.2.7",
+    "@remotion/cli": "4.0.534",
+    "@remotion/fonts": "4.0.534",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "remotion": "4.0.534"
+  },
+  "devDependencies": {
+    "@types/react": "19.1.12",
+    "typescript": "5.9.3"
+  }
+}

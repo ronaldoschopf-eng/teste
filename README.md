@@ -1,3 +1,5 @@
+> **Novo:** vídeo promocional do vôlei com 20% OFF, feito em Remotion. Está em [`volei-promo/`](volei-promo/README.md), e o vídeo pronto em [`video/volei-promo-20off.mp4`](video/volei-promo-20off.mp4).
+
 # Fotos Disponíveis — Story animado (9:16)
 
 Story vertical de 1080 × 1920 px, com 10 segundos de duração, que anuncia a liberação das fotos de um evento.
