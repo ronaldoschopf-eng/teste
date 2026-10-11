@@ -4,7 +4,7 @@ Vídeo de 19 s para Reels, TikTok e Stories: 1080 × 1920, 60 fps, MP4 H.264. Es
 
 > "Amanhã, a partir das 8 horas ocorre o Torneio - Kizuna & Vai que Dá & Diretoria. Cobertura fotográfica completa! Suas fotos estarão no link da bio."
 
-- Vídeo pronto: [`out/torneio-abertura.mp4`](out/torneio-abertura.mp4)
+- Vídeo pronto: [`out/torneio-abertura.mp4`](out/torneio-abertura.mp4), já na versão leve (5,4 MB, H.264 CRF 30, `faststart`)
 - Frame 960, para conferir o card final: [`out/frame-960.png`](out/frame-960.png)
 - Versão anterior (4º Festival Barra Vento de Capoeira, 15 s): [`out/barra-vento.mp4`](out/barra-vento.mp4) e [`out/frame-700.png`](out/frame-700.png)
 
@@ -15,6 +15,7 @@ npm install
 npm run studio      # pré-visualização interativa (Remotion Studio)
 npm run render      # = npx remotion render Torneio out/torneio-abertura.mp4 --codec=h264
 npm run still       # = npx remotion still Torneio out/frame-960.png --frame=960
+npm run compress    # versão leve (CRF 30, preset veryslow, faststart) em out/torneio-abertura-leve.mp4; precisa de ffmpeg
 npm run typecheck
 ```
 
