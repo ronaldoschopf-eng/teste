@@ -1,18 +1,19 @@
-import {loadFont} from '@remotion/google-fonts/PlusJakartaSans';
-import {loadFont as loadEmoji} from '@remotion/google-fonts/NotoColorEmoji';
 import {useEffect, useState} from 'react';
-import {continueRender, delayRender} from 'remotion';
+import {continueRender, delayRender, staticFile} from 'remotion';
+import faces from './font-files.json';
 
-const jakarta = loadFont('normal', {
-  weights: ['500', '600', '700', '800'],
-  subsets: ['latin', 'latin-ext'],
-});
-const emoji = loadEmoji('normal', {weights: ['400'], subsets: ['emoji']});
+// As fontes (Plus Jakarta Sans e Noto Color Emoji, do Google Fonts) ficam em
+// public/fonts/, para que o render funcione offline. Para baixá-las de novo
+// (por exemplo, depois de usar outro emoji): node tools/baixar-fontes.mjs
+export const FONT_FAMILY = `'Plus Jakarta Sans', 'Noto Color Emoji', sans-serif`;
+export const TEXT_FONT = `'Plus Jakarta Sans'`;
 
-export const FONT_FAMILY = `${jakarta.fontFamily}, ${emoji.fontFamily}, sans-serif`;
-export const TEXT_FONT = jakarta.fontFamily;
-
-const fontsReady = Promise.all([jakarta.waitUntilDone(), emoji.waitUntilDone()]);
+const fontsReady = Promise.all(
+  faces.map(async ({family, weight, unicodeRange, file}) => {
+    const face = new FontFace(family, `url(${staticFile(file)}) format('woff2')`, {weight, unicodeRange});
+    (document.fonts as FontFaceSet & {add: (f: FontFace) => void}).add(await face.load());
+  }),
+);
 
 // Segura o render até as fontes carregarem, para que medidas de texto
 // (measureText) usem a fonte certa.

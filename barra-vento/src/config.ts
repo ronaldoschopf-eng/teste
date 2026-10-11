@@ -37,7 +37,7 @@ export const COLORS = {
 // Frase completa. Os blocos de TEXT_GROUPS, lidos em ordem, precisam formar
 // exatamente esta frase (o vídeo avisa no console se não formarem).
 export const FULL_TEXT =
-  'Amanhã, a partir das 8 horas ocorre o Torneio - Kizuna & Vai que Dá & Diretoria. Cobertura fotográfica completa! Suas fotos estarão no link da bio.';
+  'Amanhã, a partir das 8 horas ocorre o Torneio - Kizuna & Vai que Dá & Diretoria. Cobertura fotográfica de cada ponto! Suas fotos estarão no link da bio.';
 
 // Um token é uma palavra, uma palavra com brilho laranja ({glow}) ou um
 // highlight box ({box}) cujos conteúdos se alternam com wipe vertical.
@@ -77,7 +77,7 @@ export const TEXT_GROUPS = {
   cobertura: {
     lines: [
       {tokens: ['Cobertura', 'fotográfica'], start: 506, y: Y1},
-      {tokens: [{glow: 'completa!'}], start: 522, y: Y2},
+      {tokens: ['de', 'cada', {glow: 'ponto!'}], start: 522, y: Y2},
     ],
     exit: 610,
   },
@@ -93,9 +93,9 @@ export const TEXT_GROUPS = {
 
 export const TEXT = {
   notifications: [
-    {title: '📸 Fotos do Torneio', body: 'Sua foto está pronta!'},
-    {title: '📸 Fotos do Torneio', body: 'Você apareceu na quadra!'},
-    {title: '📸 Fotos do Torneio', body: 'Baixe agora 👀'},
+    {title: '🏐 Fotos do Torneio', body: 'Sua cortada foi registrada! 🏐'},
+    {title: '🏐 Fotos do Torneio', body: 'Seu bloqueio já está na galeria!'},
+    {title: '🏐 Fotos do Torneio', body: 'Saque, defesa e ataque: baixe agora 👀'},
   ],
   notificationTime: 'agora',
 
@@ -104,7 +104,7 @@ export const TEXT = {
   endCard: {
     logoText: 'Torneio de Vôlei',
     tag: 'AMANHÃ · A PARTIR DAS 8H',
-    title: 'Cobertura fotográfica completa 📸',
+    title: 'Cada ponto, cada jogada 📸',
     button: 'Link na bio',
     footer: 'Torneio Kizuna & Vai que Dá & Diretoria',
   },
