@@ -11,7 +11,7 @@ const NOTIF_TILT = [-2, 1.5, -1];
 
 // Cena 3 (fundo escuro): chuva de fotos e notificações, com
 // "ocorre o Torneio - [Kizuna & / Vai que Dá & / Diretoria.]" e
-// "Cobertura fotográfica completa!". Até o início do zoom-out (cena 4) as
+// "Cobertura fotográfica de cada ponto!". Até o início do zoom-out (cena 4) as
 // fotos ficam aqui; depois passam para a camada <Collage/>.
 export const Scene3Rain: React.FC<{photos: string[]}> = ({photos}) => {
   const frame = useCurrentFrame();
