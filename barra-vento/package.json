@@ -5,6 +5,7 @@
   "scripts": {
     "studio": "remotion studio",
     "render": "remotion render Torneio out/torneio-abertura.mp4 --codec=h264",
+    "compress": "ffmpeg -y -i out/torneio-abertura.mp4 -c:v libx264 -preset veryslow -crf 30 -pix_fmt yuv420p -profile:v high -movflags +faststart -an out/torneio-abertura-leve.mp4",
     "still": "remotion still Torneio out/frame-960.png --frame=960",
     "typecheck": "tsc --noEmit"
   },
