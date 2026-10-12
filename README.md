@@ -160,7 +160,7 @@ O vídeo pronto está em [`video/fotos-volei.mp4`](video/fotos-volei.mp4). Espec
 
 Cada mensagem nova empurra as anteriores para cima, como no app.
 
-**Trocar as fotos**: as quatro imagens em `fotos-volei/fotos/` são ilustrações flat de exemplo. Para usar fotos reais, coloque os arquivos na pasta, atualize a lista `PHOTOS` no `index.html` (jpg, png ou webp, 4 itens; recortes quadrados ficam melhores) e mude o `MORE` para o número que aparece em "+24".
+**Fotos**: o álbum usa quatro fotos do evento, salvas em `fotos-volei/fotos/1.jpg` a `4.jpg` em 800 × 800 px. A quarta foi recortada de vertical para quadrada, mantendo os rostos no enquadramento. Para trocar, substitua os arquivos ou atualize a lista `PHOTOS` no `index.html` (jpg, png ou webp, 4 itens; recortes quadrados ficam melhores). O número em "+24" é a constante `MORE`.
 
 **Efeitos sonoros** ([`tools/sfx-fotos-volei.py`](tools/sfx-fotos-volei.py)):
 - dois toques de notificação quando chega mensagem;

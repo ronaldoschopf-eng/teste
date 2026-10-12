@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600"><defs><linearGradient id="s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff3d8b"/><stop offset="1" stop-color="#ff8a3d"/></linearGradient></defs>
-<rect width="600" height="600" fill="url(#s)"/>
-<g transform="rotate(-12 300 300)" stroke="#3b1236" fill="none"><path d="M-100 150 H700" stroke-width="18"/>
-<path d="M-100 210 H700 M-100 270 H700 M-100 330 H700 M-100 390 H700 M-100 450 H700" stroke-width="4"/>
-<path d="M-60 150 V470 M0 150 V470 M60 150 V470 M120 150 V470 M180 150 V470 M240 150 V470 M300 150 V470 M360 150 V470 M420 150 V470 M480 150 V470 M540 150 V470 M600 150 V470 M660 150 V470" stroke-width="4"/></g>
-<g transform="translate(360 300) scale(92) rotate(30)"><g class="ball"><circle r="1" fill="#fff" stroke="#3b1236" stroke-width=".07"/><path d="M-.95 -.3 C-.4 -.1 .2 -.3 .55 -.83 M-.1 .05 C.3 .1 .6 .4 .75 .65 M-.1 .05 C-.35 .4 -.3 .75 -.2 .98 M-.1 .05 C-.3 -.15 -.6 -.2 -.95 -.3" fill="none" stroke="#3b1236" stroke-width=".07" stroke-linecap="round"/></g></g>
-<path d="M150 470 l-40 40 M190 490 l-24 50 M120 420 l-60 18" stroke="#fff" stroke-width="10" stroke-linecap="round" opacity=".7"/></svg>
