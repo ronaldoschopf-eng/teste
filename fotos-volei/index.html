@@ -143,10 +143,10 @@
 /* Linha do tempo (ms) — tudo sai de render(t), então qualquer quadro pode
    ser reproduzido (?t=7000) e o vídeo é exportado sem quadros perdidos.
    0–500      cabeçalho da conversa entra
-   700–1500   "digitando…" → "Suas fotos do vôlei de ontem estão te esperando"
-   2900       a pessoa responde "Onde?" (lida em 3300)
-   3500–4300  "digitando…" → "Clica no link aqui abaixo 👇"
-   5300–8400  o álbum chega: as fotos baixam (anel de progresso) e aparecem
+   740–1500   "digitando…" → "Suas fotos do vôlei de ontem estão te esperando"
+   3020       a pessoa responde "Onde?" (lida em 3400)
+   3780–4540  "digitando…" → "Clica no link aqui abaixo 👇"
+   5300–8300  o álbum chega: as fotos baixam (anel de progresso) e aparecem
    ?clean esconde os controles · ?t=<ms> congela um quadro · R repete */
 (() => {
   'use strict';
@@ -159,14 +159,14 @@
   const PHOTOS = ['fotos/1.jpg', 'fotos/2.jpg', 'fotos/3.jpg', 'fotos/4.jpg'];
 
   /* quando cada bolha entra e sai da pilha (ms) */
-  const TYPING = [[700, 1500], [3500, 4300]];
+  const TYPING = [[740, 1500], [3780, 4540]];   // no compasso da trilha (1 tempo = 760 ms)
   const STACK = [
     { id: 'm1', at: 1500 },
-    { id: 'm2', at: 2900 },
-    { id: 'm3', at: 4300 },
+    { id: 'm2', at: 3020 },
+    { id: 'm3', at: 4540 },
     { id: 'm4', at: 5300 },
   ];
-  const TILE_AT = 5650, TILE_STEP = 380, TILE_LOAD = 1250;
+  const TILE_AT = 5650, TILE_STEP = 380, TILE_LOAD = 1170;   // fotos aparecem em colcheias: 6820, 7200, 7580, 7960
 
   const params = new URLSearchParams(location.search);
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -265,7 +265,7 @@
     } else op(typ, 0);
 
     /* "Onde?" lida: os tiques acendem */
-    op($('read'), lerp(0.45, 1, seg(t, 3300, 3450)));
+    op($('read'), lerp(0.45, 1, seg(t, 3400, 3550)));
 
     /* álbum: cada foto baixa com anel de progresso e depois aparece nítida */
     tiles.forEach((x, i) => {
@@ -279,7 +279,7 @@
       x.img.style.filter = `blur(${lerp(22, 0, rv).toFixed(2)}px) saturate(${lerp(0.7, 1, rv).toFixed(3)})`;
       tf(x.img, `scale(${lerp(1.08, 1, rv).toFixed(4)})`);
       op(x.shade, 1 - rv);
-      if (x.more) op(x.more, E.outCubic(seg(t, a + TILE_LOAD + 250, a + TILE_LOAD + 650)));
+      if (x.more) op(x.more, E.outCubic(seg(t, a + TILE_LOAD + 190, a + TILE_LOAD + 590)));
     });
 
     $('time').textContent = (Math.min(t, DURATION) / 1000).toFixed(1) + ' s';

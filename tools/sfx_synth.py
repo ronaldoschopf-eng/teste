@@ -133,15 +133,152 @@ def sent(gain=0.3):
     return s * gain + whoosh(0.18, 600, 3000, gain * 0.5)
 
 
-def write(cues, length, out, fade_out=0.4):
-    """Mixa os cues em `length` segundos e grava `out` (WAV estéreo 16 bits)."""
+# --- trilha: instrumentos (tudo vetorizado, só NumPy) ----------------------
+
+def midi(n):
+    return 440.0 * 2 ** ((n - 69) / 12)
+
+
+def adsr(n, attack, release, sustain_until=None):
+    """Envelope com ataque e soltura lineares (segundos), sustentado no meio."""
+    t = np.arange(n) / SR
+    end = n / SR if sustain_until is None else sustain_until
+    a = np.clip(t / max(attack, 1e-4), 0, 1)
+    r = np.clip((end + release - t) / max(release, 1e-4), 0, 1)
+    return a * np.minimum(r, 1)
+
+
+def pad(notes, dur, bright=2.0, bright_end=None, attack=0.5, release=0.8, gain=0.08):
+    """Pad estéreo: 3 vozes desafinadas por nota, harmônicos que somem como
+    num filtro passa-baixa. `bright` → `bright_end` abre o filtro no tempo."""
+    n = int((dur + release) * SR)
+    t = np.arange(n) / SR
+    b = np.linspace(bright, bright if bright_end is None else bright_end, n)
+    out = np.zeros((n, 2))
+    for note in notes:
+        f0 = midi(note)
+        for cents, (l, r) in ((-9, (0.9, 0.3)), (0, (0.65, 0.65)), (9, (0.3, 0.9))):
+            f = f0 * 2 ** (cents / 1200)
+            ph = rng.uniform(0, 2 * np.pi)
+            v = np.zeros(n)
+            for h in range(1, 11):
+                if f * h > 9000:
+                    break
+                v += np.sin(2 * np.pi * f * h * t + ph * h) * np.exp(-(h - 1) / b) / h
+            out[:, 0] += v * l
+            out[:, 1] += v * r
+    e = adsr(n, attack, release, dur)
+    return out * e[:, None] * gain / max(1, len(notes)) * 2
+
+
+def bass(note, dur, gain=0.22):
+    """Baixo redondo: senoide com um pouco de 2º harmônico."""
+    n = int((dur + 0.15) * SR)
+    t = np.arange(n) / SR
+    f = midi(note)
+    v = np.sin(2 * np.pi * f * t) + 0.25 * np.sin(4 * np.pi * f * t)
+    return v * adsr(n, 0.012, 0.15, dur) * gain
+
+
+def kick(gain=0.55):
+    n = int(0.42 * SR)
+    s = sweep(150, 46, 0.42, 7) * env(n, 0.001, 0.13)
+    s += np.diff(rng.standard_normal(n + 1)) * env(n, 0.0002, 0.002) * 0.15
+    return s * gain
+
+
+def clap(gain=0.22):
+    """Palma: três rajadas de ruído agudo e uma cauda curta."""
+    out = np.zeros(int(0.25 * SR))
+    for k, at in enumerate((0.0, 0.011, 0.023)):
+        n = int(0.2 * SR)
+        x = np.diff(rng.standard_normal(n + 1)) * env(n, 0.0005, 0.008 if k < 2 else 0.06)
+        i = int(at * SR)
+        out[i:i + n] += x
+    return out * gain / (np.abs(out).max() + 1e-9)
+
+
+def hat(gain=0.06, decay=0.025):
+    n = int(0.08 * SR)
+    x = np.diff(np.diff(rng.standard_normal(n + 2)))
+    return x / 4 * env(n, 0.0005, decay) * gain
+
+
+def pluck(note, gain=0.09, decay=0.22):
+    """Pluck brilhante (arpejos e brilhos das fotos)."""
+    n = int(0.9 * SR)
+    t = np.arange(n) / SR
+    f = midi(note)
+    v = np.zeros(n)
+    for h, a in ((1, 1), (2, 0.45), (3, 0.22), (4, 0.12)):
+        v += np.sin(2 * np.pi * f * h * t) * a * np.exp(-t * h / decay)
+    return v * env(n, 0.002, 10) * gain
+
+
+def riser(dur=0.76, gain=0.3):
+    """Subida de tensão: ruído que abre e um tom que sobe, com corte seco."""
+    n = int(dur * SR)
+    p = np.linspace(0, 1, n)
+    noise = lowpass(rng.standard_normal(n), 300 + 7000 * p ** 2)
+    noise -= lowpass(noise, 200)
+    noise /= np.abs(noise).max() + 1e-9
+    tone = np.sin(2 * np.pi * np.cumsum(220 * 2 ** (2 * p)) / SR) * 0.35
+    return (noise + tone) * p ** 2.2 * gain
+
+
+def stereo(x, pan=0.0):
+    l, r = np.sqrt((1 - pan) / 2), np.sqrt((1 + pan) / 2)
+    return np.stack([x * l, x * r], axis=1)
+
+
+def delay(x, ms, feedback=0.35, taps=4):
+    """Eco pingue-pongue para um sinal estéreo."""
+    d = int(ms / 1000 * SR)
+    out = np.zeros((len(x) + d * taps, 2))
+    out[:len(x)] += x
+    for k in range(1, taps + 1):
+        g = feedback ** k
+        side = k % 2
+        out[d * k:d * k + len(x), side] += x[:, side] * g + x[:, 1 - side] * g * 0.3
+    return out
+
+
+def reverb(x, seconds=2.2, decay=0.55, mix=0.25):
+    """Reverb por convolução com resposta sintética (ruído que decai), estéreo."""
+    n = int(seconds * SR)
+    t = np.arange(n) / SR
+    ir = rng.standard_normal((n, 2)) * np.exp(-t / decay)[:, None]
+    k = np.ones(24) / 24                                       # escurece a cauda
+    ir = np.stack([np.convolve(ir[:, c], k, 'same') for c in (0, 1)], axis=1)
+    ir[:int(0.012 * SR)] = 0                                  # pré-delay
+    ir /= np.sqrt((ir ** 2).sum(axis=0))
+    size = 1 << int(np.ceil(np.log2(len(x) + n)))
+    wet = np.stack([np.fft.irfft(np.fft.rfft(x[:, c], size) * np.fft.rfft(ir[:, c], size), size)[:len(x)]
+                    for c in (0, 1)], axis=1)
+    return x + wet * mix
+
+
+def write(cues, length, out, fade_out=0.4, bed=None, wet=0.0):
+    """Mixa os cues em `length` segundos e grava `out` (WAV estéreo 16 bits).
+
+    Um cue pode ser mono (usa o pan) ou estéreo (n, 2). `bed` é uma trilha
+    estéreo somada por baixo; `wet` > 0 passa os efeitos por um reverb.
+    """
     mix = np.zeros((int(length * SR), 2))
     for ms, snd, pan in cues:
         i = int(ms / 1000 * SR)
         j = min(len(mix), i + len(snd))
+        if snd.ndim == 2:
+            mix[i:j] += snd[: j - i]
+            continue
         l, r = np.sqrt((1 - pan) / 2), np.sqrt((1 + pan) / 2)
         mix[i:j, 0] += snd[: j - i] * l
         mix[i:j, 1] += snd[: j - i] * r
+
+    if wet > 0:
+        mix = reverb(mix, mix=wet)
+    if bed is not None:
+        mix += bed[: len(mix)]
 
     mix = np.tanh(mix * 1.1) * 0.89                           # cola leve, sem clipar
     fade = int(fade_out * SR)

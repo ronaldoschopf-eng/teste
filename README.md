@@ -153,22 +153,27 @@ O vídeo pronto está em [`video/fotos-volei.mp4`](video/fotos-volei.mp4). Espec
 | Tempo | O que acontece |
 | --- | --- |
 | 0–0,5 s | Entra o cabeçalho da conversa: Ronaldo Schopf · fotógrafo · online. |
-| 0,7–1,5 s | O status muda para "digitando…" e chega **Suas fotos do vôlei de ontem estão te esperando**. |
-| 2,9 s | A pessoa responde **Onde?**, e os tiques acendem quando a mensagem é lida. |
-| 3,5–4,3 s | "digitando…" de novo e chega **Clica no link aqui abaixo 👇**. |
-| 5,3–8,5 s | O fotógrafo envia um álbum 2 × 2. Cada foto chega desfocada, com o anel de download, e aparece nítida em sequência. A última foto mostra **+24**. |
+| 0,74–1,5 s | O status muda para "digitando…" e chega **Suas fotos do vôlei de ontem estão te esperando**. |
+| 3,02 s | A pessoa responde **Onde?**, e os tiques acendem quando a mensagem é lida. |
+| 3,78–4,54 s | "digitando…" de novo e chega **Clica no link aqui abaixo 👇**. |
+| 5,3–8,3 s | O fotógrafo envia um álbum 2 × 2. Cada foto chega desfocada, com o anel de download, e aparece nítida em sequência. A última foto mostra **+24**. |
 
 Cada mensagem nova empurra as anteriores para cima, como no app.
 
 **Fotos**: o álbum usa quatro fotos do evento, salvas em `fotos-volei/fotos/1.jpg` a `4.jpg` em 800 × 800 px. A quarta foi recortada de vertical para quadrada, mantendo os rostos no enquadramento. Para trocar, substitua os arquivos ou atualize a lista `PHOTOS` no `index.html` (jpg, png ou webp, 4 itens; recortes quadrados ficam melhores). O número em "+24" é a constante `MORE`.
 
-**Efeitos sonoros** ([`tools/sfx-fotos-volei.py`](tools/sfx-fotos-volei.py)):
-- dois toques de notificação quando chega mensagem;
-- "swoop" quando a resposta é enviada;
-- tiques durante o "digitando…" e o download;
-- **clique de obturador** quando cada foto aparece;
-- "pop" no +24 e um sino no fim.
+**Trilha e efeitos sonoros** ([`tools/sfx-fotos-volei.py`](tools/sfx-fotos-volei.py)): tudo é sintetizado, sem bancos de som.
 
-Os sintetizadores ficam em [`tools/sfx_synth.py`](tools/sfx_synth.py) e são compartilhados com o DEU BEACH.
+A trilha é um chill-pop a 79 BPM, e a animação foi travada no compasso dela (1 tempo = 760 ms):
+
+| Tempo | Música | Efeitos |
+| --- | --- | --- |
+| 0–2,3 s | pad escuro (Am7) entrando devagar | whoosh do cabeçalho, tiques do "digitando…", notificação da 1ª mensagem |
+| 2,3–5,3 s | Fmaj7 com o filtro abrindo, baixo e chimbal suave; um riser no último tempo | "swoop" do "Onde?", tique de lida, notificação do "Clica no link" |
+| 5,3 s | **a batida entra junto com o álbum**, com um impacto grave | notificação do álbum |
+| 5,3–11,4 s | groove com bumbo, palmas, baixo sincopado, arpejo com eco e pad que "respira" com o bumbo | tiques do download; **obturador + uma nota brilhante** a cada foto (6,82 · 7,20 · 7,58 · 7,96 s, em colcheias, formando um arpejo que sobe), "pop" no +24, sino em 8,34 s |
+| 11,4–13 s | resolve em Cmaj9 e some | — |
+
+Os efeitos passam por um reverb, a trilha abaixa um pouco quando chega mensagem e o estéreo é aberto. Os instrumentos (pad, baixo, bumbo, palma, chimbal, pluck, riser, delay e reverb) ficam em [`tools/sfx_synth.py`](tools/sfx_synth.py), compartilhados com o DEU BEACH.
 
 `?t=7000` congela um quadro, `?clean` esconde os controles, `R` repete. Para gerar o vídeo de novo: `npm run render:volei`.
