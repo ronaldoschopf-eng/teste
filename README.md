@@ -108,7 +108,7 @@ Story animado em 1080 × 1920 px, com 15,5 s de duração, em [`deu-beach/index.
 
 É um redesign em rosa pink e branco da referência do convite no chat: balão → cartão de evento → toque do dedo → lista. Aqui, a lista virou a agenda de fotos do fim de semana. Os ícones são flat e minimalistas: câmera, raquete de beach tennis, bola, rede, sol, calendário e check.
 
-O vídeo pronto está em [`video/deu-beach.mp4`](video/deu-beach.mp4). Especificações: H.264, 30 fps, 18 s (os 15,5 s da animação mais 2,5 s de tela final, com os ícones flutuando).
+O vídeo pronto está em [`video/deu-beach.mp4`](video/deu-beach.mp4). Especificações: H.264, 30 fps, com áudio AAC e 18 s de duração (os 15,5 s da animação mais 2,5 s de tela final, com os ícones flutuando).
 
 | Tempo | O que acontece |
 | --- | --- |
@@ -121,6 +121,23 @@ O vídeo pronto está em [`video/deu-beach.mp4`](video/deu-beach.mp4). Especific
 
 Cores: rosa pink `#FF2E93` (no lugar do preto), branco `#FFFFFF` e tons de rosa para o texto secundário e os fundos suaves (`#E0237F`, `#FFE6F2`, `#FFD6EA`). Fonte: Inter (Google Fonts).
 
-Os cartões ocupam quase toda a largura (margem de 50 px), e a agenda, quase toda a altura. Na tela final, os ícones e a marca ficam alinhados no alto, à esquerda, e os horários e o crédito ficam ancorados embaixo.
+Os tamanhos são enxutos para um visual mais minimalista: o cartão tem 740 px de largura e a agenda, 720 px. Na tela final, tudo fica numa coluna de 680 px, alinhada à esquerda, com a marca no alto e os horários e o crédito embaixo.
+
+## Efeitos sonoros
+
+O MP4 tem áudio (AAC, 48 kHz, estéreo). Os efeitos são sintetizados por [`tools/sfx-deu-beach.py`](tools/sfx-deu-beach.py), sem bancos de som externos, e salvos em `deu-beach/sfx.wav`. Eles seguem a linha do tempo da animação:
+
+| Momento | Som |
+| --- | --- |
+| Avatar, balões e resposta | "pop" de bolha |
+| Digitando… e as linhas do cartão entrando | tiques secos de interface |
+| Troca de cena, dedo e tela ficando rosa | sopro de ar (whoosh) |
+| Toque em "Quero minhas fotos" e crédito do fotógrafo | **obturador de câmera** |
+| Blocos da agenda crescendo | tom que sobe |
+| Lembrete das fotos ativado | sino de confirmação |
+| Ícones da tela final | "tok" de bolada de beach tennis |
+| DEU / BEACH | batida grave |
+
+Para ajustar um som ou o momento em que ele toca, edite a lista `CUES` no script (tempos em ms) e rode `npm run render:deubeach`, que gera o áudio e o vídeo. Para gerar só o áudio, use `npm run sfx:deubeach` (precisa de Python 3 com NumPy). O `tools/render-video.js` também aceita `--audio arquivo.wav` para colocar áudio em qualquer outra peça.
 
 `?t=8000` congela um quadro, `?clean` esconde os controles, `R` repete. Para gerar o vídeo de novo: `npm run render:deubeach`.

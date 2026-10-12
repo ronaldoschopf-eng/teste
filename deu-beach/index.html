@@ -36,104 +36,104 @@
 
   /* avatares: círculo branco com contorno rosa e um ícone dentro */
   .avatar {
-    width: 132px; height: 132px; border-radius: 50%; box-sizing: border-box;
-    border: 6px solid var(--ink); background: var(--paper); color: var(--ink);
-    display: grid; place-items: center; font-size: 74px; flex: none;
+    width: 100px; height: 100px; border-radius: 50%; box-sizing: border-box;
+    border: 5px solid var(--ink); background: var(--paper); color: var(--ink);
+    display: grid; place-items: center; font-size: 56px; flex: none;
   }
   .avatar--dark { background: var(--ink); color: var(--paper); }
 
   /* cena 1 · pergunta no chat */
-  .chat { display: flex; align-items: flex-start; gap: 24px; }
+  .chat { display: flex; align-items: flex-start; gap: 20px; }
   .bubble {
-    box-sizing: border-box; border: 6px solid var(--ink); border-radius: 38px;
-    padding: 28px 44px 32px; font-size: 82px; font-weight: 500; line-height: 1.06; letter-spacing: -.02em;
+    box-sizing: border-box; border: 5px solid var(--ink); border-radius: 30px;
+    padding: 20px 32px 24px; font-size: 58px; font-weight: 500; line-height: 1.08; letter-spacing: -.02em;
     background: var(--soft); transform-origin: 0 0; white-space: nowrap;
   }
   .typing {
-    left: 156px; top: 0; height: 128px; width: 230px; box-sizing: border-box;
-    border: 6px solid var(--ink); border-radius: 38px; background: var(--soft);
-    display: flex; align-items: center; justify-content: center; gap: 18px; transform-origin: 0 0;
+    left: 120px; top: 0; height: 100px; width: 176px; box-sizing: border-box;
+    border: 5px solid var(--ink); border-radius: 30px; background: var(--soft);
+    display: flex; align-items: center; justify-content: center; gap: 14px; transform-origin: 0 0;
   }
-  .typing span { width: 22px; height: 22px; border-radius: 50%; background: var(--ink); display: block; }
+  .typing span { width: 16px; height: 16px; border-radius: 50%; background: var(--ink); display: block; }
 
-  /* cena 2 · cartão do compromisso: quase a largura toda do quadro */
+  /* cena 2 · cartão do compromisso */
   .card {
-    left: 50px; width: 980px; box-sizing: border-box;
-    border: 6px solid var(--ink); border-radius: 52px; background: var(--paper);
+    left: 170px; width: 740px; box-sizing: border-box;
+    border: 5px solid var(--ink); border-radius: 40px; background: var(--paper);
     color: var(--ink);
     transform-origin: 50% 50%; backface-visibility: hidden;
   }
-  .card__body { padding: 64px 60px 56px; display: flex; flex-direction: column; gap: 48px; }
-  .row { display: flex; align-items: flex-start; gap: 34px; }
+  .card__body { padding: 44px 44px 38px; display: flex; flex-direction: column; gap: 30px; }
+  .row { display: flex; align-items: flex-start; gap: 26px; }
   .row__icon {
-    width: 112px; height: 112px; border-radius: 50%; background: var(--soft);
-    display: grid; place-items: center; font-size: 66px; flex: none;
+    width: 80px; height: 80px; border-radius: 50%; background: var(--soft);
+    display: grid; place-items: center; font-size: 46px; flex: none;
   }
   .row--head { align-items: center; }
-  .row--head .avatar { width: 112px; height: 112px; font-size: 64px; border-width: 5px; }
-  .name { font-size: 58px; font-weight: 500; letter-spacing: -.015em; }
-  .title { font-size: 66px; font-weight: 700; line-height: 1.06; letter-spacing: -.025em; padding-top: 10px; }
-  .meta { padding-top: 4px; }
-  .meta b { display: block; font-size: 62px; font-weight: 700; letter-spacing: -.02em; line-height: 1.1; }
-  .meta span { display: block; font-size: 56px; color: var(--gray); letter-spacing: -.015em; margin-top: 2px; }
+  .row--head .avatar { width: 80px; height: 80px; font-size: 44px; border-width: 4px; }
+  .name { font-size: 42px; font-weight: 500; letter-spacing: -.015em; }
+  .title { font-size: 48px; font-weight: 700; line-height: 1.06; letter-spacing: -.025em; padding-top: 6px; }
+  .meta { padding-top: 2px; }
+  .meta b { display: block; font-size: 44px; font-weight: 700; letter-spacing: -.02em; line-height: 1.1; }
+  .meta span { display: block; font-size: 40px; color: var(--gray); letter-spacing: -.015em; margin-top: 2px; }
   .card__btn {
-    border-top: 5px solid var(--ink); height: 170px; display: flex; align-items: center; justify-content: center;
-    gap: 22px; font-size: 60px; font-weight: 700; letter-spacing: -.015em;
+    border-top: 4px solid var(--ink); height: 124px; display: flex; align-items: center; justify-content: center;
+    gap: 18px; font-size: 44px; font-weight: 700; letter-spacing: -.015em;
   }
-  .card__btn .i { font-size: 66px; }
+  .card__btn .i { font-size: 48px; }
 
   /* dedo (flat, contorno rosa) */
-  .finger { left: 0; top: 0; width: 460px; height: 1236px; transform-origin: 230px 37.4px; overflow: visible; }
+  .finger { left: 0; top: 0; width: 368px; height: 989px; transform-origin: 184px 29.9px; overflow: visible; }
 
-  /* cena 3 · agenda: ocupa quase a altura toda */
-  .agenda__body { padding: 56px 56px 0; }
-  .agenda__label { font-size: 50px; font-weight: 600; padding-bottom: 22px; border-bottom: 5px solid var(--ink); display: flex; justify-content: space-between; align-items: baseline; }
-  .agenda__label small { font-size: 40px; color: var(--gray); font-weight: 400; }
-  .days { display: grid; grid-template-columns: 140px 1fr 1fr; column-gap: 22px; padding: 34px 0 24px; }
-  .day { display: flex; align-items: baseline; gap: 14px; }
-  .day b { font-size: 62px; font-weight: 800; letter-spacing: -.025em; }
-  .day span { font-size: 38px; color: var(--gray); }
-  .grid { position: relative; height: 1080px; margin-bottom: 48px; }
-  .hour { left: 0; width: 100%; height: 0; border-top: 3px solid var(--line); }
-  .hour span { position: absolute; left: 0; top: -22px; font-size: 32px; color: var(--gray); font-variant-numeric: tabular-nums; background: var(--paper); padding-right: 12px; }
+  /* cena 3 · agenda */
+  .agenda__body { padding: 40px 40px 0; }
+  .agenda__label { font-size: 36px; font-weight: 600; padding-bottom: 16px; border-bottom: 4px solid var(--ink); display: flex; justify-content: space-between; align-items: baseline; }
+  .agenda__label small { font-size: 28px; color: var(--gray); font-weight: 400; }
+  .days { display: grid; grid-template-columns: 104px 1fr 1fr; column-gap: 16px; padding: 24px 0 18px; }
+  .day { display: flex; align-items: baseline; gap: 10px; }
+  .day b { font-size: 44px; font-weight: 800; letter-spacing: -.025em; }
+  .day span { font-size: 26px; color: var(--gray); }
+  .grid { position: relative; height: 840px; margin-bottom: 36px; }
+  .hour { left: 0; width: 100%; height: 0; border-top: 2px solid var(--line); }
+  .hour span { position: absolute; left: 0; top: -16px; font-size: 24px; color: var(--gray); font-variant-numeric: tabular-nums; background: var(--paper); padding-right: 10px; }
   .slot {
-    background: var(--ink); color: var(--paper); border-radius: 28px; box-sizing: border-box;
-    padding: 28px 30px; transform-origin: 50% 0; overflow: hidden;
+    background: var(--ink); color: var(--paper); border-radius: 20px; box-sizing: border-box;
+    padding: 20px 20px; transform-origin: 50% 0; overflow: hidden;
   }
-  .slot__in { display: flex; flex-direction: column; gap: 12px; }
-  .slot .i { font-size: 64px; margin-bottom: 8px; }
-  .slot b { font-size: 46px; font-weight: 800; letter-spacing: -.015em; line-height: 1; }
-  .slot span { font-size: 36px; line-height: 1.2; color: var(--on-pink); }
-  .agenda__foot { border-top: 5px solid var(--ink); height: 160px; display: flex; align-items: center; justify-content: center; gap: 22px; font-size: 54px; font-weight: 700; letter-spacing: -.015em; }
-  .check { width: 76px; height: 76px; border-radius: 50%; background: var(--ink); color: var(--paper); display: grid; place-items: center; font-size: 50px; }
+  .slot__in { display: flex; flex-direction: column; gap: 8px; }
+  .slot .i { font-size: 44px; margin-bottom: 6px; }
+  .slot b { font-size: 32px; font-weight: 800; letter-spacing: -.015em; line-height: 1; }
+  .slot span { font-size: 26px; line-height: 1.2; color: var(--on-pink); }
+  .agenda__foot { border-top: 4px solid var(--ink); height: 118px; display: flex; align-items: center; justify-content: center; gap: 16px; font-size: 38px; font-weight: 700; letter-spacing: -.015em; }
+  .check { width: 54px; height: 54px; border-radius: 50%; background: var(--ink); color: var(--paper); display: grid; place-items: center; font-size: 36px; }
 
   /* cena 4 · resposta */
-  .reply { display: flex; align-items: flex-start; gap: 24px; }
+  .reply { display: flex; align-items: flex-start; gap: 20px; }
   .reply .bubble { background: var(--ink); color: var(--paper); transform-origin: 100% 0; }
 
-  /* cena 5 · tela final em rosa: blocos encostados nas margens, não no centro */
+  /* cena 5 · tela final em rosa: uma coluna de 680 px, alinhada à esquerda */
   .wipe { inset: 0; background: var(--ink); }
   .final { inset: 0; color: var(--paper); }
-  .icons { left: 70px; top: 150px; display: flex; gap: 46px; font-size: 118px; }
+  .icons { left: 200px; top: 250px; display: flex; gap: 34px; font-size: 80px; }
   .icons .i { transform-origin: 50% 100%; }
   .brand { left: 0; font-weight: 900; letter-spacing: -.05em; line-height: .86; white-space: nowrap; }
-  .mask { overflow: hidden; left: 70px; width: 1010px; }
-  .sub { left: 70px; width: 940px; font-size: 58px; font-weight: 600; letter-spacing: -.02em; line-height: 1.1; }
-  .credit { left: 70px; display: flex; align-items: center; gap: 18px; font-size: 42px; font-weight: 500; color: var(--on-pink); }
-  .credit .i { font-size: 52px; }
+  .mask { overflow: hidden; left: 200px; width: 880px; }
+  .sub { left: 200px; width: 680px; font-size: 42px; font-weight: 600; letter-spacing: -.02em; line-height: 1.12; }
+  .credit { left: 200px; display: flex; align-items: center; gap: 14px; font-size: 30px; font-weight: 500; color: var(--on-pink); }
+  .credit .i { font-size: 38px; }
   .slotline {
-    left: 70px; width: 940px; height: 176px; box-sizing: border-box;
-    border: 5px solid var(--paper); border-radius: 40px;
-    display: flex; align-items: center; gap: 38px; padding: 0 26px;
+    left: 200px; width: 680px; height: 128px; box-sizing: border-box;
+    border: 4px solid var(--paper); border-radius: 30px;
+    display: flex; align-items: center; gap: 28px; padding: 0 18px;
   }
   .tile {
-    width: 126px; height: 126px; border-radius: 24px; background: var(--paper); color: var(--ink);
+    width: 92px; height: 92px; border-radius: 18px; background: var(--paper); color: var(--ink);
     display: flex; flex-direction: column; overflow: hidden; flex: none;
   }
-  .tile i { font-style: normal; height: 40px; background: #c8126c; color: var(--paper); font-size: 26px; font-weight: 800; letter-spacing: .08em; display: grid; place-items: center; }
-  .tile b { flex: 1; display: grid; place-items: center; font-size: 54px; font-weight: 900; letter-spacing: -.03em; }
-  .slotline__txt b { display: block; font-size: 62px; font-weight: 800; letter-spacing: -.025em; line-height: 1.05; }
-  .slotline__txt span { display: block; font-size: 50px; color: var(--on-pink); letter-spacing: -.015em; }
+  .tile i { font-style: normal; height: 30px; background: #c8126c; color: var(--paper); font-size: 19px; font-weight: 800; letter-spacing: .08em; display: grid; place-items: center; }
+  .tile b { flex: 1; display: grid; place-items: center; font-size: 40px; font-weight: 900; letter-spacing: -.03em; }
+  .slotline__txt b { display: block; font-size: 44px; font-weight: 800; letter-spacing: -.025em; line-height: 1.05; }
+  .slotline__txt span { display: block; font-size: 36px; color: var(--on-pink); letter-spacing: -.015em; }
 
   .controls {
     position: fixed; right: 16px; bottom: 16px; display: flex; align-items: center; gap: 10px;
@@ -274,7 +274,7 @@
         <div class="slotline__txt"><b>Sábado</b><span>a partir das 18:00</span></div>
       </div>
       <div class="abs slotline" id="l2">
-        <div class="tile"><i>DOM</i><b><svg class="i" style="font-size:52px"><use href="#i-sun"/></svg></b></div>
+        <div class="tile"><i>DOM</i><b><svg class="i" style="font-size:40px"><use href="#i-sun"/></svg></b></div>
         <div class="slotline__txt"><b>Domingo</b><span>o dia todo</span></div>
       </div>
       <div class="abs credit" id="credit"><svg class="i"><use href="#i-camera"/></svg>Cobertura fotográfica · Ronaldo Schopf</div>
@@ -302,7 +302,7 @@
   const DURATION = 15500;
   const W = 1080, H = 1920;
   const HOURS = [8, 10, 12, 14, 16, 18, 20, 22, 24];   // grade da agenda
-  const GUTTER = 162;                                  // coluna dos horários
+  const GUTTER = 120;                                  // coluna dos horários
 
   const params = new URLSearchParams(location.search);
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -333,7 +333,7 @@
     /* balão 1 centralizado */
     const chat = $('chatA');
     chat.style.left = '60px';
-    chat.style.top = '760px';
+    chat.style.top = '820px';
 
     /* cartão e agenda centralizados na vertical */
     const card = $('card'), ag = $('agenda');
@@ -370,22 +370,21 @@
     reply.style.top = '880px';
     L.replyC = { x: reply.offsetLeft + reply.offsetWidth / 2, y: reply.offsetTop + 52 };
 
-    /* tela final: "BEACH" ocupa 940 px, alinhado à margem esquerda.
-       Ícones e marca no alto; horários e crédito ancorados embaixo. */
+    /* tela final: "BEACH" ocupa 640 px numa coluna de 680 px que começa em x = 200. */
     const b2 = $('b2');
     b2.style.cssText = 'font-size:100px; display:inline-block';
-    const fs = Math.min(340, 100 * 940 / b2.offsetWidth);
+    const fs = Math.min(260, 100 * 640 / b2.offsetWidth);
     b2.style.cssText = '';
     [$('b1'), b2].forEach((b) => { b.style.fontSize = fs.toFixed(1) + 'px'; });
     const lh = fs * 0.86 + 10;
-    const brandTop = 390;
+    const brandTop = 400;
     $('m1').style.top = brandTop + 'px'; $('m1').style.height = lh + 'px';
     $('m2').style.top = (brandTop + lh - 4) + 'px'; $('m2').style.height = lh + 'px';
-    $('sub').style.top = (brandTop + lh * 2 + 50) + 'px';
-    const creditTop = 1700;
+    $('sub').style.top = (brandTop + lh * 2 + 36) + 'px';
+    const creditTop = 1560;
     $('credit').style.top = creditTop + 'px';
-    $('l2').style.top = (creditTop - 76 - 176) + 'px';
-    $('l1').style.top = (creditTop - 76 - 176 - 28 - 176) + 'px';
+    $('l2').style.top = (creditTop - 60 - 128) + 'px';
+    $('l1').style.top = (creditTop - 60 - 128 - 22 - 128) + 'px';
   }
 
   function render(t) {
@@ -434,7 +433,7 @@
     const fx = L.tap.x - Math.sin(ang) * dist, fy = L.tap.y + Math.cos(ang) * dist;
     const finger = $('finger');
     finger.style.display = t > 4700 && t < 6450 ? 'block' : 'none';
-    tf(finger, `translate(${(fx - 230).toFixed(1)}px, ${(fy - 37.4).toFixed(1)}px) rotate(-26deg) scale(${(1 - 0.04 * press).toFixed(4)})`);
+    tf(finger, `translate(${(fx - 184).toFixed(1)}px, ${(fy - 29.9).toFixed(1)}px) rotate(-26deg) scale(${(1 - 0.04 * press).toFixed(4)})`);
 
     /* 3 · agenda */
     const ag = $('agenda');

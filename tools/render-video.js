@@ -4,6 +4,7 @@
  *   npm run render                     → video/fotos-disponiveis.mp4
  *   node tools/render-video.js --fps 60 --hold 3 --fade --out saida.mp4
  *   node tools/render-video.js --page logo/index.html --out video/ronaldo-schopf-logo.mp4
+ *   node tools/render-video.js --page deu-beach/index.html --audio deu-beach/sfx.wav --out video/deu-beach.mp4
  *
  * Requer ffmpeg no PATH. Cada quadro é renderizado de forma determinística
  * via window.story.seek(t), então não há quadros perdidos.
@@ -23,6 +24,7 @@ const HOLD = Number(opt('hold', 2));        // segundos extras com a tela final 
 const FADE = args.includes('--fade');
 const OUT = path.resolve(opt('out', 'video/fotos-disponiveis.mp4'));
 const PAGE = opt('page', 'index.html');
+const AUDIO = opt('audio', null);           // trilha/efeitos (wav) para mixar no MP4
 const BROWSER = process.env.CHROMIUM_PATH || undefined;
 
 (async () => {
@@ -44,6 +46,7 @@ const BROWSER = process.env.CHROMIUM_PATH || undefined;
   const ff = spawn('ffmpeg', [
     '-y', '-loglevel', 'error',
     '-f', 'image2pipe', '-framerate', String(FPS), '-i', '-',
+    ...(AUDIO ? ['-i', path.resolve(AUDIO), '-map', '0:v', '-map', '1:a', '-c:a', 'aac', '-b:a', '192k', '-shortest'] : []),
     '-c:v', 'libx264', '-preset', 'slow', '-crf', '14', '-tune', 'animation',
     '-pix_fmt', 'yuv420p', '-movflags', '+faststart', OUT,
   ], { stdio: ['pipe', 'inherit', 'inherit'] });
