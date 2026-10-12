@@ -106,7 +106,7 @@ Cores: magenta `#B4407F`, branco `#FFFFFF`, fundo preto `#000000`. Fonte: Six Ca
 
 Story animado em 1080 × 1920 px, com 15,5 s de duração, em [`deu-beach/index.html`](deu-beach/index.html). Ele divulga a **cobertura fotográfica** do campeonato de beach tennis **DEU BEACH**: **sábado a partir das 18:00** e **domingo o dia todo**. É voltado para quem quer as fotos do evento.
 
-É um redesign em preto e branco da referência do convite no chat: balão → cartão de evento → toque do dedo → lista. Aqui, a lista virou a agenda de fotos do fim de semana. Os ícones são flat e minimalistas: câmera, raquete de beach tennis, bola, rede, sol, calendário e check.
+É um redesign em rosa pink e branco da referência do convite no chat: balão → cartão de evento → toque do dedo → lista. Aqui, a lista virou a agenda de fotos do fim de semana. Os ícones são flat e minimalistas: câmera, raquete de beach tennis, bola, rede, sol, calendário e check.
 
 O vídeo pronto está em [`video/deu-beach.mp4`](video/deu-beach.mp4). Especificações: H.264, 30 fps, 18 s (os 15,5 s da animação mais 2,5 s de tela final, com os ícones flutuando).
 
@@ -117,8 +117,10 @@ O vídeo pronto está em [`video/deu-beach.mp4`](video/deu-beach.mp4). Especific
 | 5,0–6,6 s | O dedo entra e toca em "Quero minhas fotos". O cartão inverte para preto e gira. |
 | 6,5–10,4 s | Aparece a agenda de fotos do fim de semana. Os blocos crescem na grade de horários: SÁB das 18:00 até 00:00 e DOM das 08:00 até 00:00. No rodapé, **Lembrete das fotos ativado**. |
 | 10,5–12,1 s | Um jogador responde: **Quero as fotos!** |
-| 12,1–15,5 s | Um círculo escurece a tela e a marca **DEU BEACH** monta, com "Fotos do Campeonato de Beach Tennis", os dois horários em blocos de calendário e o crédito "Cobertura fotográfica · Ronaldo Schopf". |
+| 12,1–15,5 s | Um círculo pinta a tela de rosa e a marca **DEU BEACH** monta, com "Fotos do Campeonato de Beach Tennis", os dois horários em blocos de calendário e o crédito "Cobertura fotográfica · Ronaldo Schopf". |
 
-Cores: preto `#0B0B0B`, branco `#FFFFFF` e cinzas (`#8A8A8A`, `#EFEFEF`). Fonte: Inter (Google Fonts).
+Cores: rosa pink `#FF2E93` (no lugar do preto), branco `#FFFFFF` e tons de rosa para o texto secundário e os fundos suaves (`#E0237F`, `#FFE6F2`, `#FFD6EA`). Fonte: Inter (Google Fonts).
+
+Os cartões ocupam quase toda a largura (margem de 50 px), e a agenda, quase toda a altura. Na tela final, os ícones e a marca ficam alinhados no alto, à esquerda, e os horários e o crédito ficam ancorados embaixo.
 
 `?t=8000` congela um quadro, `?clean` esconde os controles, `R` repete. Para gerar o vídeo de novo: `npm run render:deubeach`.

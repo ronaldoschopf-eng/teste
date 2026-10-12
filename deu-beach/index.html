@@ -10,13 +10,14 @@
 <style>
   /* Palco 1080 × 1920 (9:16). Redesign da referência "convite no chat":
      balão → cartão de compromisso → toque → agenda do fim de semana →
-     resposta → tela final. Só preto, branco e cinzas. */
+     resposta → tela final. Só rosa pink e branco. */
   :root {
-    --ink: #0b0b0b;
+    --ink: #ff2e93;      /* rosa pink: substitui o preto */
     --paper: #ffffff;
-    --gray: #8a8a8a;
-    --line: #e4e4e4;
-    --soft: #efefef;
+    --gray: #e0237f;     /* texto secundário sobre branco */
+    --line: #ffd3e8;
+    --soft: #ffe6f2;
+    --on-pink: #ffd6ea;  /* texto secundário sobre rosa */
     --font: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
     color-scheme: light dark;
   }
@@ -33,106 +34,106 @@
   .abs { position: absolute; }
   .i { width: 1em; height: 1em; flex: none; display: block; }
 
-  /* avatares: círculo branco com contorno preto e um ícone dentro */
+  /* avatares: círculo branco com contorno rosa e um ícone dentro */
   .avatar {
-    width: 112px; height: 112px; border-radius: 50%; box-sizing: border-box;
-    border: 5px solid var(--ink); background: var(--paper); color: var(--ink);
-    display: grid; place-items: center; font-size: 62px; flex: none;
+    width: 132px; height: 132px; border-radius: 50%; box-sizing: border-box;
+    border: 6px solid var(--ink); background: var(--paper); color: var(--ink);
+    display: grid; place-items: center; font-size: 74px; flex: none;
   }
   .avatar--dark { background: var(--ink); color: var(--paper); }
 
   /* cena 1 · pergunta no chat */
-  .chat { display: flex; align-items: flex-start; gap: 22px; }
+  .chat { display: flex; align-items: flex-start; gap: 24px; }
   .bubble {
-    box-sizing: border-box; border: 5px solid var(--ink); border-radius: 30px;
-    padding: 22px 34px 26px; font-size: 62px; line-height: 1.08; letter-spacing: -.015em;
+    box-sizing: border-box; border: 6px solid var(--ink); border-radius: 38px;
+    padding: 28px 44px 32px; font-size: 82px; font-weight: 500; line-height: 1.06; letter-spacing: -.02em;
     background: var(--soft); transform-origin: 0 0; white-space: nowrap;
   }
   .typing {
-    left: 134px; top: 0; height: 104px; width: 190px; box-sizing: border-box;
-    border: 5px solid var(--ink); border-radius: 30px; background: var(--soft);
-    display: flex; align-items: center; justify-content: center; gap: 16px; transform-origin: 0 0;
+    left: 156px; top: 0; height: 128px; width: 230px; box-sizing: border-box;
+    border: 6px solid var(--ink); border-radius: 38px; background: var(--soft);
+    display: flex; align-items: center; justify-content: center; gap: 18px; transform-origin: 0 0;
   }
-  .typing span { width: 18px; height: 18px; border-radius: 50%; background: var(--ink); display: block; }
+  .typing span { width: 22px; height: 22px; border-radius: 50%; background: var(--ink); display: block; }
 
-  /* cena 2 · cartão do compromisso */
+  /* cena 2 · cartão do compromisso: quase a largura toda do quadro */
   .card {
-    left: 110px; width: 860px; box-sizing: border-box;
-    border: 5px solid var(--ink); border-radius: 40px; background: var(--paper);
+    left: 50px; width: 980px; box-sizing: border-box;
+    border: 6px solid var(--ink); border-radius: 52px; background: var(--paper);
     color: var(--ink);
     transform-origin: 50% 50%; backface-visibility: hidden;
   }
-  .card__body { padding: 44px 48px 34px; display: flex; flex-direction: column; gap: 26px; }
-  .row { display: flex; align-items: flex-start; gap: 28px; }
+  .card__body { padding: 64px 60px 56px; display: flex; flex-direction: column; gap: 48px; }
+  .row { display: flex; align-items: flex-start; gap: 34px; }
   .row__icon {
-    width: 88px; height: 88px; border-radius: 50%; background: var(--soft);
-    display: grid; place-items: center; font-size: 52px; flex: none;
+    width: 112px; height: 112px; border-radius: 50%; background: var(--soft);
+    display: grid; place-items: center; font-size: 66px; flex: none;
   }
   .row--head { align-items: center; }
-  .row--head .avatar { width: 88px; height: 88px; font-size: 50px; border-width: 4px; }
-  .name { font-size: 50px; font-weight: 500; letter-spacing: -.01em; }
-  .title { font-size: 52px; font-weight: 600; line-height: 1.1; letter-spacing: -.02em; padding-top: 12px; }
-  .meta { padding-top: 6px; }
-  .meta b { display: block; font-size: 48px; font-weight: 600; letter-spacing: -.015em; }
-  .meta span { display: block; font-size: 46px; color: var(--gray); letter-spacing: -.01em; margin-top: 2px; }
+  .row--head .avatar { width: 112px; height: 112px; font-size: 64px; border-width: 5px; }
+  .name { font-size: 58px; font-weight: 500; letter-spacing: -.015em; }
+  .title { font-size: 66px; font-weight: 700; line-height: 1.06; letter-spacing: -.025em; padding-top: 10px; }
+  .meta { padding-top: 4px; }
+  .meta b { display: block; font-size: 62px; font-weight: 700; letter-spacing: -.02em; line-height: 1.1; }
+  .meta span { display: block; font-size: 56px; color: var(--gray); letter-spacing: -.015em; margin-top: 2px; }
   .card__btn {
-    border-top: 4px solid var(--ink); height: 128px; display: flex; align-items: center; justify-content: center;
-    gap: 18px; font-size: 48px; font-weight: 600; letter-spacing: -.01em;
+    border-top: 5px solid var(--ink); height: 170px; display: flex; align-items: center; justify-content: center;
+    gap: 22px; font-size: 60px; font-weight: 700; letter-spacing: -.015em;
   }
-  .card__btn .i { font-size: 52px; }
+  .card__btn .i { font-size: 66px; }
 
-  /* dedo (flat, contorno preto) */
-  .finger { left: 0; top: 0; width: 400px; height: 1075px; transform-origin: 200px 32.5px; overflow: visible; }
+  /* dedo (flat, contorno rosa) */
+  .finger { left: 0; top: 0; width: 460px; height: 1236px; transform-origin: 230px 37.4px; overflow: visible; }
 
-  /* cena 3 · agenda */
-  .agenda__body { padding: 44px 48px 0; }
-  .agenda__label { font-size: 40px; font-weight: 500; padding-bottom: 18px; border-bottom: 4px solid var(--ink); display: flex; justify-content: space-between; align-items: baseline; }
-  .agenda__label small { font-size: 34px; color: var(--gray); font-weight: 400; }
-  .days { display: grid; grid-template-columns: 120px 1fr 1fr; column-gap: 20px; padding: 28px 0 18px; }
+  /* cena 3 · agenda: ocupa quase a altura toda */
+  .agenda__body { padding: 56px 56px 0; }
+  .agenda__label { font-size: 50px; font-weight: 600; padding-bottom: 22px; border-bottom: 5px solid var(--ink); display: flex; justify-content: space-between; align-items: baseline; }
+  .agenda__label small { font-size: 40px; color: var(--gray); font-weight: 400; }
+  .days { display: grid; grid-template-columns: 140px 1fr 1fr; column-gap: 22px; padding: 34px 0 24px; }
   .day { display: flex; align-items: baseline; gap: 14px; }
-  .day b { font-size: 50px; font-weight: 700; letter-spacing: -.02em; }
-  .day span { font-size: 34px; color: var(--gray); }
-  .grid { position: relative; height: 840px; margin-bottom: 40px; }
-  .hour { left: 0; width: 100%; height: 0; border-top: 2px solid var(--line); }
-  .hour span { position: absolute; left: 0; top: -20px; font-size: 28px; color: var(--gray); font-variant-numeric: tabular-nums; background: var(--paper); padding-right: 10px; }
+  .day b { font-size: 62px; font-weight: 800; letter-spacing: -.025em; }
+  .day span { font-size: 38px; color: var(--gray); }
+  .grid { position: relative; height: 1080px; margin-bottom: 48px; }
+  .hour { left: 0; width: 100%; height: 0; border-top: 3px solid var(--line); }
+  .hour span { position: absolute; left: 0; top: -22px; font-size: 32px; color: var(--gray); font-variant-numeric: tabular-nums; background: var(--paper); padding-right: 12px; }
   .slot {
-    background: var(--ink); color: var(--paper); border-radius: 22px; box-sizing: border-box;
-    padding: 22px 24px; transform-origin: 50% 0; overflow: hidden;
+    background: var(--ink); color: var(--paper); border-radius: 28px; box-sizing: border-box;
+    padding: 28px 30px; transform-origin: 50% 0; overflow: hidden;
   }
-  .slot__in { display: flex; flex-direction: column; gap: 10px; }
-  .slot .i { font-size: 52px; margin-bottom: 6px; }
-  .slot b { font-size: 38px; font-weight: 700; letter-spacing: -.01em; line-height: 1; }
-  .slot span { font-size: 30px; line-height: 1.2; color: #cfcfcf; }
-  .agenda__foot { border-top: 4px solid var(--ink); height: 128px; display: flex; align-items: center; justify-content: center; gap: 18px; font-size: 46px; font-weight: 600; }
-  .check { width: 60px; height: 60px; border-radius: 50%; background: var(--ink); color: var(--paper); display: grid; place-items: center; font-size: 40px; }
+  .slot__in { display: flex; flex-direction: column; gap: 12px; }
+  .slot .i { font-size: 64px; margin-bottom: 8px; }
+  .slot b { font-size: 46px; font-weight: 800; letter-spacing: -.015em; line-height: 1; }
+  .slot span { font-size: 36px; line-height: 1.2; color: var(--on-pink); }
+  .agenda__foot { border-top: 5px solid var(--ink); height: 160px; display: flex; align-items: center; justify-content: center; gap: 22px; font-size: 54px; font-weight: 700; letter-spacing: -.015em; }
+  .check { width: 76px; height: 76px; border-radius: 50%; background: var(--ink); color: var(--paper); display: grid; place-items: center; font-size: 50px; }
 
   /* cena 4 · resposta */
-  .reply { display: flex; align-items: flex-start; gap: 22px; }
+  .reply { display: flex; align-items: flex-start; gap: 24px; }
   .reply .bubble { background: var(--ink); color: var(--paper); transform-origin: 100% 0; }
 
-  /* cena 5 · tela final em preto */
+  /* cena 5 · tela final em rosa: blocos encostados nas margens, não no centro */
   .wipe { inset: 0; background: var(--ink); }
   .final { inset: 0; color: var(--paper); }
-  .icons { left: 0; width: 100%; top: 330px; display: flex; justify-content: center; gap: 44px; font-size: 104px; }
+  .icons { left: 70px; top: 150px; display: flex; gap: 46px; font-size: 118px; }
   .icons .i { transform-origin: 50% 100%; }
-  .brand { left: 0; width: 100%; text-align: center; font-weight: 900; letter-spacing: -.045em; line-height: .86; }
-  .mask { overflow: hidden; left: 0; width: 100%; }
-  .sub { left: 0; width: 100%; text-align: center; font-size: 50px; font-weight: 500; letter-spacing: -.01em; }
-  .credit { left: 0; width: 100%; display: flex; justify-content: center; align-items: center; gap: 16px; font-size: 38px; color: #bdbdbd; }
-  .credit .i { font-size: 46px; }
+  .brand { left: 0; font-weight: 900; letter-spacing: -.05em; line-height: .86; white-space: nowrap; }
+  .mask { overflow: hidden; left: 70px; width: 1010px; }
+  .sub { left: 70px; width: 940px; font-size: 58px; font-weight: 600; letter-spacing: -.02em; line-height: 1.1; }
+  .credit { left: 70px; display: flex; align-items: center; gap: 18px; font-size: 42px; font-weight: 500; color: var(--on-pink); }
+  .credit .i { font-size: 52px; }
   .slotline {
-    left: 110px; width: 860px; height: 150px; box-sizing: border-box;
-    border: 4px solid var(--paper); border-radius: 34px;
-    display: flex; align-items: center; gap: 34px; padding: 0 22px;
+    left: 70px; width: 940px; height: 176px; box-sizing: border-box;
+    border: 5px solid var(--paper); border-radius: 40px;
+    display: flex; align-items: center; gap: 38px; padding: 0 26px;
   }
   .tile {
-    width: 106px; height: 106px; border-radius: 20px; background: var(--paper); color: var(--ink);
+    width: 126px; height: 126px; border-radius: 24px; background: var(--paper); color: var(--ink);
     display: flex; flex-direction: column; overflow: hidden; flex: none;
   }
-  .tile i { font-style: normal; height: 34px; background: #4a4a4a; color: var(--paper); font-size: 22px; font-weight: 700; letter-spacing: .08em; display: grid; place-items: center; }
-  .tile b { flex: 1; display: grid; place-items: center; font-size: 46px; font-weight: 900; letter-spacing: -.03em; }
-  .slotline__txt b { display: block; font-size: 52px; font-weight: 700; letter-spacing: -.02em; line-height: 1.05; }
-  .slotline__txt span { display: block; font-size: 42px; color: #bdbdbd; letter-spacing: -.01em; }
+  .tile i { font-style: normal; height: 40px; background: #c8126c; color: var(--paper); font-size: 26px; font-weight: 800; letter-spacing: .08em; display: grid; place-items: center; }
+  .tile b { flex: 1; display: grid; place-items: center; font-size: 54px; font-weight: 900; letter-spacing: -.03em; }
+  .slotline__txt b { display: block; font-size: 62px; font-weight: 800; letter-spacing: -.025em; line-height: 1.05; }
+  .slotline__txt span { display: block; font-size: 50px; color: var(--on-pink); letter-spacing: -.015em; }
 
   .controls {
     position: fixed; right: 16px; bottom: 16px; display: flex; align-items: center; gap: 10px;
@@ -244,9 +245,9 @@
 
     <!-- dedo -->
     <svg class="abs finger" id="finger" viewBox="0 0 320 860" aria-hidden="true">
-      <path d="M44 900 V200 C44 92 100 26 160 26 C220 26 276 92 276 200 V900 Z" fill="#fff" stroke="#0b0b0b" stroke-width="7" stroke-linejoin="round"/>
-      <path d="M44 900 V200 C44 126 70 72 108 44 C88 96 82 146 82 210 V900 Z" fill="#0b0b0b"/>
-      <path d="M112 124 C112 82 136 58 164 58 C192 58 216 82 216 124 C216 156 194 172 164 172 C134 172 112 156 112 124 Z" fill="none" stroke="#0b0b0b" stroke-width="6"/>
+      <path d="M44 900 V200 C44 92 100 26 160 26 C220 26 276 92 276 200 V900 Z" fill="#fff" stroke="#ff2e93" stroke-width="7" stroke-linejoin="round"/>
+      <path d="M44 900 V200 C44 126 70 72 108 44 C88 96 82 146 82 210 V900 Z" fill="#ff2e93"/>
+      <path d="M112 124 C112 82 136 58 164 58 C192 58 216 82 216 124 C216 156 194 172 164 172 C134 172 112 156 112 124 Z" fill="none" stroke="#ff2e93" stroke-width="6"/>
     </svg>
 
     <!-- 4 · resposta -->
@@ -267,7 +268,7 @@
       </div>
       <div class="abs mask" id="m1"><div class="brand" id="b1">DEU</div></div>
       <div class="abs mask" id="m2"><div class="brand" id="b2">BEACH</div></div>
-      <div class="abs sub" id="sub">Fotos do Campeonato de Beach Tennis</div>
+      <div class="abs sub" id="sub">Fotos do Campeonato<br>de Beach Tennis</div>
       <div class="abs slotline" id="l1">
         <div class="tile"><i>SÁB</i><b>18h</b></div>
         <div class="slotline__txt"><b>Sábado</b><span>a partir das 18:00</span></div>
@@ -301,7 +302,7 @@
   const DURATION = 15500;
   const W = 1080, H = 1920;
   const HOURS = [8, 10, 12, 14, 16, 18, 20, 22, 24];   // grade da agenda
-  const GUTTER = 140;                                  // coluna dos horários
+  const GUTTER = 162;                                  // coluna dos horários
 
   const params = new URLSearchParams(location.search);
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -331,8 +332,8 @@
   function build() {
     /* balão 1 centralizado */
     const chat = $('chatA');
-    chat.style.left = ((W - chat.offsetWidth) / 2) + 'px';
-    chat.style.top = '820px';
+    chat.style.left = '60px';
+    chat.style.top = '760px';
 
     /* cartão e agenda centralizados na vertical */
     const card = $('card'), ag = $('agenda');
@@ -365,29 +366,26 @@
 
     /* resposta alinhada à direita, como na referência */
     const reply = $('reply');
-    reply.style.left = (W - reply.offsetWidth - 150) + 'px';
+    reply.style.left = (W - reply.offsetWidth - 60) + 'px';
     reply.style.top = '880px';
     L.replyC = { x: reply.offsetLeft + reply.offsetWidth / 2, y: reply.offsetTop + 52 };
 
-    /* tela final: "BEACH" ocupa 880 px; "DEU" usa o mesmo corpo */
+    /* tela final: "BEACH" ocupa 940 px, alinhado à margem esquerda.
+       Ícones e marca no alto; horários e crédito ancorados embaixo. */
     const b2 = $('b2');
-    b2.style.cssText = 'font-size:100px; display:inline-block; width:auto';
-    const fs = Math.min(300, 100 * 880 / b2.offsetWidth);
+    b2.style.cssText = 'font-size:100px; display:inline-block';
+    const fs = Math.min(340, 100 * 940 / b2.offsetWidth);
     b2.style.cssText = '';
     [$('b1'), b2].forEach((b) => { b.style.fontSize = fs.toFixed(1) + 'px'; });
-    /* bloco final centralizado: ícones · DEU · BEACH · chamada · 2 horários */
-    const lh = fs * 0.86 + 8;
-    const total = 104 + 100 + lh * 2 + 40 + 60 + 70 + 150 + 26 + 150 + 60 + 46;
-    const y0 = Math.round((H - total) / 2 - 20);
-    const brandTop = y0 + 104 + 100;
-    $('icons').style.top = y0 + 'px';
+    const lh = fs * 0.86 + 10;
+    const brandTop = 390;
     $('m1').style.top = brandTop + 'px'; $('m1').style.height = lh + 'px';
     $('m2').style.top = (brandTop + lh - 4) + 'px'; $('m2').style.height = lh + 'px';
-    const subTop = brandTop + lh * 2 + 40;
-    $('sub').style.top = subTop + 'px';
-    $('l1').style.top = (subTop + 130) + 'px';
-    $('l2').style.top = (subTop + 130 + 176) + 'px';
-    $('credit').style.top = (subTop + 130 + 176 + 150 + 60) + 'px';
+    $('sub').style.top = (brandTop + lh * 2 + 50) + 'px';
+    const creditTop = 1700;
+    $('credit').style.top = creditTop + 'px';
+    $('l2').style.top = (creditTop - 76 - 176) + 'px';
+    $('l1').style.top = (creditTop - 76 - 176 - 28 - 176) + 'px';
   }
 
   function render(t) {
@@ -420,11 +418,12 @@
     op(card, seg(t, 2950, 3250) * (flipA < 1 ? 1 : 0));
     tf(card, `perspective(2600px) translateY(${((1 - cIn) * 220).toFixed(1)}px) scale(${(lerp(0.9, 1, cIn) - 0.035 * press).toFixed(4)}) rotateY(${(90 * flipA).toFixed(2)}deg)`);
     /* toque: o cartão inverte (preto ↔ branco), como o destaque da referência */
-    const g = (a, b) => { const v = Math.round(lerp(a, b, inv)); return `rgb(${v},${v},${v})`; };
-    card.style.setProperty('--paper', g(255, 11));
-    card.style.setProperty('--ink', g(11, 255));
-    card.style.setProperty('--soft', g(239, 40));
-    card.style.setProperty('--gray', g(138, 160));
+    const g = (a, b) => `rgb(${a.map((v, k) => Math.round(lerp(v, b[k], inv))).join(',')})`;
+    const WHITE = [255, 255, 255], PINK = [255, 46, 147];
+    card.style.setProperty('--paper', g(WHITE, PINK));
+    card.style.setProperty('--ink', g(PINK, WHITE));
+    card.style.setProperty('--soft', g([255, 230, 242], [255, 98, 172]));
+    card.style.setProperty('--gray', g([224, 35, 127], [255, 214, 234]));
     rows.forEach((r, i) => rise(r, E.outCubic(seg(t, 3250 + i * 170, 3800 + i * 170)), 34));
 
     /* dedo: entra pela direita, toca o botão e sai */
@@ -435,7 +434,7 @@
     const fx = L.tap.x - Math.sin(ang) * dist, fy = L.tap.y + Math.cos(ang) * dist;
     const finger = $('finger');
     finger.style.display = t > 4700 && t < 6450 ? 'block' : 'none';
-    tf(finger, `translate(${(fx - 200).toFixed(1)}px, ${(fy - 32.5).toFixed(1)}px) rotate(-26deg) scale(${(1 - 0.04 * press).toFixed(4)})`);
+    tf(finger, `translate(${(fx - 230).toFixed(1)}px, ${(fy - 37.4).toFixed(1)}px) rotate(-26deg) scale(${(1 - 0.04 * press).toFixed(4)})`);
 
     /* 3 · agenda */
     const ag = $('agenda');
