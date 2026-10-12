@@ -118,6 +118,8 @@
   .brand { left: 0; width: 100%; text-align: center; font-weight: 900; letter-spacing: -.045em; line-height: .86; }
   .mask { overflow: hidden; left: 0; width: 100%; }
   .sub { left: 0; width: 100%; text-align: center; font-size: 50px; font-weight: 500; letter-spacing: -.01em; }
+  .credit { left: 0; width: 100%; display: flex; justify-content: center; align-items: center; gap: 16px; font-size: 38px; color: #bdbdbd; }
+  .credit .i { font-size: 46px; }
   .slotline {
     left: 110px; width: 860px; height: 150px; box-sizing: border-box;
     border: 4px solid var(--paper); border-radius: 34px;
@@ -180,6 +182,10 @@
       <path d="M8 12 V56 M56 12 V56"/><path d="M8 18 H56" stroke-width="6"/>
       <path d="M8 40 H56 M20 18 V40 M32 18 V40 M44 18 V40 M8 29 H56" stroke-width="2.6"/>
     </symbol>
+        <symbol id="i-camera" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M8 22 C8 19 10 17 13 17 H21 L25 11 H39 L43 17 H51 C54 17 56 19 56 22 V48 C56 51 54 53 51 53 H13 C10 53 8 51 8 48 Z"/>
+      <circle cx="32" cy="34" r="10"/><circle cx="47" cy="25" r="1.6" fill="currentColor" stroke="none"/>
+    </symbol>
     <symbol id="i-check" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
       <path d="M17 33 L28 44 L48 22"/>
     </symbol>
@@ -187,25 +193,25 @@
 </svg>
 
 <main class="viewport">
-  <div class="stage" id="stage" role="img" aria-label="Animação em preto e branco no estilo agenda: um convite no chat vira o compromisso DEU BEACH, campeonato de beach tennis, no sábado a partir das 18:00 e no domingo o dia todo.">
+  <div class="stage" id="stage" role="img" aria-label="Animação em preto e branco no estilo agenda: um convite no chat vira o compromisso de fotos do DEU BEACH, campeonato de beach tennis, no sábado a partir das 18:00 e no domingo o dia todo, com cobertura fotográfica de Ronaldo Schopf.">
 
     <!-- 1 · pergunta -->
     <div class="abs chat" id="chatA">
-      <div class="avatar" id="avA"><svg class="i"><use href="#i-racket"/></svg></div>
+      <div class="avatar" id="avA"><svg class="i"><use href="#i-camera"/></svg></div>
       <div class="abs typing" id="typing"><span></span><span></span><span></span></div>
-      <div class="bubble" id="bubA">Quem topa um<br>beach tennis?</div>
+      <div class="bubble" id="bubA">Vai jogar no<br>DEU BEACH?</div>
     </div>
 
     <!-- 2 · compromisso -->
     <div class="abs card" id="card">
       <div class="card__body">
         <div class="row row--head" data-row>
-          <div class="avatar avatar--dark"><svg class="i"><use href="#i-ball"/></svg></div>
-          <div class="name">Deu Beach</div>
+          <div class="avatar avatar--dark"><svg class="i"><use href="#i-camera"/></svg></div>
+          <div class="name">Ronaldo Schopf · fotos</div>
         </div>
         <div class="row" data-row>
-          <div class="row__icon"><svg class="i"><use href="#i-trophy"/></svg></div>
-          <div class="title">Campeonato de<br>Beach Tennis</div>
+          <div class="row__icon"><svg class="i"><use href="#i-racket"/></svg></div>
+          <div class="title">Suas fotos no<br>DEU BEACH</div>
         </div>
         <div class="row" data-row>
           <div class="row__icon"><svg class="i"><use href="#i-cal"/></svg></div>
@@ -216,24 +222,24 @@
           <div class="meta"><b>Domingo</b><span>o dia todo</span></div>
         </div>
       </div>
-      <div class="card__btn" id="btn" data-row><svg class="i"><use href="#i-racket"/></svg>Vou jogar</div>
+      <div class="card__btn" id="btn" data-row><svg class="i"><use href="#i-camera"/></svg>Quero minhas fotos</div>
     </div>
 
     <!-- 3 · agenda do fim de semana -->
     <div class="abs card" id="agenda">
       <div class="agenda__body">
-        <div class="agenda__label" data-ag>Agenda <small>fim de semana</small></div>
+        <div class="agenda__label" data-ag>Agenda <small>fotos do fim de semana</small></div>
         <div class="days" data-ag>
           <span></span>
           <div class="day"><b>SÁB</b><span>sábado</span></div>
           <div class="day"><b>DOM</b><span>domingo</span></div>
         </div>
         <div class="grid" id="grid">
-          <div class="abs slot" id="slotSat"><div class="slot__in"><svg class="i"><use href="#i-ball"/></svg><b>DEU BEACH</b><span>a partir<br>das 18:00</span></div></div>
-          <div class="abs slot" id="slotSun"><div class="slot__in"><svg class="i"><use href="#i-sun"/></svg><b>DEU BEACH</b><span>o dia todo</span></div></div>
+          <div class="abs slot" id="slotSat"><div class="slot__in"><svg class="i"><use href="#i-camera"/></svg><b>DEU BEACH</b><span>fotos a partir<br>das 18:00</span></div></div>
+          <div class="abs slot" id="slotSun"><div class="slot__in"><svg class="i"><use href="#i-camera"/></svg><b>DEU BEACH</b><span>fotos o<br>dia todo</span></div></div>
         </div>
       </div>
-      <div class="agenda__foot" id="foot"><span class="check" id="check"><svg class="i"><use href="#i-check"/></svg></span>Presença confirmada</div>
+      <div class="agenda__foot" id="foot"><span class="check" id="check"><svg class="i"><use href="#i-check"/></svg></span>Lembrete das fotos ativado</div>
     </div>
 
     <!-- dedo -->
@@ -245,7 +251,7 @@
 
     <!-- 4 · resposta -->
     <div class="abs reply" id="reply">
-      <div class="bubble" id="bubR">Tô dentro!</div>
+      <div class="bubble" id="bubR">Quero as fotos!</div>
       <div class="avatar" id="avR"><svg class="i"><use href="#i-ball"/></svg></div>
     </div>
 
@@ -255,13 +261,13 @@
       <div class="abs icons" id="icons">
         <svg class="i"><use href="#i-racket"/></svg>
         <svg class="i"><use href="#i-ball"/></svg>
+        <svg class="i"><use href="#i-camera"/></svg>
         <svg class="i"><use href="#i-net"/></svg>
-        <svg class="i"><use href="#i-trophy"/></svg>
         <svg class="i"><use href="#i-sun"/></svg>
       </div>
       <div class="abs mask" id="m1"><div class="brand" id="b1">DEU</div></div>
       <div class="abs mask" id="m2"><div class="brand" id="b2">BEACH</div></div>
-      <div class="abs sub" id="sub">Campeonato de Beach Tennis</div>
+      <div class="abs sub" id="sub">Fotos do Campeonato de Beach Tennis</div>
       <div class="abs slotline" id="l1">
         <div class="tile"><i>SÁB</i><b>18h</b></div>
         <div class="slotline__txt"><b>Sábado</b><span>a partir das 18:00</span></div>
@@ -270,6 +276,7 @@
         <div class="tile"><i>DOM</i><b><svg class="i" style="font-size:52px"><use href="#i-sun"/></svg></b></div>
         <div class="slotline__txt"><b>Domingo</b><span>o dia todo</span></div>
       </div>
+      <div class="abs credit" id="credit"><svg class="i"><use href="#i-camera"/></svg>Cobertura fotográfica · Ronaldo Schopf</div>
     </div>
   </div>
   <nav class="controls" aria-label="Controles da animação">
@@ -282,11 +289,11 @@
 <script>
 /* Linha do tempo (ms) — tudo sai de render(t): qualquer quadro pode ser
    reproduzido (?t=5500) e o vídeo é exportado sem quadros perdidos.
-   0–2900      "digitando…" e o balão "Quem topa um beach tennis?"
+   0–2900      "digitando…" e o balão "Vai jogar no DEU BEACH?"
    2700–5400   o balão vira o cartão do compromisso, linha por linha
-   5000–6600   o dedo toca em "Vou jogar"; o cartão inverte e gira
+   5000–6600   o dedo toca em "Quero minhas fotos"; o cartão inverte e gira
    6500–10400  agenda do fim de semana: SÁB a partir das 18:00, DOM o dia todo
-   10500–12100 resposta "Tô dentro!"
+   10500–12100 resposta "Quero as fotos!"
    12100–15500 a tela escurece e a assinatura DEU BEACH monta
    ?clean esconde os controles · ?t=<ms> congela um quadro · R repete */
 (() => {
@@ -370,7 +377,7 @@
     [$('b1'), b2].forEach((b) => { b.style.fontSize = fs.toFixed(1) + 'px'; });
     /* bloco final centralizado: ícones · DEU · BEACH · chamada · 2 horários */
     const lh = fs * 0.86 + 8;
-    const total = 104 + 100 + lh * 2 + 40 + 60 + 70 + 150 + 26 + 150;
+    const total = 104 + 100 + lh * 2 + 40 + 60 + 70 + 150 + 26 + 150 + 60 + 46;
     const y0 = Math.round((H - total) / 2 - 20);
     const brandTop = y0 + 104 + 100;
     $('icons').style.top = y0 + 'px';
@@ -380,6 +387,7 @@
     $('sub').style.top = subTop + 'px';
     $('l1').style.top = (subTop + 130) + 'px';
     $('l2').style.top = (subTop + 130 + 176) + 'px';
+    $('credit').style.top = (subTop + 130 + 176 + 150 + 60) + 'px';
   }
 
   function render(t) {
@@ -490,6 +498,8 @@
       op($(id), p);
       tf($(id), `translateX(${((1 - p) * -60).toFixed(1)}px)`);
     });
+
+    rise($('credit'), E.outCubic(seg(t, 14100, 14600)), 20);
 
     $('time').textContent = (Math.min(t, DURATION) / 1000).toFixed(1) + ' s';
     $('fill').style.transform = `scaleX(${clamp(t / DURATION).toFixed(4)})`;
