@@ -177,3 +177,29 @@ A trilha é um chill-pop a 79 BPM, e a animação foi travada no compasso dela (
 Os efeitos passam por um reverb, a trilha abaixa um pouco quando chega mensagem e o estéreo é aberto. Os instrumentos (pad, baixo, bumbo, palma, chimbal, pluck, riser, delay e reverb) ficam em [`tools/sfx_synth.py`](tools/sfx_synth.py), compartilhados com o DEU BEACH.
 
 `?t=7000` congela um quadro, `?clean` esconde os controles, `R` repete. Para gerar o vídeo de novo: `npm run render:volei`.
+
+---
+
+# Registro Premiado — flyer animado (1:1)
+
+Flyer animado em 1080 × 1080 px, com 12,5 s de duração, em [`registro/index.html`](registro/index.html). Segue a mesma pegada do "Fotos do vôlei": uma conversa com o fotógrafo, com a imagem do prêmio baixando e uma trilha no compasso. No fim, o flyer completo se monta. As cores são as do flyer: fundo mostarda (`#D4AE3A`, em degradê de `#E3BD48` a `#C0951F`) e texto branco. As fontes são Montserrat no flyer e Inter no chat.
+
+O vídeo pronto está em [`video/registro-premiado.mp4`](video/registro-premiado.mp4). Especificações: 1080 × 1080, H.264, 30 fps, com áudio AAC e 14,5 s de duração (2 s a mais com o flyer na tela).
+
+| Tempo | O que acontece | Som |
+| --- | --- | --- |
+| 0,74–1,5 s | "digitando…" → **Seu registro foi premiado 🏆** | notificação; pad de acordes entrando |
+| 3,02 s | **Sério?! 😱** | "swoop" de envio; os acordes abrem |
+| 3,78–5,3 s | chega a imagem do prêmio, que baixa com o anel de progresso | tiques do download e um riser |
+| **5,3 s** | a imagem fica nítida, com um brilho dourado: é o próprio flyer em miniatura | **a batida entra**, com obturador, impacto e um arpejo de "prêmio" |
+| 6,06–6,82 s | chega o cupom **FOTOGRATIS2026**, e "Copiar código" vira "Copiado" | notificação e clique |
+| 7,58 s | **Ganhei, e agora?** | envio |
+| 8,34–9,1 s | "digitando…" → **Coloque um número par de fotos no carrinho e pague pela metade** | notificação |
+| 10,62 s | a conversa desfoca e sai | a bateria para e uma subida cria tensão |
+| 10,8–12,5 s | o flyer se monta: REGIS bate, TRO desliza, o sorriso se desenha e pisca, as linhas de PREMIADO se abrem, **FOTO GRÁTIS** pousa (11,38 s), o contorno do cupom se desenha e entra a regra do número par | **a batida volta com tudo** e o arpejo de "prêmio" toca de novo; acorde final em 12,9 s |
+
+A trilha é um chill-pop a 79 BPM em ré maior, sintetizado por [`tools/sfx-registro.py`](tools/sfx-registro.py) com os instrumentos de [`tools/sfx_synth.py`](tools/sfx_synth.py).
+
+O texto do flyer fica no `<template id="flyer-tpl">` do `index.html`. Ele é usado tanto na miniatura do chat quanto no final, e REGISTRO e FOTO GRÁTIS se ajustam sozinhos à largura de 860 px.
+
+`?t=11500` congela um quadro, `?clean` esconde os controles, `R` repete. Para gerar o vídeo de novo: `npm run render:registro`.

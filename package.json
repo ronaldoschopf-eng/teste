@@ -9,7 +9,9 @@
     "render:deubeach": "python3 tools/sfx-deu-beach.py && node tools/render-video.js --page deu-beach/index.html --hold 2.5 --audio deu-beach/sfx.wav --out video/deu-beach.mp4",
     "sfx:deubeach": "python3 tools/sfx-deu-beach.py",
     "sfx:volei": "python3 tools/sfx-fotos-volei.py",
-    "render:volei": "python3 tools/sfx-fotos-volei.py && node tools/render-video.js --page fotos-volei/index.html --hold 2.5 --audio fotos-volei/sfx.wav --out video/fotos-volei.mp4"
+    "render:volei": "python3 tools/sfx-fotos-volei.py && node tools/render-video.js --page fotos-volei/index.html --hold 2.5 --audio fotos-volei/sfx.wav --out video/fotos-volei.mp4",
+    "sfx:registro": "python3 tools/sfx-registro.py",
+    "render:registro": "python3 tools/sfx-registro.py && node tools/render-video.js --page registro/index.html --hold 2 --audio registro/sfx.wav --out video/registro-premiado.mp4"
   },
   "devDependencies": {
     "playwright": "1.56.1"

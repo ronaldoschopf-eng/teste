@@ -1,0 +1,498 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Registro Premiado</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:ital,wght@0,600;0,700;0,800;0,900;1,200;1,900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&text=%F0%9F%8F%86%F0%9F%98%B1&display=swap">
+<style>
+  /* Palco 1080 × 1080 (1:1). Flyer "Registro Premiado" animado na mesma
+     pegada da conversa do vôlei: o fotógrafo avisa no chat, a imagem do
+     prêmio baixa e aparece quando a batida entra, chega o cupom e, no fim,
+     o flyer completo se monta. Fundo mostarda do flyer, texto branco. */
+  :root {
+    --gold-1: #e3bd48;
+    --gold-2: #d4ae3a;     /* cor do flyer */
+    --gold-3: #c0951f;
+    --white: #ffffff;
+    --font: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif, 'Noto Color Emoji', 'Apple Color Emoji', 'Segoe UI Emoji';
+    --brand: 'Montserrat', 'Inter', ui-sans-serif, system-ui, sans-serif;
+    color-scheme: dark;
+  }
+  html, body { height: 100%; margin: 0; }
+  body { background: #1a1a1a; color: var(--white); font-family: var(--font); overflow: hidden; }
+
+  .viewport { position: fixed; inset: 0; display: grid; place-items: center; }
+  .stage {
+    position: relative; width: 1080px; height: 1080px; flex: none;
+    transform: scale(var(--scale, 1)); transform-origin: center;
+    background: linear-gradient(160deg, var(--gold-1) 0%, var(--gold-2) 50%, var(--gold-3) 100%);
+    overflow: hidden; color: var(--white);
+    -webkit-font-smoothing: antialiased;
+  }
+  .abs { position: absolute; }
+  .i { width: 1em; height: 1em; flex: none; display: block; }
+
+  .glow { border-radius: 50%; filter: blur(60px); pointer-events: none; }
+  .glow--a { width: 620px; height: 620px; left: -220px; top: 120px; background: rgba(255, 255, 255, .2); }
+  .glow--b { width: 700px; height: 700px; right: -260px; bottom: -260px; background: rgba(150, 95, 0, .25); }
+
+  /* --- conversa ---------------------------------------------------------- */
+  .chatwrap { inset: 0; transform-origin: 50% 60%; }
+  .head {
+    left: 0; top: 0; width: 100%; height: 170px; box-sizing: border-box; padding: 36px 48px 0;
+    display: flex; align-items: center; gap: 22px;
+    border-bottom: 2px solid rgba(255, 255, 255, .4);
+  }
+  .head__back { font-size: 46px; }
+  .avatar {
+    width: 84px; height: 84px; border-radius: 50%; box-sizing: border-box;
+    border: 4px solid var(--white); display: grid; place-items: center; font-size: 46px; flex: none;
+    background: rgba(255, 255, 255, .16);
+  }
+  .head__who { position: relative; flex: 1; height: 84px; }
+  .head__name { position: absolute; left: 0; top: 2px; font-size: 38px; font-weight: 600; letter-spacing: -.015em; }
+  .head__status { position: absolute; left: 0; top: 50px; font-size: 27px; opacity: .92; white-space: nowrap; }
+
+  .chat { left: 0; top: 172px; width: 100%; bottom: 0; overflow: hidden; }
+  .msg {
+    box-sizing: border-box; max-width: 700px; width: max-content;
+    padding: 18px 26px 12px; border-radius: 30px; font-size: 40px; line-height: 1.22; letter-spacing: -.015em;
+  }
+  .msg--in { left: 48px; background: rgba(255, 255, 255, .16); border: 3px solid rgba(255, 255, 255, .92); border-top-left-radius: 10px; transform-origin: 0 0; }
+  .msg--out { right: 48px; background: rgba(110, 70, 0, .26); border: 3px solid transparent; border-top-right-radius: 10px; transform-origin: 100% 0; }
+  .msg__meta { display: flex; justify-content: flex-end; align-items: center; gap: 8px; font-size: 22px; opacity: .88; margin-top: 2px; letter-spacing: 0; }
+  .msg__meta .i { font-size: 30px; }
+  .typing { width: 150px; height: 82px; padding: 0; display: flex; align-items: center; justify-content: center; gap: 12px; }
+  .typing span { width: 14px; height: 14px; border-radius: 50%; background: var(--white); display: block; }
+
+  /* imagem do prêmio: o próprio flyer em miniatura, baixando */
+  .photo { padding: 8px; max-width: none; }
+  .photo__tile { position: relative; width: 500px; height: 500px; border-radius: 20px; overflow: hidden; }
+  .photo__art { position: absolute; left: 0; top: 0; width: 1080px; height: 1080px; transform-origin: 0 0; }
+  .photo__shade { position: absolute; inset: 0; background: rgba(70, 40, 0, .3); }
+  .photo__ring { position: absolute; left: 50%; top: 50%; width: 124px; height: 124px; margin: -62px 0 0 -62px; }
+  .photo .msg__meta { padding: 4px 10px 0; }
+
+  /* cupom com botão de copiar */
+  .coupon__label { font-size: 26px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; opacity: .9; }
+  .coupon__code { font-family: var(--brand); font-size: 50px; font-weight: 800; letter-spacing: .02em; margin: 2px 0 14px; }
+  .coupon__btn {
+    position: relative; display: flex; align-items: center; justify-content: center; gap: 12px;
+    height: 70px; border-top: 2px solid rgba(255, 255, 255, .55); margin: 0 -26px; font-size: 32px; font-weight: 600;
+  }
+  .coupon__btn .i { font-size: 34px; }
+  .coupon__btn > span { position: absolute; display: flex; align-items: center; gap: 12px; }
+
+  /* --- flyer ------------------------------------------------------------- */
+  .flyer {
+    width: 1080px; height: 1080px; box-sizing: border-box;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-family: var(--brand); color: var(--white); text-transform: uppercase;
+    background: linear-gradient(160deg, var(--gold-1) 0%, var(--gold-2) 55%, var(--gold-3) 100%);
+  }
+  .flyer--final { background: transparent; }
+  .fl-row { position: relative; }
+  .fl-brand { display: flex; align-items: center; font-size: 172px; line-height: .9; letter-spacing: -.035em; }
+  .fl-brand b { font-weight: 900; font-style: italic; }
+  .fl-brand i { font-weight: 200; font-style: italic; letter-spacing: -.02em; }
+  .fl-smile { width: .74em; height: .74em; margin-left: .02em; transform: skewX(-10deg); overflow: visible; }
+  .fl-premiado { display: flex; align-items: center; gap: 26px; width: 860px; margin-top: 10px; }
+  .fl-premiado span { font-size: 54px; font-weight: 800; letter-spacing: .01em; }
+  .fl-line { flex: 1; height: 4px; background: var(--white); border-radius: 2px; }
+  .fl-line--l { transform-origin: 100% 50%; }
+  .fl-line--r { transform-origin: 0 50%; }
+  .fl-ganhou { font-size: 44px; font-weight: 800; margin-top: 66px; letter-spacing: .005em; }
+  .fl-gratis { font-size: 158px; font-weight: 900; font-style: italic; line-height: .95; letter-spacing: -.035em; margin-top: 6px; white-space: nowrap; }
+  .fl-cupom { margin-top: 30px; padding: 14px 40px 16px; border-radius: 24px; font-size: 46px; font-weight: 800; letter-spacing: .015em; }
+  .fl-cupom svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .fl-bottom { display: flex; align-items: center; gap: 30px; margin-top: 54px; }
+  .fl-bottom__q { font-size: 34px; font-weight: 800; line-height: 1.12; }
+  .fl-bottom__bar { width: 4px; height: 92px; background: var(--white); border-radius: 2px; transform-origin: 50% 0; }
+  .fl-bottom__a { font-size: 32px; font-weight: 600; line-height: 1.15; }
+  .fl-bottom__a b { font-weight: 900; }
+
+  .final { inset: 0; }
+
+  .controls {
+    position: fixed; right: 16px; bottom: 16px; display: flex; align-items: center; gap: 10px;
+    padding: 8px 8px 8px 14px; border-radius: 999px; background: rgba(20, 20, 20, .85);
+    border: 1px solid #333; font: 500 13px/1 var(--font); color: #9a9a9a; font-variant-numeric: tabular-nums;
+  }
+  .controls__track { position: relative; width: 90px; height: 3px; border-radius: 3px; background: #333; overflow: hidden; }
+  .controls__track > span { position: absolute; inset: 0; background: var(--gold-2); transform-origin: 0 50%; transform: scaleX(0); }
+  .controls button { font: inherit; color: #fff; background: transparent; border: 1px solid #444; border-radius: 999px; padding: 8px 14px; cursor: pointer; }
+  .controls button:hover { border-color: var(--gold-2); }
+  .controls button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+  .is-clean .controls { display: none; }
+  @media (max-width: 480px) { .controls__track { display: none; } }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-camera" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M8 22 C8 19 10 17 13 17 H21 L25 11 H39 L43 17 H51 C54 17 56 19 56 22 V48 C56 51 54 53 51 53 H13 C10 53 8 51 8 48 Z"/>
+      <circle cx="32" cy="34" r="10"/><circle cx="47" cy="25" r="1.6" fill="currentColor" stroke="none"/>
+    </symbol>
+    <symbol id="i-back" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path d="M40 12 L20 32 L40 52"/></symbol>
+    <symbol id="i-ticks" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 34 L16 44 L36 22 M28 40 L32 44 L52 22"/></symbol>
+    <symbol id="i-down" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path d="M32 16 V46 M20 35 L32 47 L44 35"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><rect x="22" y="22" width="30" height="32" rx="6"/><path d="M42 14 H18 C15 14 12 17 12 20 V44"/></symbol>
+    <symbol id="i-check" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 33 L27 46 L50 20"/></symbol>
+  </defs>
+</svg>
+
+<!-- o flyer (usado em miniatura no chat e, no fim, em tamanho cheio) -->
+<template id="flyer-tpl">
+  <div class="flyer">
+    <div class="fl-row fl-brand" data-k="brand"><b>REGIS</b><i>TR</i><svg class="fl-smile" viewBox="0 0 100 100" fill="none" stroke="#fff" stroke-width="5.5" stroke-linecap="round">
+      <circle class="sm-ring" cx="50" cy="50" r="44"/>
+      <path class="sm-eye sm-eye--l" d="M37 30 V44"/><path class="sm-eye sm-eye--r" d="M62 30 V44"/>
+      <path class="sm-mouth" d="M27 56 C35 76 65 76 73 56"/></svg></div>
+    <div class="fl-row fl-premiado" data-k="premiado"><div class="fl-line fl-line--l"></div><span>Premiado</span><div class="fl-line fl-line--r"></div></div>
+    <div class="fl-row fl-ganhou" data-k="ganhou">Você ganhou uma</div>
+    <div class="fl-row fl-gratis" data-k="gratis">Foto grátis</div>
+    <div class="fl-row fl-cupom" data-k="cupom"><svg preserveAspectRatio="none"><rect class="cp-rect" x="2.5" y="2.5" rx="22" fill="none" stroke="#fff" stroke-width="5"/></svg>Cupom: FOTOGRATIS2026</div>
+    <div class="fl-row fl-bottom" data-k="bottom">
+      <div class="fl-bottom__q">Ganhei,<br>e agora?</div>
+      <div class="fl-bottom__bar"></div>
+      <div class="fl-bottom__a">Coloque um <b>número par</b> de fotos<br>no carrinho e pague pela metade</div>
+    </div>
+  </div>
+</template>
+
+<main class="viewport">
+  <div class="stage" id="stage" role="img" aria-label="Flyer animado Registro Premiado: numa conversa, o fotógrafo avisa que o registro foi premiado, envia a imagem do prêmio, uma foto grátis, e o cupom FOTOGRATIS2026; a pessoa pergunta 'Ganhei, e agora?' e ele explica: coloque um número par de fotos no carrinho e pague pela metade. No fim, o flyer completo se monta.">
+    <div class="abs glow glow--a" id="glowA"></div>
+    <div class="abs glow glow--b" id="glowB"></div>
+
+    <div class="abs chatwrap" id="chatwrap">
+      <header class="abs head" id="head">
+        <svg class="i head__back"><use href="#i-back"/></svg>
+        <div class="avatar"><svg class="i"><use href="#i-camera"/></svg></div>
+        <div class="head__who">
+          <div class="head__name">Ronaldo Schopf</div>
+          <div class="head__status" id="stOnline">fotógrafo · online</div>
+          <div class="head__status" id="stTyping">digitando…</div>
+        </div>
+      </header>
+
+      <div class="abs chat" id="chat">
+        <div class="abs msg msg--in typing" id="typing"><span></span><span></span><span></span></div>
+        <div class="abs msg msg--in" id="m1">Seu registro foi premiado 🏆<div class="msg__meta">10:12</div></div>
+        <div class="abs msg msg--out" id="m2">Sério?! 😱<div class="msg__meta">10:12 <svg class="i" id="read"><use href="#i-ticks"/></svg></div></div>
+        <div class="abs msg msg--in photo" id="m3">
+          <div class="photo__tile" id="tile">
+            <div class="photo__art" id="art"></div>
+            <div class="photo__shade" id="shade"></div>
+            <svg class="photo__ring" id="ring" viewBox="0 0 124 124">
+              <circle cx="62" cy="62" r="58" fill="rgba(70,40,0,.45)"/>
+              <circle cx="62" cy="62" r="47" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="7"/>
+              <circle id="arc" cx="62" cy="62" r="47" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-dasharray="295.3" stroke-dashoffset="295.3"/>
+              <use href="#i-down" x="36" y="36" width="52" height="52" color="#fff"/>
+            </svg>
+          </div>
+          <div class="msg__meta">10:13</div>
+        </div>
+        <div class="abs msg msg--in coupon" id="m4">
+          <div class="coupon__label">Seu cupom</div>
+          <div class="coupon__code">FOTOGRATIS2026</div>
+          <div class="coupon__btn"><span id="cpCopy"><svg class="i"><use href="#i-copy"/></svg>Copiar código</span><span id="cpDone"><svg class="i"><use href="#i-check"/></svg>Copiado</span></div>
+        </div>
+        <div class="abs msg msg--out" id="m5">Ganhei, e agora?<div class="msg__meta">10:14 <svg class="i" id="read2"><use href="#i-ticks"/></svg></div></div>
+        <div class="abs msg msg--in" id="m6">Coloque um número par de fotos no carrinho e pague pela metade<div class="msg__meta">10:14</div></div>
+      </div>
+    </div>
+
+    <div class="abs final" id="final"></div>
+  </div>
+  <nav class="controls" aria-label="Controles da animação">
+    <span id="time">0.0 s</span>
+    <span class="controls__track"><span id="fill"></span></span>
+    <button type="button" id="replay" aria-keyshortcuts="R">↻ Repetir</button>
+  </nav>
+</main>
+
+<script>
+/* Linha do tempo (ms), travada no compasso da trilha (1 tempo = 760 ms).
+   Tudo sai de render(t): ?t=5400 congela um quadro e o vídeo é exportado
+   sem quadros perdidos.
+   0–500        cabeçalho da conversa entra
+   740–1500     "digitando…" → "Seu registro foi premiado 🏆"
+   3020         "Sério?! 😱"
+   3780–4540    "digitando…" → chega a imagem do prêmio, que baixa
+   5300         a batida entra e a imagem aparece: o flyer, FOTO GRÁTIS
+   6060 / 6820  chega o cupom / "Copiado"
+   7580         "Ganhei, e agora?"
+   8340–9100    "digitando…" → "Coloque um número par de fotos…"
+   10620–12500  a conversa sai e o flyer completo se monta (pousa em 11380)
+   ?clean esconde os controles · ?t=<ms> congela um quadro · R repete */
+(() => {
+  'use strict';
+  const DURATION = 12500;
+  const W = 1080, H = 1080;
+  const BOTTOM = 870;            // base da pilha de mensagens, dentro do .chat
+  const GAP = 18;
+  const Q = 760;                 // um tempo da trilha (ms)
+
+  const TYPING = [[740, 1500], [3780, 4540], [8340, 9100]];
+  const STACK = [
+    { id: 'm1', at: 1500 },
+    { id: 'm2', at: 3020 },
+    { id: 'm3', at: 4540 },
+    { id: 'm4', at: 6060 },
+    { id: 'm5', at: 7580 },
+    { id: 'm6', at: 9100 },
+  ];
+  const LOAD = [4700, 5300];     // a imagem baixa e aparece quando a batida entra
+  const COPY = 6820;
+  const OUT = 10620, LAND = 11380;
+  /* entrada do flyer final, peça por peça (ms) */
+  const FINAL = { brand: 10800, premiado: 11000, ganhou: 11190, gratis: 11380, cupom: 11570, bottom: 11760 };
+
+  const params = new URLSearchParams(location.search);
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (params.has('clean')) document.documentElement.classList.add('is-clean');
+
+  const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+  const lerp = (a, b, p) => a + (b - a) * p;
+  const seg = (t, a, b) => clamp((t - a) / (b - a));
+  const E = {
+    outCubic: (p) => 1 - Math.pow(1 - p, 3),
+    outQuint: (p) => 1 - Math.pow(1 - p, 5),
+    inCubic: (p) => p * p * p,
+    inOut: (p) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2),
+    outBack: (p) => { const c = 1.6; return 1 + (c + 1) * Math.pow(p - 1, 3) + c * Math.pow(p - 1, 2); },
+  };
+  const $ = (id) => document.getElementById(id);
+  const tf = (el, s) => { el.style.transform = s; };
+  const op = (el, v) => { el.style.opacity = v.toFixed(3); };
+
+  const H_ = {};
+  let fin = null;               // peças do flyer final
+
+  function makeFlyer() {
+    return $('flyer-tpl').content.firstElementChild.cloneNode(true);
+  }
+  /* ajusta a largura de REGISTRO e FOTO GRÁTIS e o contorno do cupom */
+  function fitFlyer(f) {
+    [['.fl-brand', 860], ['.fl-gratis', 860]].forEach(([sel, w]) => {
+      const el = f.querySelector(sel);
+      const fs = parseFloat(getComputedStyle(el).fontSize);
+      el.style.fontSize = (fs * Math.min(1.2, w / el.scrollWidth)).toFixed(1) + 'px';
+    });
+    const cp = f.querySelector('.fl-cupom'), r = f.querySelector('.cp-rect');
+    r.setAttribute('width', cp.offsetWidth - 5);
+    r.setAttribute('height', cp.offsetHeight - 5);
+    const per = 2 * (cp.offsetWidth + cp.offsetHeight);
+    r.setAttribute('stroke-dasharray', per);
+    return per;
+  }
+
+  function build() {
+    /* miniatura dentro do chat */
+    const art = $('art');
+    const mini = makeFlyer();
+    art.appendChild(mini);
+    fitFlyer(mini);
+    mini.querySelector('.cp-rect').setAttribute('stroke-dashoffset', 0);
+    tf(art, `scale(${500 / 1080})`);
+
+    /* flyer final */
+    const big = makeFlyer();
+    big.classList.add('flyer--final');
+    $('final').appendChild(big);
+    const per = fitFlyer(big);
+    fin = { per };
+    big.querySelectorAll('[data-k]').forEach((el) => { fin[el.dataset.k] = el; });
+    fin.lineL = big.querySelector('.fl-line--l');
+    fin.lineR = big.querySelector('.fl-line--r');
+    fin.rect = big.querySelector('.cp-rect');
+    fin.bar = big.querySelector('.fl-bottom__bar');
+    fin.ring = big.querySelector('.sm-ring');
+    fin.mouth = big.querySelector('.sm-mouth');
+    fin.eyeL = big.querySelector('.sm-eye--l');
+    fin.eyeR = big.querySelector('.sm-eye--r');
+    fin.b = big.querySelector('.fl-brand b');
+    fin.i = big.querySelector('.fl-brand i');
+    fin.ring.setAttribute('stroke-dasharray', 276.5);
+    fin.mouth.setAttribute('stroke-dasharray', 60);
+    [fin.eyeL, fin.eyeR].forEach((e) => { e.style.transformBox = 'fill-box'; e.style.transformOrigin = '50% 50%'; });
+
+    ['typing', ...STACK.map((s) => s.id)].forEach((id) => { H_[id] = $(id).offsetHeight; });
+  }
+
+  const grow = (t, a) => E.outCubic(seg(t, a, a + 380));
+
+  function render(t) {
+    tf($('glowA'), `translate(${(Math.sin(t / 2600) * 50).toFixed(1)}px, ${(Math.cos(t / 3100) * 60).toFixed(1)}px)`);
+    tf($('glowB'), `translate(${(Math.cos(t / 2900) * -60).toFixed(1)}px, ${(Math.sin(t / 2400) * 50).toFixed(1)}px)`);
+
+    /* cabeçalho e status */
+    const h = E.outCubic(seg(t, 0, 550));
+    op($('head'), h);
+    tf($('head'), `translateY(${((1 - h) * -50).toFixed(1)}px)`);
+    const ty = TYPING.reduce((m, [a, b]) => Math.max(m, seg(t, a - 150, a) * (1 - seg(t, b - 50, b + 100))), 0);
+    op($('stTyping'), ty);
+    op($('stOnline'), 1 - ty);
+
+    /* pilha de mensagens: cada nova empurra as anteriores para cima */
+    const items = [];
+    STACK.forEach((s) => {
+      const tw = TYPING.find(([, b]) => b === s.at);
+      if (tw) items.push({ id: 'typing', w: grow(t, tw[0]) * (1 - E.outCubic(seg(t, tw[1] - 60, tw[1] + 260))), typing: tw });
+      items.push({ id: s.id, w: grow(t, s.at) });
+    });
+    let y = BOTTOM;
+    for (let k = items.length - 1; k >= 0; k--) {
+      const it = items[k];
+      if (it.typing && (t < it.typing[0] || t > it.typing[1] + 300)) continue;
+      $(it.id).style.top = (y - H_[it.id]).toFixed(1) + 'px';
+      y -= (H_[it.id] + GAP) * it.w;
+    }
+    STACK.forEach((s) => {
+      const p = E.outBack(seg(t, s.at, s.at + 420));
+      op($(s.id), seg(t, s.at, s.at + 160));
+      tf($(s.id), `scale(${lerp(0.72, 1, Math.max(0, p)).toFixed(4)})`);
+    });
+    const typ = $('typing');
+    const tw = TYPING.find(([a, b]) => t >= a && t < b + 300);
+    if (tw) {
+      const pin = E.outBack(seg(t, tw[0], tw[0] + 380)), pout = seg(t, tw[1] - 60, tw[1] + 160);
+      op(typ, seg(t, tw[0], tw[0] + 140) * (1 - pout));
+      tf(typ, `scale(${(lerp(0.6, 1, Math.max(0, pin)) * (1 - 0.25 * pout)).toFixed(4)})`);
+      [...typ.children].forEach((d, i) => {
+        const b = Math.max(0, Math.sin((t - tw[0]) / 140 - i * 0.9));
+        tf(d, `translateY(${(-9 * b).toFixed(1)}px)`);
+        op(d, 0.4 + 0.6 * b);
+      });
+    } else op(typ, 0);
+    op($('read'), lerp(0.45, 1, seg(t, 3400, 3550)));
+    op($('read2'), lerp(0.45, 1, seg(t, 7960, 8110)));
+
+    /* imagem do prêmio: baixa com o anel e aparece nítida na batida */
+    const load = E.inOut(seg(t, LOAD[0], LOAD[1]));
+    const rv = E.outCubic(seg(t, LOAD[1], LOAD[1] + 420));
+    $('arc').setAttribute('stroke-dashoffset', (295.3 * (1 - lerp(0.04, 1, load) * seg(t, LOAD[0] - 200, LOAD[0]))).toFixed(2));
+    $('arc').setAttribute('transform', `rotate(${(-90 + seg(t, LOAD[0] - 200, LOAD[1]) * 120).toFixed(1)} 62 62)`);
+    op($('ring'), 1 - rv);
+    tf($('ring'), `scale(${(1 - 0.3 * rv).toFixed(4)})`);
+    $('art').style.filter = `blur(${lerp(20, 0, rv).toFixed(2)}px)`;
+    tf($('art'), `scale(${(500 / 1080 * lerp(1.1, 1, rv)).toFixed(5)})`);
+    op($('shade'), 1 - rv);
+    /* flash dourado na revelação */
+    const flash = Math.sin(Math.PI * seg(t, LOAD[1], LOAD[1] + 300));
+    $('tile').style.boxShadow = `0 0 ${(60 * flash).toFixed(1)}px ${(10 * flash).toFixed(1)}px rgba(255,240,190,${(0.8 * flash).toFixed(3)})`;
+
+    /* cupom copiado */
+    const cp = E.outBack(seg(t, COPY, COPY + 360));
+    op($('cpCopy'), 1 - seg(t, COPY - 40, COPY + 120));
+    tf($('cpCopy'), `translateY(${(-20 * seg(t, COPY - 40, COPY + 160)).toFixed(1)}px)`);
+    op($('cpDone'), seg(t, COPY, COPY + 160));
+    tf($('cpDone'), `scale(${lerp(0.6, 1, Math.max(0, cp)).toFixed(4)})`);
+
+    /* a conversa sai e o flyer completo se monta */
+    const out = E.inCubic(seg(t, OUT, OUT + 520));
+    const cw = $('chatwrap');
+    op(cw, 1 - out);
+    tf(cw, `scale(${(1 - 0.08 * out).toFixed(4)})`);
+    cw.style.filter = out > 0 ? `blur(${(14 * out).toFixed(2)}px)` : 'none';
+    $('final').style.display = t > OUT ? 'block' : 'none';
+    if (fin && t > OUT) renderFinal(t);
+
+    $('time').textContent = (Math.min(t, DURATION) / 1000).toFixed(1) + ' s';
+    $('fill').style.transform = `scaleX(${clamp(t / DURATION).toFixed(4)})`;
+  }
+
+  function renderFinal(t) {
+    const rise = (el, a, dy = 40, blur = 10) => {
+      const p = E.outQuint(seg(t, a, a + 650));
+      op(el, seg(t, a, a + 260));
+      tf(el, `translateY(${((1 - p) * dy).toFixed(1)}px)`);
+      el.style.filter = p < 1 ? `blur(${((1 - p) * blur).toFixed(2)}px)` : 'none';
+    };
+    /* REGIS bate pesado, TRO desliza, o sorriso se desenha e pisca */
+    const b = E.outBack(seg(t, FINAL.brand, FINAL.brand + 520));
+    op(fin.brand, 1);
+    op(fin.b, seg(t, FINAL.brand, FINAL.brand + 160));
+    tf(fin.b, `scale(${lerp(1.5, 1, Math.max(0, Math.min(1.2, b))).toFixed(4)})`);
+    fin.b.style.display = 'inline-block';
+    const ip = E.outCubic(seg(t, FINAL.brand + 180, FINAL.brand + 700));
+    op(fin.i, ip);
+    tf(fin.i, `translateX(${((1 - ip) * 60).toFixed(1)}px)`);
+    fin.i.style.display = 'inline-block';
+    fin.ring.setAttribute('stroke-dashoffset', (276.5 * (1 - E.inOut(seg(t, FINAL.brand + 300, FINAL.brand + 900)))).toFixed(2));
+    fin.mouth.setAttribute('stroke-dashoffset', (60 * (1 - E.outCubic(seg(t, FINAL.brand + 750, FINAL.brand + 1100)))).toFixed(2));
+    const eyes = E.outBack(seg(t, FINAL.brand + 650, FINAL.brand + 950));
+    const wink = 1 - 0.9 * Math.sin(Math.PI * seg(t, 12000, 12260));
+    tf(fin.eyeL, `scaleY(${Math.max(0, eyes).toFixed(3)})`);
+    tf(fin.eyeR, `scaleY(${(Math.max(0, eyes) * wink).toFixed(3)})`);
+
+    /* PREMIADO: as linhas se abrem a partir do texto */
+    rise(fin.premiado, FINAL.premiado, 24, 6);
+    const ln = E.outQuint(seg(t, FINAL.premiado + 120, FINAL.premiado + 720));
+    tf(fin.lineL, `scaleX(${ln.toFixed(4)})`);
+    tf(fin.lineR, `scaleX(${ln.toFixed(4)})`);
+
+    rise(fin.ganhou, FINAL.ganhou, 30, 8);
+    /* FOTO GRÁTIS pousa no tempo forte, com um pulso */
+    const g = E.outBack(seg(t, FINAL.gratis, FINAL.gratis + 560));
+    op(fin.gratis, seg(t, FINAL.gratis, FINAL.gratis + 140));
+    const pulse = t > 12100 ? 1 + 0.025 * Math.sin((t - 12100) / Q * Math.PI * 2) * Math.exp(-(t - 12100) / 2000) : 1;
+    tf(fin.gratis, `scale(${(lerp(0.4, 1, Math.max(0, g)) * pulse).toFixed(4)})`);
+    fin.gratis.style.filter = g < 1 ? `blur(${((1 - clamp(g)) * 12).toFixed(2)}px)` : 'none';
+
+    /* cupom: o contorno se desenha em volta do texto */
+    rise(fin.cupom, FINAL.cupom, 26, 6);
+    fin.rect.setAttribute('stroke-dashoffset', (fin.per * (1 - E.inOut(seg(t, FINAL.cupom + 100, FINAL.cupom + 800)))).toFixed(2));
+
+    rise(fin.bottom, FINAL.bottom, 26, 6);
+    tf(fin.bar, `scaleY(${E.outQuint(seg(t, FINAL.bottom + 150, FINAL.bottom + 650)).toFixed(4)})`);
+  }
+
+  /* --- palco, relógio e controles ------------------------------------ */
+  const stage = $('stage');
+  function fit() {
+    const g = params.has('clean') ? 0 : 32;
+    const s = Math.min((innerWidth - g) / W, (innerHeight - g) / H);
+    stage.style.setProperty('--scale', s.toFixed(5));
+  }
+  addEventListener('resize', fit);
+  fit();
+
+  let start = 0, raf = 0;
+  const frozen = params.has('t');
+  const tick = (now) => { render(now - start); raf = requestAnimationFrame(tick); };
+  const play = () => { cancelAnimationFrame(raf); start = performance.now(); raf = requestAnimationFrame(tick); };
+  $('replay').addEventListener('click', play);
+  addEventListener('keydown', (e) => { if (e.key === 'r' || e.key === 'R') play(); });
+
+  let fontsOk = false;
+  const ready = Promise.all([
+    document.fonts.load('500 40px "Inter"'),
+    document.fonts.load('italic 900 100px "Montserrat"'),
+    document.fonts.load('italic 200 100px "Montserrat"'),
+    document.fonts.load('800 40px "Montserrat"'),
+    document.fonts.load('40px "Noto Color Emoji"', '🏆😱').catch(() => []),
+  ]).then((f) => { fontsOk = f.slice(0, 4).every((x) => x.length > 0); })
+    .catch(() => {}).then(() => {
+      build();
+      if (frozen) render(+params.get('t'));
+      else if (reduce) render(DURATION);
+      else play();
+    });
+
+  window.story = {
+    duration: DURATION,
+    ready,
+    fontsOk: () => fontsOk,
+    seek(ms) { cancelAnimationFrame(raf); render(ms); },
+  };
+})();
+</script>
+</body>
+</html>

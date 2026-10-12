@@ -258,6 +258,22 @@ def reverb(x, seconds=2.2, decay=0.55, mix=0.25):
     return x + wet * mix
 
 
+def place(track, sec, snd, pan=0.0):
+    """Soma `snd` (mono com pan, ou estéreo) em `track` a partir de `sec` segundos."""
+    i = int(sec * SR)
+    x = snd if snd.ndim == 2 else stereo(snd, pan)
+    j = min(len(track), i + len(x))
+    if j > i:
+        track[i:j] += x[: j - i]
+
+
+def crash(gain=0.08, decay=0.9):
+    """Prato aberto: ruído agudo com cauda longa."""
+    n = int(decay * 3 * SR)
+    x = np.diff(np.diff(rng.standard_normal(n + 2))) / 4
+    return x * env(n, 0.002, decay) * gain
+
+
 def write(cues, length, out, fade_out=0.4, bed=None, wet=0.0):
     """Mixa os cues em `length` segundos e grava `out` (WAV estéreo 16 bits).
 
