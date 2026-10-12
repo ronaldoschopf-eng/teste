@@ -141,3 +141,34 @@ O MP4 tem áudio (AAC, 48 kHz, estéreo). Os efeitos são sintetizados por [`too
 Para ajustar um som ou o momento em que ele toca, edite a lista `CUES` no script (tempos em ms) e rode `npm run render:deubeach`, que gera o áudio e o vídeo. Para gerar só o áudio, use `npm run sfx:deubeach` (precisa de Python 3 com NumPy). O `tools/render-video.js` também aceita `--audio arquivo.wav` para colocar áudio em qualquer outra peça.
 
 `?t=8000` congela um quadro, `?clean` esconde os controles, `R` repete. Para gerar o vídeo de novo: `npm run render:deubeach`.
+
+---
+
+# Fotos do vôlei — conversa no WhatsApp (9:16)
+
+Story animado em 1080 × 1920 px, com 10,5 s de duração, em [`fotos-volei/index.html`](fotos-volei/index.html). Simula uma conversa no estilo WhatsApp com o fotógrafo, sobre um fundo em degradê de rosa pink (`#FF2E93`) para laranja (`#FF8A3D`). Todo o texto é branco.
+
+O vídeo pronto está em [`video/fotos-volei.mp4`](video/fotos-volei.mp4). Especificações: H.264, 30 fps, com áudio AAC e 13 s de duração (os 10,5 s da animação mais 2,5 s com o álbum completo na tela).
+
+| Tempo | O que acontece |
+| --- | --- |
+| 0–0,5 s | Entra o cabeçalho da conversa: Ronaldo Schopf · fotógrafo · online. |
+| 0,7–1,5 s | O status muda para "digitando…" e chega **Suas fotos do vôlei de ontem estão te esperando**. |
+| 2,9 s | A pessoa responde **Onde?**, e os tiques acendem quando a mensagem é lida. |
+| 3,5–4,3 s | "digitando…" de novo e chega **Clica no link aqui abaixo 👇**. |
+| 5,3–8,5 s | O fotógrafo envia um álbum 2 × 2. Cada foto chega desfocada, com o anel de download, e aparece nítida em sequência. A última foto mostra **+24**. |
+
+Cada mensagem nova empurra as anteriores para cima, como no app.
+
+**Trocar as fotos**: as quatro imagens em `fotos-volei/fotos/` são ilustrações flat de exemplo. Para usar fotos reais, coloque os arquivos na pasta, atualize a lista `PHOTOS` no `index.html` (jpg, png ou webp, 4 itens; recortes quadrados ficam melhores) e mude o `MORE` para o número que aparece em "+24".
+
+**Efeitos sonoros** ([`tools/sfx-fotos-volei.py`](tools/sfx-fotos-volei.py)):
+- dois toques de notificação quando chega mensagem;
+- "swoop" quando a resposta é enviada;
+- tiques durante o "digitando…" e o download;
+- **clique de obturador** quando cada foto aparece;
+- "pop" no +24 e um sino no fim.
+
+Os sintetizadores ficam em [`tools/sfx_synth.py`](tools/sfx_synth.py) e são compartilhados com o DEU BEACH.
+
+`?t=7000` congela um quadro, `?clean` esconde os controles, `R` repete. Para gerar o vídeo de novo: `npm run render:volei`.

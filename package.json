@@ -7,7 +7,9 @@
     "render:fade": "node tools/render-video.js --fade --out video/fotos-disponiveis-fade.mp4",
     "render:logo": "node tools/render-video.js --page logo/index.html --out video/ronaldo-schopf-logo.mp4",
     "render:deubeach": "python3 tools/sfx-deu-beach.py && node tools/render-video.js --page deu-beach/index.html --hold 2.5 --audio deu-beach/sfx.wav --out video/deu-beach.mp4",
-    "sfx:deubeach": "python3 tools/sfx-deu-beach.py"
+    "sfx:deubeach": "python3 tools/sfx-deu-beach.py",
+    "sfx:volei": "python3 tools/sfx-fotos-volei.py",
+    "render:volei": "python3 tools/sfx-fotos-volei.py && node tools/render-video.js --page fotos-volei/index.html --hold 2.5 --audio fotos-volei/sfx.wav --out video/fotos-volei.mp4"
   },
   "devDependencies": {
     "playwright": "1.56.1"
