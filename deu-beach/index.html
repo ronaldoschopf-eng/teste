@@ -1,0 +1,537 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Deu Beach Agenda</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap">
+<style>
+  /* Palco 1080 × 1920 (9:16). Redesign da referência "convite no chat":
+     balão → cartão de compromisso → toque → agenda do fim de semana →
+     resposta → tela final. Só preto, branco e cinzas. */
+  :root {
+    --ink: #0b0b0b;
+    --paper: #ffffff;
+    --gray: #8a8a8a;
+    --line: #e4e4e4;
+    --soft: #efefef;
+    --font: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
+    color-scheme: light dark;
+  }
+  html, body { height: 100%; margin: 0; }
+  body { background: #1a1a1a; color: var(--ink); font-family: var(--font); overflow: hidden; }
+
+  .viewport { position: fixed; inset: 0; display: grid; place-items: center; }
+  .stage {
+    position: relative; width: 1080px; height: 1920px; flex: none;
+    transform: scale(var(--scale, 1)); transform-origin: center;
+    background: var(--paper); overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+  .abs { position: absolute; }
+  .i { width: 1em; height: 1em; flex: none; display: block; }
+
+  /* avatares: círculo branco com contorno preto e um ícone dentro */
+  .avatar {
+    width: 112px; height: 112px; border-radius: 50%; box-sizing: border-box;
+    border: 5px solid var(--ink); background: var(--paper); color: var(--ink);
+    display: grid; place-items: center; font-size: 62px; flex: none;
+  }
+  .avatar--dark { background: var(--ink); color: var(--paper); }
+
+  /* cena 1 · pergunta no chat */
+  .chat { display: flex; align-items: flex-start; gap: 22px; }
+  .bubble {
+    box-sizing: border-box; border: 5px solid var(--ink); border-radius: 30px;
+    padding: 22px 34px 26px; font-size: 62px; line-height: 1.08; letter-spacing: -.015em;
+    background: var(--soft); transform-origin: 0 0; white-space: nowrap;
+  }
+  .typing {
+    left: 134px; top: 0; height: 104px; width: 190px; box-sizing: border-box;
+    border: 5px solid var(--ink); border-radius: 30px; background: var(--soft);
+    display: flex; align-items: center; justify-content: center; gap: 16px; transform-origin: 0 0;
+  }
+  .typing span { width: 18px; height: 18px; border-radius: 50%; background: var(--ink); display: block; }
+
+  /* cena 2 · cartão do compromisso */
+  .card {
+    left: 110px; width: 860px; box-sizing: border-box;
+    border: 5px solid var(--ink); border-radius: 40px; background: var(--paper);
+    color: var(--ink);
+    transform-origin: 50% 50%; backface-visibility: hidden;
+  }
+  .card__body { padding: 44px 48px 34px; display: flex; flex-direction: column; gap: 26px; }
+  .row { display: flex; align-items: flex-start; gap: 28px; }
+  .row__icon {
+    width: 88px; height: 88px; border-radius: 50%; background: var(--soft);
+    display: grid; place-items: center; font-size: 52px; flex: none;
+  }
+  .row--head { align-items: center; }
+  .row--head .avatar { width: 88px; height: 88px; font-size: 50px; border-width: 4px; }
+  .name { font-size: 50px; font-weight: 500; letter-spacing: -.01em; }
+  .title { font-size: 52px; font-weight: 600; line-height: 1.1; letter-spacing: -.02em; padding-top: 12px; }
+  .meta { padding-top: 6px; }
+  .meta b { display: block; font-size: 48px; font-weight: 600; letter-spacing: -.015em; }
+  .meta span { display: block; font-size: 46px; color: var(--gray); letter-spacing: -.01em; margin-top: 2px; }
+  .card__btn {
+    border-top: 4px solid var(--ink); height: 128px; display: flex; align-items: center; justify-content: center;
+    gap: 18px; font-size: 48px; font-weight: 600; letter-spacing: -.01em;
+  }
+  .card__btn .i { font-size: 52px; }
+
+  /* dedo (flat, contorno preto) */
+  .finger { left: 0; top: 0; width: 400px; height: 1075px; transform-origin: 200px 32.5px; overflow: visible; }
+
+  /* cena 3 · agenda */
+  .agenda__body { padding: 44px 48px 0; }
+  .agenda__label { font-size: 40px; font-weight: 500; padding-bottom: 18px; border-bottom: 4px solid var(--ink); display: flex; justify-content: space-between; align-items: baseline; }
+  .agenda__label small { font-size: 34px; color: var(--gray); font-weight: 400; }
+  .days { display: grid; grid-template-columns: 120px 1fr 1fr; column-gap: 20px; padding: 28px 0 18px; }
+  .day { display: flex; align-items: baseline; gap: 14px; }
+  .day b { font-size: 50px; font-weight: 700; letter-spacing: -.02em; }
+  .day span { font-size: 34px; color: var(--gray); }
+  .grid { position: relative; height: 840px; margin-bottom: 40px; }
+  .hour { left: 0; width: 100%; height: 0; border-top: 2px solid var(--line); }
+  .hour span { position: absolute; left: 0; top: -20px; font-size: 28px; color: var(--gray); font-variant-numeric: tabular-nums; background: var(--paper); padding-right: 10px; }
+  .slot {
+    background: var(--ink); color: var(--paper); border-radius: 22px; box-sizing: border-box;
+    padding: 22px 24px; transform-origin: 50% 0; overflow: hidden;
+  }
+  .slot__in { display: flex; flex-direction: column; gap: 10px; }
+  .slot .i { font-size: 52px; margin-bottom: 6px; }
+  .slot b { font-size: 38px; font-weight: 700; letter-spacing: -.01em; line-height: 1; }
+  .slot span { font-size: 30px; line-height: 1.2; color: #cfcfcf; }
+  .agenda__foot { border-top: 4px solid var(--ink); height: 128px; display: flex; align-items: center; justify-content: center; gap: 18px; font-size: 46px; font-weight: 600; }
+  .check { width: 60px; height: 60px; border-radius: 50%; background: var(--ink); color: var(--paper); display: grid; place-items: center; font-size: 40px; }
+
+  /* cena 4 · resposta */
+  .reply { display: flex; align-items: flex-start; gap: 22px; }
+  .reply .bubble { background: var(--ink); color: var(--paper); transform-origin: 100% 0; }
+
+  /* cena 5 · tela final em preto */
+  .wipe { inset: 0; background: var(--ink); }
+  .final { inset: 0; color: var(--paper); }
+  .icons { left: 0; width: 100%; top: 330px; display: flex; justify-content: center; gap: 44px; font-size: 104px; }
+  .icons .i { transform-origin: 50% 100%; }
+  .brand { left: 0; width: 100%; text-align: center; font-weight: 900; letter-spacing: -.045em; line-height: .86; }
+  .mask { overflow: hidden; left: 0; width: 100%; }
+  .sub { left: 0; width: 100%; text-align: center; font-size: 50px; font-weight: 500; letter-spacing: -.01em; }
+  .slotline {
+    left: 110px; width: 860px; height: 150px; box-sizing: border-box;
+    border: 4px solid var(--paper); border-radius: 34px;
+    display: flex; align-items: center; gap: 34px; padding: 0 22px;
+  }
+  .tile {
+    width: 106px; height: 106px; border-radius: 20px; background: var(--paper); color: var(--ink);
+    display: flex; flex-direction: column; overflow: hidden; flex: none;
+  }
+  .tile i { font-style: normal; height: 34px; background: #4a4a4a; color: var(--paper); font-size: 22px; font-weight: 700; letter-spacing: .08em; display: grid; place-items: center; }
+  .tile b { flex: 1; display: grid; place-items: center; font-size: 46px; font-weight: 900; letter-spacing: -.03em; }
+  .slotline__txt b { display: block; font-size: 52px; font-weight: 700; letter-spacing: -.02em; line-height: 1.05; }
+  .slotline__txt span { display: block; font-size: 42px; color: #bdbdbd; letter-spacing: -.01em; }
+
+  .controls {
+    position: fixed; right: 16px; bottom: 16px; display: flex; align-items: center; gap: 10px;
+    padding: 8px 8px 8px 14px; border-radius: 999px; background: rgba(20, 20, 20, .85);
+    border: 1px solid #333; font: 500 13px/1 var(--font); color: #9a9a9a;
+    font-variant-numeric: tabular-nums;
+  }
+  .controls__track { position: relative; width: 90px; height: 3px; border-radius: 3px; background: #333; overflow: hidden; }
+  .controls__track > span { position: absolute; inset: 0; background: #fff; transform-origin: 0 50%; transform: scaleX(0); }
+  .controls button { font: inherit; color: #fff; background: transparent; border: 1px solid #444; border-radius: 999px; padding: 8px 14px; cursor: pointer; }
+  .controls button:hover { border-color: #fff; }
+  .controls button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+  .is-clean .controls { display: none; }
+  @media (max-width: 480px) { .controls__track { display: none; } }
+</style>
+</head>
+<body>
+<!-- ícones flat e minimalistas (traço 4, cantos arredondados) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-racket" viewBox="0 0 64 64">
+      <mask id="m-holes"><rect width="64" height="64" fill="#fff"/><g fill="#000"><circle cx="19" cy="19" r="2.8"/><circle cx="27" cy="16" r="2.8"/><circle cx="35" cy="19" r="2.8"/><circle cx="16" cy="27" r="2.8"/><circle cx="24" cy="25" r="2.8"/><circle cx="32" cy="27" r="2.8"/><circle cx="19" cy="35" r="2.8"/><circle cx="27" cy="33" r="2.8"/></g></mask>
+      <g fill="currentColor" mask="url(#m-holes)"><circle cx="26" cy="26" r="20"/></g>
+      <path d="M40 40 L54 54" stroke="currentColor" stroke-width="9" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-ball" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round">
+      <circle cx="32" cy="32" r="22"/>
+      <path d="M15 17 C24 25 24 39 15 47"/><path d="M49 17 C40 25 40 39 49 47"/>
+    </symbol>
+    <symbol id="i-cal" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="10" y="14" width="44" height="40" rx="7"/><path d="M10 26 H54 M22 8 V18 M42 8 V18"/>
+      <g fill="currentColor" stroke="none"><rect x="18" y="33" width="7" height="6" rx="1.5"/><rect x="29" y="33" width="7" height="6" rx="1.5"/><rect x="40" y="33" width="7" height="6" rx="1.5"/><rect x="18" y="43" width="7" height="6" rx="1.5"/><rect x="29" y="43" width="7" height="6" rx="1.5"/></g>
+    </symbol>
+    <symbol id="i-clock" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="32" cy="32" r="22"/><path d="M32 19 V32 L41 38"/>
+    </symbol>
+    <symbol id="i-sun" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round">
+      <circle cx="32" cy="32" r="10"/>
+      <path d="M32 8 V14 M32 50 V56 M8 32 H14 M50 32 H56 M15 15 L19 19 M45 45 L49 49 M49 15 L45 19 M19 45 L15 49"/>
+    </symbol>
+    <symbol id="i-trophy" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20 10 H44 V26 C44 33 38.6 38 32 38 C25.4 38 20 33 20 26 Z"/>
+      <path d="M20 15 H11 C11 23 15 27 20 27 M44 15 H53 C53 23 49 27 44 27"/>
+      <path d="M32 38 V47 M22 54 H42 M25 54 C25 50 28 47 32 47 C36 47 39 50 39 54"/>
+    </symbol>
+    <symbol id="i-net" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M8 12 V56 M56 12 V56"/><path d="M8 18 H56" stroke-width="6"/>
+      <path d="M8 40 H56 M20 18 V40 M32 18 V40 M44 18 V40 M8 29 H56" stroke-width="2.6"/>
+    </symbol>
+    <symbol id="i-check" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M17 33 L28 44 L48 22"/>
+    </symbol>
+  </defs>
+</svg>
+
+<main class="viewport">
+  <div class="stage" id="stage" role="img" aria-label="Animação em preto e branco no estilo agenda: um convite no chat vira o compromisso DEU BEACH, campeonato de beach tennis, no sábado a partir das 18:00 e no domingo o dia todo.">
+
+    <!-- 1 · pergunta -->
+    <div class="abs chat" id="chatA">
+      <div class="avatar" id="avA"><svg class="i"><use href="#i-racket"/></svg></div>
+      <div class="abs typing" id="typing"><span></span><span></span><span></span></div>
+      <div class="bubble" id="bubA">Quem topa um<br>beach tennis?</div>
+    </div>
+
+    <!-- 2 · compromisso -->
+    <div class="abs card" id="card">
+      <div class="card__body">
+        <div class="row row--head" data-row>
+          <div class="avatar avatar--dark"><svg class="i"><use href="#i-ball"/></svg></div>
+          <div class="name">Deu Beach</div>
+        </div>
+        <div class="row" data-row>
+          <div class="row__icon"><svg class="i"><use href="#i-trophy"/></svg></div>
+          <div class="title">Campeonato de<br>Beach Tennis</div>
+        </div>
+        <div class="row" data-row>
+          <div class="row__icon"><svg class="i"><use href="#i-cal"/></svg></div>
+          <div class="meta"><b>Sábado</b><span>a partir das 18:00</span></div>
+        </div>
+        <div class="row" data-row>
+          <div class="row__icon"><svg class="i"><use href="#i-sun"/></svg></div>
+          <div class="meta"><b>Domingo</b><span>o dia todo</span></div>
+        </div>
+      </div>
+      <div class="card__btn" id="btn" data-row><svg class="i"><use href="#i-racket"/></svg>Vou jogar</div>
+    </div>
+
+    <!-- 3 · agenda do fim de semana -->
+    <div class="abs card" id="agenda">
+      <div class="agenda__body">
+        <div class="agenda__label" data-ag>Agenda <small>fim de semana</small></div>
+        <div class="days" data-ag>
+          <span></span>
+          <div class="day"><b>SÁB</b><span>sábado</span></div>
+          <div class="day"><b>DOM</b><span>domingo</span></div>
+        </div>
+        <div class="grid" id="grid">
+          <div class="abs slot" id="slotSat"><div class="slot__in"><svg class="i"><use href="#i-ball"/></svg><b>DEU BEACH</b><span>a partir<br>das 18:00</span></div></div>
+          <div class="abs slot" id="slotSun"><div class="slot__in"><svg class="i"><use href="#i-sun"/></svg><b>DEU BEACH</b><span>o dia todo</span></div></div>
+        </div>
+      </div>
+      <div class="agenda__foot" id="foot"><span class="check" id="check"><svg class="i"><use href="#i-check"/></svg></span>Presença confirmada</div>
+    </div>
+
+    <!-- dedo -->
+    <svg class="abs finger" id="finger" viewBox="0 0 320 860" aria-hidden="true">
+      <path d="M44 900 V200 C44 92 100 26 160 26 C220 26 276 92 276 200 V900 Z" fill="#fff" stroke="#0b0b0b" stroke-width="7" stroke-linejoin="round"/>
+      <path d="M44 900 V200 C44 126 70 72 108 44 C88 96 82 146 82 210 V900 Z" fill="#0b0b0b"/>
+      <path d="M112 124 C112 82 136 58 164 58 C192 58 216 82 216 124 C216 156 194 172 164 172 C134 172 112 156 112 124 Z" fill="none" stroke="#0b0b0b" stroke-width="6"/>
+    </svg>
+
+    <!-- 4 · resposta -->
+    <div class="abs reply" id="reply">
+      <div class="bubble" id="bubR">Tô dentro!</div>
+      <div class="avatar" id="avR"><svg class="i"><use href="#i-ball"/></svg></div>
+    </div>
+
+    <!-- 5 · tela final -->
+    <div class="abs wipe" id="wipe"></div>
+    <div class="abs final" id="final">
+      <div class="abs icons" id="icons">
+        <svg class="i"><use href="#i-racket"/></svg>
+        <svg class="i"><use href="#i-ball"/></svg>
+        <svg class="i"><use href="#i-net"/></svg>
+        <svg class="i"><use href="#i-trophy"/></svg>
+        <svg class="i"><use href="#i-sun"/></svg>
+      </div>
+      <div class="abs mask" id="m1"><div class="brand" id="b1">DEU</div></div>
+      <div class="abs mask" id="m2"><div class="brand" id="b2">BEACH</div></div>
+      <div class="abs sub" id="sub">Campeonato de Beach Tennis</div>
+      <div class="abs slotline" id="l1">
+        <div class="tile"><i>SÁB</i><b>18h</b></div>
+        <div class="slotline__txt"><b>Sábado</b><span>a partir das 18:00</span></div>
+      </div>
+      <div class="abs slotline" id="l2">
+        <div class="tile"><i>DOM</i><b><svg class="i" style="font-size:52px"><use href="#i-sun"/></svg></b></div>
+        <div class="slotline__txt"><b>Domingo</b><span>o dia todo</span></div>
+      </div>
+    </div>
+  </div>
+  <nav class="controls" aria-label="Controles da animação">
+    <span id="time">0.0 s</span>
+    <span class="controls__track"><span id="fill"></span></span>
+    <button type="button" id="replay" aria-keyshortcuts="R">↻ Repetir</button>
+  </nav>
+</main>
+
+<script>
+/* Linha do tempo (ms) — tudo sai de render(t): qualquer quadro pode ser
+   reproduzido (?t=5500) e o vídeo é exportado sem quadros perdidos.
+   0–2900      "digitando…" e o balão "Quem topa um beach tennis?"
+   2700–5400   o balão vira o cartão do compromisso, linha por linha
+   5000–6600   o dedo toca em "Vou jogar"; o cartão inverte e gira
+   6500–10400  agenda do fim de semana: SÁB a partir das 18:00, DOM o dia todo
+   10500–12100 resposta "Tô dentro!"
+   12100–15500 a tela escurece e a assinatura DEU BEACH monta
+   ?clean esconde os controles · ?t=<ms> congela um quadro · R repete */
+(() => {
+  'use strict';
+  const DURATION = 15500;
+  const W = 1080, H = 1920;
+  const HOURS = [8, 10, 12, 14, 16, 18, 20, 22, 24];   // grade da agenda
+  const GUTTER = 140;                                  // coluna dos horários
+
+  const params = new URLSearchParams(location.search);
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (params.has('clean')) document.documentElement.classList.add('is-clean');
+
+  const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+  const lerp = (a, b, p) => a + (b - a) * p;
+  const seg = (t, a, b) => clamp((t - a) / (b - a));
+  const E = {
+    outCubic: (p) => 1 - Math.pow(1 - p, 3),
+    outQuint: (p) => 1 - Math.pow(1 - p, 5),
+    inCubic: (p) => p * p * p,
+    inOut: (p) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2),
+    outBack: (p) => { const c = 1.7; return 1 + (c + 1) * Math.pow(p - 1, 3) + c * Math.pow(p - 1, 2); },
+  };
+  const $ = (id) => document.getElementById(id);
+  const tf = (el, s) => { el.style.transform = s; };
+  const op = (el, v) => { el.style.opacity = v.toFixed(3); };
+  /* entrada padrão: sobe `dy` px e aparece */
+  const rise = (el, p, dy = 30) => { op(el, p); tf(el, `translateY(${((1 - p) * dy).toFixed(1)}px)`); };
+
+  const L = {};                         // medidas calculadas no build()
+  const rows = [...document.querySelectorAll('#card [data-row]')];
+  const agRows = [...document.querySelectorAll('#agenda [data-ag]')];
+  const icons = [...document.querySelectorAll('#icons .i')];
+
+  function build() {
+    /* balão 1 centralizado */
+    const chat = $('chatA');
+    chat.style.left = ((W - chat.offsetWidth) / 2) + 'px';
+    chat.style.top = '820px';
+
+    /* cartão e agenda centralizados na vertical */
+    const card = $('card'), ag = $('agenda');
+    card.style.top = Math.round((H - card.offsetHeight) / 2) + 'px';
+    ag.style.top = Math.round((H - ag.offsetHeight) / 2) + 'px';
+
+    /* ponto do toque: centro do botão */
+    const btn = $('btn');
+    L.tap = { x: card.offsetLeft + btn.offsetLeft + btn.offsetWidth / 2 + 40, y: card.offsetTop + btn.offsetTop + btn.offsetHeight / 2 + 6 };
+
+    /* grade de horários */
+    const grid = $('grid');
+    const step = grid.offsetHeight / (HOURS.length - 1);
+    HOURS.forEach((h, i) => {
+      const d = document.createElement('div');
+      d.className = 'abs hour';
+      d.style.top = (i * step) + 'px';
+      d.innerHTML = `<span>${String(h % 24).padStart(2, '0')}:00</span>`;
+      grid.insertBefore(d, grid.firstChild);
+    });
+    const colW = (grid.offsetWidth - GUTTER - 20) / 2;
+    const place = (el, col, from, to) => {
+      el.style.left = (GUTTER + col * (colW + 20)) + 'px';
+      el.style.width = colW + 'px';
+      el.style.top = (HOURS.indexOf(from) * step + 4) + 'px';
+      el.style.height = ((HOURS.indexOf(to) - HOURS.indexOf(from)) * step - 8) + 'px';
+    };
+    place($('slotSat'), 0, 18, 24);
+    place($('slotSun'), 1, 8, 24);
+
+    /* resposta alinhada à direita, como na referência */
+    const reply = $('reply');
+    reply.style.left = (W - reply.offsetWidth - 150) + 'px';
+    reply.style.top = '880px';
+    L.replyC = { x: reply.offsetLeft + reply.offsetWidth / 2, y: reply.offsetTop + 52 };
+
+    /* tela final: "BEACH" ocupa 880 px; "DEU" usa o mesmo corpo */
+    const b2 = $('b2');
+    b2.style.cssText = 'font-size:100px; display:inline-block; width:auto';
+    const fs = Math.min(300, 100 * 880 / b2.offsetWidth);
+    b2.style.cssText = '';
+    [$('b1'), b2].forEach((b) => { b.style.fontSize = fs.toFixed(1) + 'px'; });
+    /* bloco final centralizado: ícones · DEU · BEACH · chamada · 2 horários */
+    const lh = fs * 0.86 + 8;
+    const total = 104 + 100 + lh * 2 + 40 + 60 + 70 + 150 + 26 + 150;
+    const y0 = Math.round((H - total) / 2 - 20);
+    const brandTop = y0 + 104 + 100;
+    $('icons').style.top = y0 + 'px';
+    $('m1').style.top = brandTop + 'px'; $('m1').style.height = lh + 'px';
+    $('m2').style.top = (brandTop + lh - 4) + 'px'; $('m2').style.height = lh + 'px';
+    const subTop = brandTop + lh * 2 + 40;
+    $('sub').style.top = subTop + 'px';
+    $('l1').style.top = (subTop + 130) + 'px';
+    $('l2').style.top = (subTop + 130 + 176) + 'px';
+  }
+
+  function render(t) {
+    /* 1 · digitando → pergunta */
+    const aIn = E.outBack(seg(t, 200, 650));
+    const aOut = E.inCubic(seg(t, 2700, 3150));
+    const chat = $('chatA');
+    op(chat, 1 - aOut);
+    tf(chat, `translateY(${(-160 * aOut).toFixed(1)}px) scale(${(1 - 0.12 * aOut).toFixed(4)})`);
+    op($('avA'), seg(t, 200, 450));
+    tf($('avA'), `scale(${Math.max(0, aIn).toFixed(4)})`);
+    const ty = E.outBack(seg(t, 500, 850)), tyOut = seg(t, 1350, 1500);
+    op($('typing'), seg(t, 500, 700) * (1 - tyOut));
+    tf($('typing'), `scale(${(Math.max(0, ty) * (1 - 0.3 * tyOut)).toFixed(4)})`);
+    [...$('typing').children].forEach((d, i) => {
+      const b = Math.max(0, Math.sin((t - 600) / 140 - i * 0.9));
+      tf(d, `translateY(${(-10 * b).toFixed(1)}px)`);
+      op(d, 0.35 + 0.65 * b);
+    });
+    const bIn = E.outBack(seg(t, 1400, 1850));
+    op($('bubA'), seg(t, 1400, 1550));
+    tf($('bubA'), `scale(${Math.max(0, lerp(0.55, 1, bIn)).toFixed(4)})`);
+
+    /* 2 · cartão do compromisso */
+    const card = $('card');
+    const cIn = E.outQuint(seg(t, 2950, 3650));
+    const press = Math.sin(Math.PI * seg(t, 5450, 5800));
+    const inv = E.inOut(seg(t, 5480, 5720));
+    const flipA = E.inCubic(seg(t, 6150, 6500));
+    op(card, seg(t, 2950, 3250) * (flipA < 1 ? 1 : 0));
+    tf(card, `perspective(2600px) translateY(${((1 - cIn) * 220).toFixed(1)}px) scale(${(lerp(0.9, 1, cIn) - 0.035 * press).toFixed(4)}) rotateY(${(90 * flipA).toFixed(2)}deg)`);
+    /* toque: o cartão inverte (preto ↔ branco), como o destaque da referência */
+    const g = (a, b) => { const v = Math.round(lerp(a, b, inv)); return `rgb(${v},${v},${v})`; };
+    card.style.setProperty('--paper', g(255, 11));
+    card.style.setProperty('--ink', g(11, 255));
+    card.style.setProperty('--soft', g(239, 40));
+    card.style.setProperty('--gray', g(138, 160));
+    rows.forEach((r, i) => rise(r, E.outCubic(seg(t, 3250 + i * 170, 3800 + i * 170)), 34));
+
+    /* dedo: entra pela direita, toca o botão e sai */
+    const fIn = E.outCubic(seg(t, 4750, 5450));
+    const fOut = E.inCubic(seg(t, 5800, 6400));
+    const dist = 1150 * (1 - fIn) + 1150 * fOut - 18 * press;
+    const ang = -26 * Math.PI / 180;
+    const fx = L.tap.x - Math.sin(ang) * dist, fy = L.tap.y + Math.cos(ang) * dist;
+    const finger = $('finger');
+    finger.style.display = t > 4700 && t < 6450 ? 'block' : 'none';
+    tf(finger, `translate(${(fx - 200).toFixed(1)}px, ${(fy - 32.5).toFixed(1)}px) rotate(-26deg) scale(${(1 - 0.04 * press).toFixed(4)})`);
+
+    /* 3 · agenda */
+    const ag = $('agenda');
+    const flipB = E.outCubic(seg(t, 6500, 6950));
+    const agOut = E.inCubic(seg(t, 10150, 10600));
+    op(ag, (t >= 6500 ? 1 : 0) * (1 - agOut));
+    tf(ag, `perspective(2600px) translateY(${(-140 * agOut).toFixed(1)}px) scale(${(1 - 0.1 * agOut).toFixed(4)}) rotateY(${(-90 * (1 - flipB)).toFixed(2)}deg)`);
+    agRows.forEach((r, i) => rise(r, E.outCubic(seg(t, 6600 + i * 140, 7100 + i * 140)), 24));
+    [...$('grid').querySelectorAll('.hour')].reverse().forEach((h, i) => {
+      const p = E.outCubic(seg(t, 6750 + i * 55, 7150 + i * 55));
+      op(h, p);
+      tf(h, `scaleX(${lerp(0.6, 1, p).toFixed(4)})`);
+      h.style.transformOrigin = '0 0';
+    });
+    const slot = (el, a) => {
+      const g = E.outQuint(seg(t, a, a + 700));
+      op(el, seg(t, a, a + 120));
+      tf(el, `scaleY(${g.toFixed(4)})`);
+      const inner = el.firstElementChild;
+      const ti = E.outCubic(seg(t, a + 350, a + 800));
+      op(inner, ti);
+      tf(inner, `scaleY(${(g > 0.001 ? 1 / g : 1).toFixed(4)}) translateY(${((1 - ti) * 16).toFixed(1)}px)`);
+      inner.style.transformOrigin = '0 0';
+    };
+    slot($('slotSat'), 7450);
+    slot($('slotSun'), 8050);
+    const fo = E.outCubic(seg(t, 8950, 9350));
+    rise($('foot'), fo, 20);
+    const ck = E.outBack(seg(t, 9050, 9450));
+    tf($('check'), `scale(${Math.max(0, ck).toFixed(4)})`);
+
+    /* 4 · resposta */
+    const rv = E.outBack(seg(t, 10700, 11050));
+    const rb = E.outBack(seg(t, 10900, 11350));
+    op($('avR'), seg(t, 10700, 10850));
+    tf($('avR'), `scale(${Math.max(0, rv).toFixed(4)})`);
+    op($('bubR'), seg(t, 10900, 11050));
+    tf($('bubR'), `scale(${Math.max(0, lerp(0.5, 1, rb)).toFixed(4)})`);
+    op($('reply'), t < 12700 ? 1 : 0);
+
+    /* 5 · tela final */
+    const wp = E.inOut(seg(t, 12100, 12750));
+    const wipe = $('wipe');
+    wipe.style.clipPath = `circle(${(wp * 2300).toFixed(1)}px at ${L.replyC.x}px ${L.replyC.y}px)`;
+    const fin = $('final');
+    fin.style.display = t > 12300 ? 'block' : 'none';
+    icons.forEach((ic, i) => {
+      const p = E.outBack(seg(t, 12550 + i * 110, 13000 + i * 110));
+      const bob = t > 14400 ? Math.sin((t - 14400) / 380 + i * 1.1) * 6 : 0;
+      op(ic, seg(t, 12550 + i * 110, 12700 + i * 110));
+      tf(ic, `translateY(${(bob - (1 - Math.min(1, p)) * 40).toFixed(1)}px) scale(${Math.max(0, p).toFixed(4)})`);
+    });
+    [['b1', 12850], ['b2', 13000]].forEach(([id, a]) => {
+      const p = E.outQuint(seg(t, a, a + 800));
+      tf($(id), `translateY(${((1 - p) * 105).toFixed(2)}%)`);
+    });
+    rise($('sub'), E.outCubic(seg(t, 13350, 13850)), 26);
+    [['l1', 13600], ['l2', 13800]].forEach(([id, a]) => {
+      const p = E.outCubic(seg(t, a, a + 600));
+      op($(id), p);
+      tf($(id), `translateX(${((1 - p) * -60).toFixed(1)}px)`);
+    });
+
+    $('time').textContent = (Math.min(t, DURATION) / 1000).toFixed(1) + ' s';
+    $('fill').style.transform = `scaleX(${clamp(t / DURATION).toFixed(4)})`;
+  }
+
+  /* --- palco, relógio e controles ------------------------------------ */
+  const stage = $('stage');
+  function fit() {
+    const g = params.has('clean') ? 0 : 32;
+    const s = Math.min((innerWidth - g) / W, (innerHeight - g) / H);
+    stage.style.setProperty('--scale', s.toFixed(5));
+  }
+  addEventListener('resize', fit);
+  fit();
+
+  let start = 0, raf = 0;
+  const frozen = params.has('t');
+  const tick = (now) => { render(now - start); raf = requestAnimationFrame(tick); };
+  const play = () => { cancelAnimationFrame(raf); start = performance.now(); raf = requestAnimationFrame(tick); };
+  $('replay').addEventListener('click', play);
+  addEventListener('keydown', (e) => { if (e.key === 'r' || e.key === 'R') play(); });
+
+  let fontsOk = false;
+  const ready = Promise.all([
+    document.fonts.load('900 100px "Inter"'),
+    document.fonts.load('500 50px "Inter"'),
+    document.fonts.load('600 50px "Inter"'),
+  ]).then((f) => { fontsOk = f.every((x) => x.length > 0); })
+    .catch(() => {}).then(() => {
+      build();
+      if (frozen) render(+params.get('t'));
+      else if (reduce) render(DURATION);
+      else play();
+    });
+
+  window.story = {
+    duration: DURATION,
+    ready,
+    fontsOk: () => fontsOk,
+    seek(ms) { cancelAnimationFrame(raf); render(ms); },
+  };
+})();
+</script>
+</body>
+</html>

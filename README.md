@@ -99,3 +99,26 @@ Animação da logo em 1080 × 1350 px, 9 s, em [`logo/index.html`](logo/index.ht
 Cores: magenta `#B4407F`, branco `#FFFFFF`, fundo preto `#000000`. Fonte: Six Caps (Google Fonts), esticada para preencher a largura e inclinada junto com o cartão.
 
 `?t=6500` congela um quadro, `?clean` esconde os controles, `R` repete. Para gerar o vídeo de novo: `npm run render:logo`.
+
+---
+
+# DEU BEACH — convite em formato de agenda (9:16)
+
+Story animado em 1080 × 1920 px, com 15,5 s de duração, em [`deu-beach/index.html`](deu-beach/index.html). Ele anuncia o campeonato de beach tennis **DEU BEACH**: **sábado a partir das 18:00** e **domingo o dia todo**.
+
+É um redesign em preto e branco da referência do convite no chat. A sequência vai do balão para o cartão de evento, o dedo toca em "Responder" e aparece a lista. Aqui, a lista virou a agenda do fim de semana. Os ícones são flat e minimalistas: raquete de beach tennis, bola, rede, troféu, sol, calendário e check.
+
+O vídeo pronto está em [`video/deu-beach.mp4`](video/deu-beach.mp4). Especificações: H.264, 30 fps, 18 s (os 15,5 s da animação mais 2,5 s de tela final, com os ícones flutuando).
+
+| Tempo | O que acontece |
+| --- | --- |
+| 0–2,9 s | Um avatar com raquete aparece, o balão mostra "digitando…" e surge a pergunta **Quem topa um beach tennis?** |
+| 2,7–5,4 s | O balão vira o cartão de compromisso, montado linha por linha: Deu Beach · Campeonato de Beach Tennis · Sábado, a partir das 18:00 · Domingo, o dia todo · **Vou jogar**. |
+| 5,0–6,6 s | O dedo entra e toca em "Vou jogar". O cartão inverte para preto e gira. |
+| 6,5–10,4 s | Aparece a agenda do fim de semana. Os blocos de compromisso crescem na grade de horários: SÁB das 18:00 até 00:00 e DOM das 08:00 até 00:00. No rodapé, **Presença confirmada**. |
+| 10,5–12,1 s | Chega a resposta **Tô dentro!** |
+| 12,1–15,5 s | Um círculo escurece a tela, os ícones saltam e a marca **DEU BEACH** sobe da máscara. Em seguida aparecem a chamada e os dois horários, em blocos no estilo de calendário. |
+
+Cores: preto `#0B0B0B`, branco `#FFFFFF` e cinzas (`#8A8A8A`, `#EFEFEF`). Fonte: Inter (Google Fonts).
+
+`?t=8000` congela um quadro, `?clean` esconde os controles, `R` repete. Para gerar o vídeo de novo: `npm run render:deubeach`.
