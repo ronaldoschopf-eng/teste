@@ -1,0 +1,13 @@
+{
+  "extraKnownMarketplaces": {
+    "apify": {
+      "source": {
+        "source": "github",
+        "repo": "apify/apify-claude-code-plugin"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "apify@apify": true
+  }
+}
